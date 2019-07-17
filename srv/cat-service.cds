@@ -1,6 +1,8 @@
 using wb.db as path from '../db/data-model';
 
-service CatalogService {  
+service CatalogService {
+  entity Books as projection on path.Books;
+		
   entity Waybills as projection on path.Waybill;
   entity Werks as projection on path.Werk;
   entity Drivers as projection on path.Driver;

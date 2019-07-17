@@ -1,5 +1,12 @@
 namespace wb.db;
 
+	entity Books {
+	  key ID : UUID;
+	  title  : String;
+	  stock  : Integer;
+	}
+
+
 // @EndUserText.label: 'Demo service Definition'
 // context pack
     type TWaybill : Integer64;

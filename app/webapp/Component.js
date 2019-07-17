@@ -17,9 +17,8 @@ sap.ui.define([
          * @override
          */
         init: function () {
-            var path = this.absolutePath("/");
             var oModel = new ODataModel({
-                serviceUrl: path.lastIndexOf('http://localhost', 0) === 0 ? "/catalog/" : "/srv/catalog/",
+                serviceUrl: this.isWindows() ? "/catalog/" : "/srv/catalog/",
                 synchronizationMode: "None"
             });
             // set as default
@@ -39,6 +38,11 @@ sap.ui.define([
 
             this._link.href = href;
             return this._link.href;
+        },
+
+        isWindows: function () {
+            var path = this.absolutePath("/");
+            return path.lastIndexOf('http://localhost', 0) === 0;
         }
     });
 });

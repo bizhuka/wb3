@@ -22,8 +22,5 @@ service CatalogService {
   entity VDrivers @readonly as projection on path.VDriver;
   entity VCountWBs @readonly as projection on path.VCountWB;
   entity VCountREQs @readonly as projection on path.VCountREQ;
-  entity VGasspents @readonly as projection on path.VGasSpent; 
-
-  action csvUploadDriverMedCards(csv : String) returns String;
-  action uploadEquipment(csv : String) returns String;
+  entity VGasspents @readonly as projection on path.VGasSpent;
 }

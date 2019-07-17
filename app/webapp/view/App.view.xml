@@ -23,8 +23,8 @@
                             <headerToolbar>
                                 <OverflowToolbar>
                                     <content>
-                                        <Button text="check upload med"
-                                                press=".uploadDriverMedCards"/>
+                                        <Button text="check upload med" press=".uploadDriverMedCards"/>
+                                        <Button text="check upload Equipment" press=".uploadEquipment"/>
                                         <ToolbarSpacer/>
                                         <SearchField
                                                 id="searchField"

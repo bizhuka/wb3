@@ -1,32 +1,33 @@
+"use strict";
 
-module.exports = function (entities) {
+module.exports = function (srv) {
 
-	this.on('CREATE', 'Books', req => {
-		console.log('11111111')
+	srv.on('CREATE', 'Books', req => {
+		console.log('CREATE')
 		// req.data.tenantID = req._.req.authInfo.identityZone;
-	})
+	});
 
-	this.on('DELETE', 'Books', req => {
-		console.log('11111111')
+    srv.on('DELETE', 'Books', req => {
+		console.log('DELETE')
 		// req.query.DELETE.where.push("and", {
 		// 	"ref": ["tenantID"]
 		// }, "=", {
 		// 	"val": req._.req.authInfo.identityZone
 		// });
-	})
+	});
 
-	this.on('UPDATE', 'Books', req => {
-		console.log('11111111')
+    srv.on('UPDATE', 'Books', req => {
+		console.log('UPDATE')
 		// req.data.tenantID = req._.req.authInfo.identityZone;
 		// req.query.UPDATE.where.push("and", {
 		// 	"ref": ["tenantID"]
 		// }, "=", {
 		// 	"val": req._.req.authInfo.identityZone
 		// });
-	})
+	});
 
-	this.on('READ', 'Books', req => {
-		console.log('11111111')
+    srv.on('READ', 'Books', req => {
+		console.log('READ')
 		// if (!req.query.SELECT.where) {
 		// 	req.query.SELECT.where = [{
 		// 		"ref": ["tenantID"]
@@ -40,11 +41,11 @@ module.exports = function (entities) {
 		// 		"val": req._.req.authInfo.identityZone
 		// 	});
 		// }
-	})
+	});
 	
-    // // DB - updates
-    // require('./DB')(srv);
+    // DB - updates
+    require('./DB')(srv);
 
-    // CSV - files
-    // require('./CSV')(srv);
+    // Update from CSV
+    require('./CSV')(global.__express, srv);
 };

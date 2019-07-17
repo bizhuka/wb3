@@ -1,8 +1,13 @@
+"use strict";
+
 const Status = require('./Status');
 const Time = require('./Time');
 
+
 module.exports = (srv) => {
-    const {Waybill, ReqHeader, ReqHistory, Schedule} = srv.entities('wb.db');
+    global.__srv = srv;
+
+    const {Waybill, ReqHeader, ReqHistory, Schedule} = global.__srv.entities('wb.db');
 
     ////////////////////////////////////////////////////////////////////////////
     srv.before('UPDATE', 'Drivers', async (req) => {

@@ -1,18 +1,27 @@
-const {Driver, Equipment, EqunrGrp} = cds.entities('wb.db');
+"use strict";
+const multiparty = require('multiparty');
+const util = require('util');
+const fs = require('fs');
 
-module.exports = (srv) => {
+module.exports = (app, srv) => {
+    const {Driver, Equipment, EqunrGrp} = srv.entities('wb.db');
+
     const UPDATED = 'U';
     const INSERTED = 'I';
     const DELETED = 'D';
 
     //////////////////////////////////////////////////////////////////////////////
-    srv.on('csvUploadDriverMedCards', async (req) => {
-        const data = req.data;
-        const result = dbUpdateInfoPlus(data.csv, 4);
+    app.post("/csv/uploadDriverMedCards", async (req, res) => {
+        // await dbUpdateInfoPlus(req, 4, async function (result) {
+        const result = {
+            data: [
+                ['BR_CODE', '111', 'TTT', '751202301311']
+            ]
+        };
 
         const tx = cds.transaction(req);
         for (let i = 0; i < result.data.length; i++) {
-            const item = result[i];
+            const item = result.data[i];
             const updCnt = await tx.run(
                 UPDATE(Driver).set({
                     Barcode: item[0]
@@ -26,11 +35,14 @@ module.exports = (srv) => {
                 result.result = UPDATED;
         }
 
-        req.reply(JSON.stringify(result));
+        res.status(200).json(result);
+        // });
+
     });
 
-    srv.on('uploadEquipment', async (req) => {
+    app.get("/uploadEquipment", async (req, res) => {
         const data = req.data;
+        debugger
         const result = dbUpdateInfoPlus(data.csv, 6);
 
         const tx = cds.transaction(req);
@@ -97,26 +109,37 @@ module.exports = (srv) => {
     });
 };
 
-function dbUpdateInfoPlus(text, count) {
-    const result = {
-        data: [],
-        result: '',
+async function dbUpdateInfoPlus(req, count, callBack) {
+    const form = new multiparty.Form();
 
-        inserted: 0,
-        updated: 0,
-        deleted: 0,
-        dbcnt: 0
-    };
+    form.parse(req, async function (error, field, file) {
+        const path = file.id_csv_uploader[0].path;
+        const readFile = util.promisify(fs.readFile);
 
-    const lines = text.split("\\r?\\n");
-    for (let i = 0; i < lines.length; i++) { // TODO from 1 or JSON ?
-        const line = lines[i];
-        const parts = line.split(";");
-        if (parts.length !== count)
-            continue;
+        // TODO use string
+        const text = await readFile(path, 'utf8');
+        fs.unlink(path);
 
-        result.data.push(parts)
-    }
+        const result = {
+            data: [],
+            result: '',
 
-    return result;
+            inserted: 0,
+            updated: 0,
+            deleted: 0,
+            dbcnt: 0
+        };
+
+        const lines = text.split("\\r?\\n");
+        for (let i = 0; i < lines.length; i++) { // TODO from 1 or JSON ?
+            const line = lines[i];
+            const parts = line.split(";");
+            if (parts.length !== count)
+                continue;
+
+            result.data.push(parts)
+        }
+
+        callBack(result);
+    });
 }

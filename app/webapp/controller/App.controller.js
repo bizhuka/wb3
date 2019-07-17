@@ -272,7 +272,7 @@ sap.ui.define([
             var bundle = this.getBundle(this);
             this.loadFromFile({
                 title: bundle.getText("medCards"),
-                url: "./csv/uploadDriverMedCards",
+                url: "../srv/csv/uploadDriverMedCards",
                 columns: [
                     bundle.getText("iin"),
                     bundle.getText("pernr"),

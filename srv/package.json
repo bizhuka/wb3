@@ -9,7 +9,7 @@
     "express": "^4.17.1",
     "hdb": "^0.17.0",
     "multer": "^1.4.2",
-    "multiparty": "^4.2.1",
+    "node-rfc": "^0.1.16",
     "passport": "^0.4.0"
   },
   "engines": {

@@ -1,31 +1,32 @@
 /*eslint no-console: 0, no-unused-vars: 0*/
 "use strict";
 
-var cds = require("@sap/cds");
-// var cdsLib = require("@sap/cds/lib/cds");
-var express = require("express");
+const cds = require("@sap/cds");
+const express = require("express");
 
-// var xsenv = require("@sap/xsenv");
-// var xssec = require("@sap/xssec");
-// var passport = require("passport");
+const xsenv = require("@sap/xsenv");
+const xssec = require("@sap/xssec");
+const passport = require("passport");
 
 async function start() {
-    var app = express();
+    // Save in global var
+    const app = express();
     global.__express = app;
 
-// passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
-// 	uaa: {
-// 		tag: "xsuaa"
-// 	}
-// }).uaa));
-// app.use(passport.initialize());
-// app.use(
-// 	passport.authenticate("JWT", {
-// 		session: false
-// 	})
-// );
+    const isLocalHost = process.platform === 'win32';
 
-    const options = process.platform === 'win32' ?
+    // Security options
+    if (!isLocalHost) {
+        passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
+            uaa: {
+                tag: "xsuaa"
+            }
+        }).uaa));
+        app.use(passport.initialize());
+        app.use(passport.authenticate("JWT", {session: false}));
+    }
+
+    const options = isLocalHost ?
         {
             kind: "sqlite",
             logLevel: "error",
@@ -50,8 +51,8 @@ async function start() {
         });
 
 
-    var server = require("http").createServer();
-    var port = process.env.PORT || 4004;
+    const server = require("http").createServer();
+    const port = process.env.PORT || 4004;
 
     server.on("request", app);
     server.listen(port, function () {

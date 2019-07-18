@@ -109,9 +109,14 @@ namespace wb.db;
 
     @Comment: 'Works for authority checks'
     entity Werk {
+            @PERS_FIELD : 'T001W_WERKS'
         key Werks : TWerks;
+            @PERS_FIELD : 'T001K_BUKRS'
             Bukrs : TBukrs;
+            @PERS_FIELD : 'T001_BUTXT'
             Butxt : String(25);
+
+            @PERS_FIELD : 'T001W_NAME1'
             Name1 : String(30);
     };
 

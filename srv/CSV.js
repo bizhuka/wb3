@@ -11,7 +11,7 @@ module.exports = (app, srv) => {
     const C_DELETED = 'D';
 
     //////////////////////////////////////////////////////////////////////////////
-    app.all("/csv/uploadDriverMedCards", upload.single('id_csv_uploader'), async (req, res) => {
+    app.post("/csv/uploadDriverMedCards", upload.single('id_csv_uploader'), async (req, res) => {
         let result = dbUpdateInfoPlus(req.file, 4);
 
         const tx = cds.transaction(req);
@@ -37,7 +37,7 @@ module.exports = (app, srv) => {
         res.status(200).json(result);
     });
 
-    app.all("/csv/uploadEquipment", upload.single('id_csv_uploader'), async (req, res) => {
+    app.post("/csv/uploadEquipment", upload.single('id_csv_uploader'), async (req, res) => {
         let result = dbUpdateInfoPlus(req.file, 6);
 
         const tx = cds.transaction(req);

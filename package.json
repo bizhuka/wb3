@@ -37,6 +37,9 @@
           "database": "db/wb.db"
         }
       }
+    },
+    "odata": {
+      "version": "v4"
     }
   }
 }

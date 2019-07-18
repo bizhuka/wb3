@@ -48,4 +48,10 @@ module.exports = function (srv) {
 
     // Update from CSV
     require('./CSV')(global.__express, srv);
+
+    // Update from CSV
+    require('./SYNC')(global.__express, srv);
+
+    // Information about current user
+    require('./USER_INFO')(global.__express, srv);
 };

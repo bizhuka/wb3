@@ -1,18 +1,17 @@
 {
-  "welcomeFile": "/app/index.html",
-  "authenticationMethod": "route",
-  "routes": [
-    {
-      "scope": "$XSAPPNAME.User",
-      "source": "^/srv/(.*)$",
-      "target": "$1",
-      "destination": "srv_api"
-    },
-    {
-      "scope": "$XSAPPNAME.User",
-      "source": "^/app/(.*)$",
-      "target": "$1",
-      "localDir": "webapp"
-    }
-  ]
+	"welcomeFile": "/app/index.html",
+	"authenticationMethod": "route",
+	"routes": [
+	{
+		"scope": "wbr!t6614.WbAdmin",
+		"source": "^/srv/(.*)$",
+		"target": "$1",
+		"destination": "srv_api"
+	},
+	{
+		"scope": "wbr!t6614.WbAdmin",
+		"source": "^/app/(.*)$",
+		"target": "$1",
+		"localDir": "webapp"
+	}]
 }

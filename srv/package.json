@@ -6,11 +6,12 @@
     "@sap/cds": "^3.13.0",
     "@sap/xsenv": "latest",
     "@sap/xssec": "latest",
+    "bluebird": "^3.5.5",
     "express": "^4.17.1",
     "hdb": "^0.17.0",
     "multer": "^1.4.2",
-    "node-rfc": "^0.1.16",
-    "passport": "^0.4.0"
+    "passport": "^0.4.0",
+    "node-rfc": "SAP/node-rfc#napi"
   },
   "engines": {
     "node": "^8.9",

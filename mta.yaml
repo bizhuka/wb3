@@ -23,7 +23,7 @@ modules:
           url: '${default-url}'
     requires:
       - name: wb3-hdi-container
-      - name: wb3-uaa
+#      - name: wb3-uaa
       
   - name: wb3-app
     type: html5
@@ -34,7 +34,7 @@ modules:
     build-parameters:
       builder: grunt
     requires:
-      - name: wb3-uaa
+#      - name: wb3-uaa
       - name: srv_api
         group: destinations
         properties:
@@ -50,9 +50,9 @@ resources:
     properties:
       hdi-container-name: '${service-name}'
       
-  - name: wb3-uaa
-    type: org.cloudfoundry.managed-service
-    parameters:
-      path: ./xs-security.json
-      service-plan: application
-      service: xsuaa
+#  - name: wb3-uaa
+#    type: org.cloudfoundry.managed-service
+#    parameters:
+#      path: ./xs-security.json
+#      service-plan: application
+#      service: xsuaa

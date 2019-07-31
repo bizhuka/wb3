@@ -26,7 +26,7 @@ async function start() {
         app.use(passport.authenticate("JWT", {session: false}));
     }
 
-    const options = isLocalHost ?
+    const options = process.platform === 'win32' ?
         {
             kind: "sqlite",
             logLevel: "error",

@@ -1,8 +1,7 @@
 using wb.db as path from '../db/data-model';
+using { Country, managed } from '@sap/cds/common';
 
 service CatalogService {
-  entity Books as projection on path.Books;
-		
   entity Waybills as projection on path.Waybill;
   entity Werks as projection on path.Werk;
   entity Drivers as projection on path.Driver;
@@ -15,7 +14,7 @@ service CatalogService {
   entity ReqHeaders as projection on path.ReqHeader;
   entity ReqHistorys as projection on path.ReqHistory;
   entity Schedules as projection on path.Schedule;
-  entity Wlnvehicles as projection on path.Wlnvehicle;
+  entity WlnVehicles as projection on path.WlnVehicle;
 
   entity VWaybills @readonly as projection on path.VWaybill;
   entity VReqHeaders @readonly as projection on path.VReqHeader;

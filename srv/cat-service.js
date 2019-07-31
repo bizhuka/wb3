@@ -1,57 +1,27 @@
 "use strict";
 
 module.exports = function (srv) {
-
-	srv.on('CREATE', 'Books', req => {
-		console.log('CREATE')
-		// req.data.tenantID = req._.req.authInfo.identityZone;
-	});
-
-    srv.on('DELETE', 'Books', req => {
-		console.log('DELETE')
-		// req.query.DELETE.where.push("and", {
-		// 	"ref": ["tenantID"]
-		// }, "=", {
-		// 	"val": req._.req.authInfo.identityZone
-		// });
-	});
-
-    srv.on('UPDATE', 'Books', req => {
-		console.log('UPDATE')
-		// req.data.tenantID = req._.req.authInfo.identityZone;
-		// req.query.UPDATE.where.push("and", {
-		// 	"ref": ["tenantID"]
-		// }, "=", {
-		// 	"val": req._.req.authInfo.identityZone
-		// });
-	});
-
-    srv.on('READ', 'Books', req => {
-		console.log('READ')
-		// if (!req.query.SELECT.where) {
-		// 	req.query.SELECT.where = [{
-		// 		"ref": ["tenantID"]
-		// 	}, "=", {
-		// 		"val": req._.req.authInfo.identityZone
-		// 	}];
-		// } else {
-		// 	req.query.SELECT.where.push("and", {
-		// 		"ref": ["tenantID"]
-		// 	}, "=", {
-		// 		"val": req._.req.authInfo.identityZone
-		// 	});
-		// }
-	});
-	
     // DB - updates
-    require('./DB')(srv);
+    require('./api/db')(srv);
 
     // Update from CSV
-    require('./CSV')(global.__express, srv);
+    require('./api/csv')(global.__express, srv);
 
-    // Update from CSV
-    require('./SYNC')(global.__express, srv);
+    // Synchronization with R3
+    require('./api/sync')(global.__express, srv);
 
     // Information about current user
-    require('./USER_INFO')(global.__express, srv);
+    require('./api/user_info')(global.__express);
+
+    // Wialon
+    require('./api/wialon')(global.__express, srv);
+
+    // Select data from DB
+    require('./api/select')(global.__express, srv);
+
+    // PDF & word
+    require('./api/print')(global.__express, srv);
+
+    // runtime code
+    require('./api/code')(global.__express, srv);
 };

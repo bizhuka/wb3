@@ -1,27 +1,90 @@
 {
-  "xsappname": "wb3",
-	"tenant-mode": "shared",
-	"description": "Bookshop",
-	"scopes": [{
-		"name": "$XSAPPNAME.User",
-		"description": "User"
-	}, {
-		"name": "$XSAPPNAME.Administrator",
-		"description": "Administrator"
-	}, {
-		"name": "$XSAPPNAME.Callback",
-		"description": "Multitenant Callbacks",
-		"grant-as-authority-to-apps": [
-			"$XSAPPNAME(application, sap-provisioning, tenant-onboarding)"
-		]
-	}],
-	"role-templates": [{
-		"name": "user",
-		"description": "User Role",
-		"scope-references": ["$XSAPPNAME.User"]
-	}, {
-		"name": "administrator",
-		"description": "Administrator Role",
-		"scope-references": ["$XSAPPNAME.Administrator", "$XSAPPNAME.User"]
-	}]
+  "xsappname": "TODO",
+  "tenant-mode": "shared",
+  "oauth2-configuration": {
+    "system-attributes": ["groups", "rolecollections"]
+  },
+  "attributes": [
+    {
+      "name": "Werks",
+      "description": "Werks",
+      "valueType": "string"
+    }
+  ],
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Callback",
+      "description": "Multitenant Callbacks",
+      "grant-as-authority-to-apps": [
+        "$XSAPPNAME(application, sap-provisioning, tenant-onboarding)"
+      ]
+    },
+
+    { "name": "$XSAPPNAME.WbAdmin", "description": "Администратор программы" },
+    { "name": "$XSAPPNAME.WbAnalyticsCloud", "description": "Отчетность и KPI" },
+    { "name": "$XSAPPNAME.WbAuthorized", "description": "Авторизован" },
+    { "name": "$XSAPPNAME.WbCancel", "description": "Отменить ПЛ" },
+    { "name": "$XSAPPNAME.WbChangeDate", "description": "Изменение даты" },
+    { "name": "$XSAPPNAME.WbChangeWialonData", "description": "Менять данные Wialon" },
+    { "name": "$XSAPPNAME.WbChangeWialonDataClose", "description": "Менять данные Wialon после закрытия" },
+    { "name": "$XSAPPNAME.WbClose", "description": "Закрытие ПЛ" },
+    { "name": "$XSAPPNAME.WbCloseReqs", "description": "Закрытие заявки" },
+    { "name": "$XSAPPNAME.WbCreateNew", "description": "Создание ПЛ" },
+    { "name": "$XSAPPNAME.WbCreateNoReq", "description": "Создание ПЛ без заявки" },
+    { "name": "$XSAPPNAME.WbDoctor", "description": "Медик" },
+    { "name": "$XSAPPNAME.WbDoctorManual", "description": "Рабочая инструкция доктора" },
+    { "name": "$XSAPPNAME.WbEngineerManual", "description": "Рабочая инструкция инженера" },
+    { "name": "$XSAPPNAME.WbFillNoReq", "description": "Заполнение заявки ПЛ созданного с WbCreateNoReq" },
+    { "name": "$XSAPPNAME.WbGarage", "description": "Выезд + Заезд в гараж" },
+    { "name": "$XSAPPNAME.WbLateAddReqs", "description": "Позднее добавление заявок в ПЛ!" },
+    { "name": "$XSAPPNAME.WbLoaderDriver", "description": "Обновление водителей" },
+    { "name": "$XSAPPNAME.WbLoaderEo", "description": "Обновление ТС" },
+    { "name": "$XSAPPNAME.WbLoaderLgort", "description": "Обновление складов" },
+    { "name": "$XSAPPNAME.WbLoaderReq", "description": "Обновление заявок" },
+    { "name": "$XSAPPNAME.WbLoaderSchedule", "description": "Обновление плана ремонта (ТО1, TO2)" },
+    { "name": "$XSAPPNAME.WbMechanic", "description": "Контрольный механик" },
+    { "name": "$XSAPPNAME.WbMechanicManual", "description": "Рабочая инструкция механика" },
+    { "name": "$XSAPPNAME.WbPdfTemplates", "description": "Показ шаблонов ПЛ" },
+    { "name": "$XSAPPNAME.WbRequestReject", "description": "Отмена заявки" },
+    { "name": "$XSAPPNAME.WbSetDriver", "description": "Назначить водителя" },
+    { "name": "$XSAPPNAME.WbShowFinishedReqs", "description": "Просмотр обработанных заявок" },
+    { "name": "$XSAPPNAME.WbShowList", "description": "Просмотр списка ПЛ" },
+    { "name": "$XSAPPNAME.WbShowNewReqs", "description": "Просмотр Заявок TORO" },
+    { "name": "$XSAPPNAME.WbShowOne", "description": "Просмотр отдельного ПЛ" },
+    { "name": "$XSAPPNAME.WbDispatcherManual", "description": "Рабочая инструкция диспетчера" }
+  ],
+  "role-templates": [
+    { "name": "WbAdmin", "description": "Администратор программы", "scope-references": [ "$XSAPPNAME.WbAdmin" ] },
+    { "name": "WbAnalyticsCloud", "description": "Отчетность и KPI", "scope-references": [ "$XSAPPNAME.WbAnalyticsCloud" ] },
+    { "name": "WbAuthorized", "description": "Авторизован", "scope-references": [ "$XSAPPNAME.WbAuthorized" ] },
+    { "name": "WbCancel", "description": "Отменить ПЛ", "scope-references": [ "$XSAPPNAME.WbCancel" ] },
+    { "name": "WbChangeDate", "description": "Изменение даты", "scope-references": [ "$XSAPPNAME.WbChangeDate" ] },
+    { "name": "WbChangeWialonData", "description": "Менять данные Wialon", "scope-references": [ "$XSAPPNAME.WbChangeWialonData" ] },
+    { "name": "WbChangeWialonDataClose", "description": "Менять данные Wialon", "scope-references": [ "$XSAPPNAME.WbChangeWialonDataClose" ] },
+    { "name": "WbClose", "description": "Закрытие ПЛ", "scope-references": [ "$XSAPPNAME.WbClose" ] },
+    { "name": "WbCloseReqs", "description": "Закрытие заявки", "scope-references": [ "$XSAPPNAME.WbCloseReqs" ] },
+    { "name": "WbCreateNew", "description": "Создание ПЛ", "scope-references": [ "$XSAPPNAME.WbCreateNew" ] },
+    { "name": "WbCreateNoReq", "description": "Создание ПЛ без заявки", "scope-references": [ "$XSAPPNAME.WbCreateNoReq" ] },
+    { "name": "WbDoctor", "description": "Медик", "scope-references": [ "$XSAPPNAME.WbDoctor" ] },
+    { "name": "WbDoctorManual", "description": "Рабочая инструкция доктора", "scope-references": [ "$XSAPPNAME.WbDoctorManual" ] },
+    { "name": "WbEngineerManual", "description": "Рабочая инструкция инженера", "scope-references": [ "$XSAPPNAME.WbEngineerManual" ] },
+    { "name": "WbFillNoReq", "description": "Заполнение заявки ПЛ созданного с WbCreateNoReq", "scope-references": [ "$XSAPPNAME.WbFillNoReq" ] },
+    { "name": "WbGarage", "description": "Выезд + Заезд в гараж", "scope-references": [ "$XSAPPNAME.WbGarage" ] },
+    { "name": "WbLateAddReqs", "description": "Позднее добавление заявок в ПЛ!", "scope-references": [ "$XSAPPNAME.WbLateAddReqs" ] },
+    { "name": "WbLoaderDriver", "description": "Обновление водителей", "scope-references": [ "$XSAPPNAME.WbLoaderDriver" ] },
+    { "name": "WbLoaderEo", "description": "Обновление ТС", "scope-references": [ "$XSAPPNAME.WbLoaderEo" ] },
+    { "name": "WbLoaderLgort", "description": "Обновление складов", "scope-references": [ "$XSAPPNAME.WbLoaderLgort" ] },
+    { "name": "WbLoaderReq", "description": "Обновление заявок", "scope-references": [ "$XSAPPNAME.WbLoaderReq" ] },
+    { "name": "WbLoaderSchedule", "description": "Обновление плана ремонта (ТО1, TO2)", "scope-references": [ "$XSAPPNAME.WbLoaderSchedule" ] },
+    { "name": "WbMechanic", "description": "Контрольный механик", "scope-references": [ "$XSAPPNAME.WbMechanic" ] },
+    { "name": "WbMechanicManual", "description": "Рабочая инструкция механика", "scope-references": [ "$XSAPPNAME.WbMechanicManual" ] },
+    { "name": "WbPdfTemplates", "description": "Показ шаблонов ПЛ", "scope-references": [ "$XSAPPNAME.WbPdfTemplates" ] },
+    { "name": "WbRequestReject", "description": "Отмена заявки", "scope-references": [ "$XSAPPNAME.WbRequestReject" ] },
+    { "name": "WbSetDriver", "description": "Назначить водителя", "scope-references": [ "$XSAPPNAME.WbSetDriver" ] },
+    { "name": "WbShowFinishedReqs", "description": "Просмотр обработанных заявок", "scope-references": [ "$XSAPPNAME.WbShowFinishedReqs" ] },
+    { "name": "WbShowList", "description": "Просмотр списка ПЛ", "scope-references": [ "$XSAPPNAME.WbShowList" ] },
+    { "name": "WbShowNewReqs", "description": "Просмотр Заявок TORO", "scope-references": [ "$XSAPPNAME.WbShowNewReqs" ] },
+    { "name": "WbShowOne", "description": "Просмотр отдельного ПЛ", "scope-references": [ "$XSAPPNAME.WbShowOne" ] },
+    { "name": "WbDispatcherManual", "description": "Рабочая инструкция диспетчера", "scope-references": [ "$XSAPPNAME.WbDispatcherManual" ] }
+  ]
 }

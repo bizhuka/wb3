@@ -1,16 +1,8 @@
-namespace wb.db;
+    namespace wb.db;
 
-	entity Books {
-	  key ID : UUID;
-	  title  : String;
-	  stock  : Integer;
-	}
-
-
-// @EndUserText.label: 'Demo service Definition'
-// context pack
     type TWaybill : Integer64;
     type TAufnr : String(12);
+    type TObjnr : String(22);
     type TEqunr : String(18);
     type TBukrs : String(4);
     type TWerks : String(4);
@@ -37,11 +29,11 @@ namespace wb.db;
         top  = 2;
         both = 4;
     };
-
     
     @Comment : 'Main waybill table'
     entity Waybill {
         @Comment : 'Waybill id'
+        @EndUserText.label: 'Waybill main id'
         key Id            : TWaybill @title: '{i18n>waybill}' not null;
             Description   : TDescription @title: '{i18n>description}';
 
@@ -80,7 +72,7 @@ namespace wb.db;
             // bukrs : TBukrs; driver: TPernr;
             Driver : Association to Driver;
 
-            // equnr: TEqunr;
+            //Equnr: TEqunr;
             Equipment : Association to Equipment;
             
             @Comment: 'stype = WB'
@@ -93,104 +85,187 @@ namespace wb.db;
             Schedules: Association to many Schedule on Schedules.Waybill_Id = $self.Id;
             ReqHistories: Association to many ReqHistory on ReqHistories.Waybill_Id = $self.Id;
             GasSpents: Association to many GasSpent on GasSpents.Waybill_Id = $self.Id;
+
+            // Counts
+            virtual req_cnt  : Integer;
+            virtual sch_cnt  : Integer;
+            virtual hist_cnt : Integer;
+            virtual gas_cnt  : Integer;
     };
-    
-    define entity VWaybill AS SELECT FROM Waybill  {
-        Id,
-        Driver.Fio,
-        // Equipment.Eqktx, Equipment.Point, Equipment.Imei, Equipment.Mptyp, Equipment.WialonId, Equipment.License_num, Equipment.TooName, Equipment.PetrolMode, Equipment.Anln1, Equipment.KtschTxt,
-
-        // count(ReqHeaders.Objnr) as req_cnt : Integer,
-        // count(Schedules.Datum) as sch_cnt : Integer,
-        // count(ReqHistories.Objnr) as hist_cnt : Integer,
-        count(GasSpents.Pos) as gas_cnt : Integer
-    } group by Id, Driver.Fio;
-
 
     @Comment: 'Works for authority checks'
     entity Werk {
-            @PERS_FIELD : 'T001W_WERKS'
+            @R3_FIELD : 'T001W_WERKS'
         key Werks : TWerks;
-            @PERS_FIELD : 'T001K_BUKRS'
+
+            @R3_FIELD : 'T001K_BUKRS'
             Bukrs : TBukrs;
-            @PERS_FIELD : 'T001_BUTXT'
+
+            @R3_FIELD : 'T001_BUTXT'
             Butxt : String(25);
 
-            @PERS_FIELD : 'T001W_NAME1'
+            @R3_FIELD : 'T001W_NAME1'
             Name1 : String(30);
     };
 
     entity Driver {
+            @R3_FIELD : 'DR_BE'
         key Bukrs     : TBukrs not null;
+
+            @R3_FIELD : 'DR_TN'
         key Pernr     : TPernr not null;
+
+            @Comment : 'Load from 1C'
             Barcode   : TBarcode;
+
+            @R3_FIELD : 'DR_DATBEG'
             Datbeg    : Date;
+
+            @R3_FIELD : 'DR_FIO'
             Fio       : TFio;
+
+            @R3_FIELD : 'DR_PODR'
             Podr      : String(50);
+
+            @R3_FIELD : 'DR_POST'
             Post      : String(120);
 
             @Comment : 'IIN is now empty'
+            @R3_FIELD : 'DR_STCD3'
             Stcd3     : TIin;
+
             ValidDate : Timestamp;
     };
 
     @Comment: 'Vehicles of PM'
     entity Equipment {
+            @R3_FIELD : 'EQUI_EQUNR'
         key Equnr        : TEqunr not null;
 
             @Comment: 'Works regulate access to data'
+            @R3_FIELD : 'ILOA_SWERK'
             Swerk        : TWerks;
 
+            @R3_FIELD : '_MARK'
+            Expelled     : String(1);
+
             @Comment: 'For reading data from Wialon system'
+            @R3_FIELD : 'WV_ID'
             WialonId     : String(5);
 
-            Anln1        : String(12);
-            Baujj        : String(4);
-            Baumm        : String(2);
-            Bukrs        : String(4);
-            Datbi        : Date;
-            Engine_type  : String(10);
-            Eqart        : String(10);
-            Eqktx        : String(40);
-            Fleet_num    : String(18);
-            Fuel_pri     : String(12);
-            Fuel_sec     : String(12);
-            Gernr        : String(18);
-            Herld        : String(3);
-            Herst        : String(30);
-            Imei         : String(40);
-            Inbdt        : Date;
-            KtschTxt     : String(40);
-            License_num  : String(15);
-            Mptyp        : String(1);
-            N_class      : String(15);
             NoDriverDate : Timestamp;
-            OrigClass    : String(15);
-            PetrolMode   : String(3);
-            Pltxt        : String(40);
-            Point        : String(12);
-            Speed_max    : DecimalFloat; //Decimal;
+
             TooName      : String(50);
+
+            @R3_FIELD : 'ILOA_ANLNR'
+            Anln1        : String(12);
+
+            @R3_FIELD : 'EQUI_BAUJJ'
+            Baujj        : String(4);
+
+            @R3_FIELD : 'EQUI_BAUMM'
+            Baumm        : String(2);
+
+            @R3_FIELD : 'T001K_BUKRS'
+            Bukrs        : String(4);
+
+            @R3_FIELD : 'EQUZ_DATBI'
+            Datbi        : Date;
+
+            @R3_FIELD : 'FLEET_ENGINE_TYPE'
+            Engine_type  : String(10);
+
+            @R3_FIELD : 'EQUI_EQART'
+            Eqart        : String(10);
+
+            @R3_FIELD : 'EQKT_EQKTX'
+            Eqktx        : String(40);
+
+            @R3_FIELD : 'FLEET_FLEET_NUM'
+            Fleet_num    : String(18);
+
+            @R3_FIELD : 'FLEET_FUEL_PRI'
+            Fuel_pri     : String(12);
+
+            @R3_FIELD : 'FLEET_FUEL_SEC'
+            Fuel_sec     : String(12);
+
+            @R3_FIELD : 'EQUI_GERNR'
+            Gernr        : String(18);
+
+            @R3_FIELD : 'EQUI_HERLD'
+            Herld        : String(3);
+
+            @R3_FIELD : 'EQUI_HERST'
+            Herst        : String(30);
+
+            @R3_FIELD : 'WV_IMEI'
+            Imei         : String(40);
+
+            @R3_FIELD : 'EQUI_INBDT'
+            Inbdt        : Date;
+
+            @R3_FIELD : '_T435T_TXT'
+            KtschTxt     : String(40);
+
+            @R3_FIELD : 'FLEET_LICENSE_NUM'
+            License_num  : String(15);
+
+            @R3_FIELD : 'IMPTT_MPTYP'
+            Mptyp        : String(1);
+
+            @R3_FIELD : 'KLAH_CLASS'
+            N_class      : String(15);
+
+            @R3_FIELD : '_ORIG_CLASS'
+            OrigClass    : String(15);
+
+            @R3_FIELD : 'WV_PETROL_MODE'
+            PetrolMode   : String(3);
+
+            @R3_FIELD : 'IFLOTX_PLTXT'
+            Pltxt        : String(40);
+
+            @R3_FIELD : 'IMPTT_POINT'
+            Point        : String(12);
+
+            @R3_FIELD : 'FLEET_SPEED_MAX'
+            Speed_max    : DecimalFloat; //Decimal;
+
+            @R3_FIELD : 'ILOA_TPLNR'
             Tplnr        : String(30);
+
+            @R3_FIELD : 'EQUI_TYPBZ'
             Typbz        : String(20);
     };
 
     entity StatusText {
+        @R3_FIELD       : 'STATUS_ID'
         key Id          : Integer;
+
+            @R3_FIELD   : 'MESSAGE_TYPE'
             MessageType : TMessagetype;
 
             @Comment: 'Each for different purpose'
+            @R3_FIELD   : 'STATUS_TYPE'
             Stype       : TStype;
 
             // TODO 'X' ???
+            @R3_FIELD   : 'IN_TILE'
             InTile      : String(1);
 
+            @R3_FIELD   : 'KZ'
             Kz          : String(40);
+
+            @R3_FIELD   : 'RU'
             Ru          : String(40);
     };
 
     entity EqunrGrp {
+        @R3_FIELD : 'KTSCH'
         key Ktsch : TKtsch; // Class
+
+        @R3_FIELD : 'GRP'
             Grp   : String(40); // Group
     };
 
@@ -206,74 +281,168 @@ namespace wb.db;
     };
 
     entity GasType {
+        @R3_FIELD : 'MARA_MATNR'
         key Matnr : TMatnr;
+
+            @R3_FIELD : 'MAKT_MAKTX'
             Maktx : String(40);
+
+            @R3_FIELD : 'T006A_MSEHL'
             Msehl : String(30);
     };
 
     entity Lgort {
-        key Werks : Association to Werk;
+        @R3_FIELD : 'T001L_WERKS'
+        key Werks : TWerks; // Association to Werk;
+
+        @R3_FIELD : 'T001L_LGORT'
         key Lgort : TLgort;
+
+        @R3_FIELD : 'T001L_LGOBE'
             Lgobe : String(16);
     };
 
     entity ReqHeader {
-        key Objnr        : String(22);
+            @R3_FIELD    : 'AFVC_OBJNR'
+        key Objnr        : TObjnr;
 
+            @R3_FIELD : 'AFIH_AUFNR'
             Aufnr        : String(12);
-            Iwerk        : Association to Werk;
-            Ktsch        : Association to EqunrGrp;
-            KtschTxt     : String(40);
 
-            Beber        : String(3);
+            @R3_FIELD : 'AFIH_IWERK'
+            Werks        : TWerks; // Association to Werk;
 
-            Duration     : DecimalFloat;
-            Equnr        : String(18);
-            Gltrp        : Date;
-            Gstrp        : Date;
-            Ilart        : String(3);
-            Ilatx        : String(30);
-            Ingpr        : String(3);
-            Innam        : String(18);
-            Ltxa1        : String(40);
-            Pltxt        : String(40);
-            Priok        : String(1);
-            Priokx       : String(20);
-            Stand        : String(40);
-            Tplnr        : String(30);
             Waybill_Id   : TWaybill;
+
             FromDate     : Timestamp;
+            ToDate       : Timestamp;
+
             Reason       : String(100);
             Status       : Association to StatusText;
-            ToDate       : Timestamp;
+
+            @R3_FIELD : 'AFVC_KTSCH'
+            Ktsch        : TKtsch; // Association to EqunrGrp;
+
+            @R3_FIELD : 'T435T_TXT'
+            KtschTxt     : String(40);
+
+            @R3_FIELD : 'ILOA_BEBER'
+            Beber        : String(3);
+
+            @R3_FIELD : 'AFVV_DAUNO'
+            Duration     : DecimalFloat;
+
+            @R3_FIELD : 'AFIH_EQUNR'
+            Equnr        : TEqunr;
+
+            @R3_FIELD : 'AFKO_GLTRP'
+            Gltrp        : Date;
+
+            @R3_FIELD : 'AFKO_GSTRP'
+            Gstrp        : Date;
+
+            @R3_FIELD : 'AFIH_ILART'
+            Ilart        : String(3);
+
+            @R3_FIELD : 'T353I_ILATX'
+            Ilatx        : String(30);
+
+            @R3_FIELD : 'AFIH_INGPR'
+            Ingpr        : String(3);
+
+            @R3_FIELD : 'T024I_INNAM'
+            Innam        : String(18);
+
+            @R3_FIELD : 'AFVC_LTXA1'
+            Ltxa1        : String(40);
+
+            @R3_FIELD : 'IFLOTX_PLTXT'
+            Pltxt        : String(40);
+
+            @R3_FIELD : 'AFIH_PRIOK'
+            Priok        : String(1);
+
+            @R3_FIELD : 'T356_PRIOKX'
+            Priokx       : String(20);
+
+            @R3_FIELD : 'T499S_KTEXT'
+            Stand        : String(40);
+
+            @R3_FIELD : 'ILOA_TPLNR'
+            Tplnr        : String(30);
+
+            @R3_FIELD : 'T357_FING'
             Fing         : String(14);
+
+            @R3_FIELD : '_HOURS'
             Hours        : String(11);
     };
 
     entity ReqHistory {
         key Waybill_Id : TWaybill;
-        key Objnr      : String(22);
+        key Objnr      : TObjnr;
     };
 
     entity Schedule {
+            @R3_FIELD : 'DATUM'
         key Datum      : Date;
-        key Werks      : Association to Werk ;
-        key Equnr      : Association to Equipment;
+
+            @R3_FIELD : 'WERKS'
+        key Werks      : TWerks; // Association to Werk;
+
+            @R3_FIELD : 'EQUNR'
+        key Equnr      : TEqunr; // Association to Equipment;
+
+            @R3_FIELD : 'ILART'
             Ilart      : String(3);
+
             Waybill_Id : TWaybill;
     };
 
-    entity Wlnvehicle {
+    entity WlnVehicle {
+        @R3_FIELD       : 'GUID'
         key Gd          : TGuid;
-            Gps_mileage : DecimalFloat;
+
+            @R3_FIELD   : 'ID'
             Id          : String(5);
-            Mileage     : DecimalFloat;
+
+            @R3_FIELD   : 'TEXT'
             Nm          : String(50);
-            Rs485_fls02 : DecimalFloat;
-            Rs485_fls12 : DecimalFloat;
-            Rs485_fls22 : DecimalFloat;
+
+            @R3_FIELD   : 'IMEI'
             Uid         : String(20);
+
+            @R3_FIELD   : ''
+            Mileage     : DecimalFloat;
+
+            @R3_FIELD   : ''
+            Gps_mileage : DecimalFloat;
+
+            @R3_FIELD   : ''
+            Rs485_fls02 : DecimalFloat;
+
+            @R3_FIELD   : ''
+            Rs485_fls12 : DecimalFloat;
+
+            @R3_FIELD   : ''
+            Rs485_fls22 : DecimalFloat;
     };
+
+    define entity VWaybill AS SELECT FROM Waybill  {
+        *,
+        Driver.Fio,
+
+        Equipment.Eqktx,
+        Equipment.Point,
+        Equipment.Imei,
+        Equipment.Mptyp,
+        Equipment.WialonId,
+        Equipment.License_num,
+        Equipment.TooName,
+        Equipment.PetrolMode,
+        Equipment.Anln1,
+        Equipment.KtschTxt
+    } ;
 
     define entity VReqHeader AS SELECT FROM ReqHeader{
         *,
@@ -298,25 +467,25 @@ namespace wb.db;
         w.Equipment.Anln1, w.Equipment.KtschTxt,
 
       CASE
-        WHEN PtType = 1 THEN 'РќРµРіС–Р·РіС– Р±Р°Рє'
-        WHEN PtType = 2 THEN 'Р–РѕТ“Р°СЂС‹ Р¶Р°Р±РґС‹Т›С‚Р°Сѓ'
-        WHEN PtType = 4 THEN 'РљТЇСЂРєРµ'
+        WHEN PtType = 1 THEN 'Негізгі бак'
+        WHEN PtType = 2 THEN 'Жоғары жабдықтау'
+        WHEN PtType = 4 THEN 'Күрке'
       END as PtType_kz : String(40),
 
       CASE
-        WHEN PtType = 1 THEN 'РћСЃРЅРѕРІРЅРѕР№ Р±Р°Рє'
-        WHEN PtType = 2 THEN 'Р’РµСЂС…РЅРµРµ РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµ'
-        WHEN PtType = 4 THEN 'Р‘СѓРґРєР°'
+        WHEN PtType = 1 THEN 'Основной бак'
+        WHEN PtType = 2 THEN 'Верхнее оборудование'
+        WHEN PtType = 4 THEN 'Будка'
       END as PtType_ru : String(40)
     } ORDER BY Waybill_Id, PtType, Pos;
 
     define entity VCountREQ AS SELECT FROM ReqHeader{
-        key Iwerk as Werks,
+        key Werks as Werks,
         key Status as Status,
         count(*) as cnt   : Integer
     }
-    group by Iwerk, Status
-    order by Iwerk, Status;
+    group by Werks, Status
+    order by Werks, Status;
 
 
     define entity VCountWB AS SELECT FROM Waybill{

@@ -5,7 +5,7 @@ const util = require('util');
 const fs = require('fs');
 
 const readFile = util.promisify(fs.readFile);
-const isLocalHost = process.platform === 'win32';
+const isLocalHost = !!process.env.WB_IS_TEST;//process.platform === 'win32';
 
 async function getUserInfo() {
     // TODO PATH srv/

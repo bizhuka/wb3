@@ -13,7 +13,7 @@ async function start() {
     const app = express();
     global.__express = app;
 
-    const isLocalHost = process.platform === 'win32';
+    const isLocalHost = !!process.env.WB_IS_TEST;//process.platform === 'win32';
 
     // Security options
     if (!isLocalHost) {

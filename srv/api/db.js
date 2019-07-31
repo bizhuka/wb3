@@ -3,7 +3,6 @@
 const Status = require('../util/Status');
 const Time = require('../util/Time');
 
-
 module.exports = (srv) => {
 
     const {Waybill, ReqHeader, ReqHistory, Schedule, Equipment, GasSpent, Driver} = srv.entities('wb.db');

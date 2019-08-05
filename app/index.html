@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script id="sap-ui-bootstrap"
-		src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_belize"
-		data-sap-ui-resourceroots='{
-			"bookshop.app": "./webapp/"
-		}'
-		data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
-		data-sap-ui-compatVersion="edge"
-		data-sap-ui-async="true">
-	</script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="webapp/icon.png"/>
+    <title>Waybill</title>
+
+    <script id="sap-ui-bootstrap"
+            src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+            data-sap-ui-libs="sap.m,sap.f,sap.ui.core,sap.ui.layout"
+            data-sap-ui-theme="sap_belize"
+            data-sap-ui-resourceroots='{
+			    "com.modekzWaybill": "./webapp/"
+		    }'
+            data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+            data-sap-ui-compatVersion="edge"
+            data-sap-ui-xx-bindingSyntax="complex"
+            data-sap-ui-async="true">
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="webapp/css/style.css">
+
 </head>
 <body class="sapUiBody">
-	<div data-sap-ui-component data-name="bookshop.app" data-id="container" data-settings='{"id" : "odatav4"}'></div>
+<div data-sap-ui-component data-name="com.modekzWaybill" data-id="container" data-settings='{"id" : "odatav4"}'></div>
 </body>
 </html>

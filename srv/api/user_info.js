@@ -4,12 +4,14 @@ const xssec = require("@sap/xssec");
 const util = require('util');
 const fs = require('fs');
 
+const resolve = require('path').resolve;
 const readFile = util.promisify(fs.readFile);
 const isLocalHost = !!process.env.WB_IS_TEST;//process.platform === 'win32';
 
 async function getUserInfo() {
     // TODO PATH srv/
-    const token = isLocalHost ? JSON.parse(await readFile('./json/token.json', 'utf8')) : getHanaAuthInfo();
+    const path2File = resolve('./srv/json/token.json');
+    const token = isLocalHost ? JSON.parse(await readFile(path2File, 'utf8')) : getHanaAuthInfo();
 
     // Parsed info
     const result = {

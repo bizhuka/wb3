@@ -81,7 +81,7 @@
             @Comment: 'stype = DR'
             DelayReason: Association to StatusText;
 
-            ReqHeaders: Association to many ReqHeader on ReqHeaders.Waybill_Id = $self.Id;
+            ReqHeaders: Association to many ReqHeader on $self;
             Schedules: Association to many Schedule on Schedules.Waybill_Id = $self.Id;
             ReqHistories: Association to many ReqHistory on ReqHistories.Waybill_Id = $self.Id;
             GasSpents: Association to many GasSpent on GasSpents.Waybill_Id = $self.Id;
@@ -312,7 +312,8 @@
             @R3_FIELD : 'AFIH_IWERK'
             Werks        : TWerks; // Association to Werk;
 
-            Waybill_Id   : TWaybill;
+            //Waybill_Id   : TWaybill;
+            Waybill      : Association [0..1] to Waybill;
 
             FromDate     : Timestamp;
             ToDate       : Timestamp;
@@ -446,8 +447,11 @@
 
     define entity VReqHeader AS SELECT FROM ReqHeader{
         *,
-        Status.Kz as StatusReason_kz,
-        Status.Ru as StatusReason_ru
+        Waybill.Status as Status,
+        Waybill.Description as Description
+        
+        // Status.Kz as StatusReason_kz,
+        // Status.Ru as StatusReason_ru
     };
 
     define entity VDriver as SELECT FROM Driver { * };

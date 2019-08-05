@@ -1,11 +1,12 @@
 sap.ui.define([
     "sap/ui/core/UIComponent",
-    "bookshop/app/model/models",
+    "sap/ui/Device",
+    "com/modekzWaybill/model/models",
     "sap/ui/model/odata/v4/ODataModel"
-], function (UIComponent, models, ODataModel) {
+], function (UIComponent, Device, models, ODataModel) {
     "use strict";
 
-    return UIComponent.extend("ui.Component", {
+    return UIComponent.extend("com.modekzWaybill.Component", {
 
         metadata: {
             manifest: "json"
@@ -17,19 +18,29 @@ sap.ui.define([
          * @override
          */
         init: function () {
-            var oModel = new ODataModel({
-                serviceUrl: this.isWindows() ? "/catalog/" : "/srv/catalog/",
-                synchronizationMode: "None"
-            });
-            // set as default
-            this.setModel(oModel);
-
 
             // call the base component's init function
             UIComponent.prototype.init.apply(this, arguments);
 
             // set the device model
             this.setModel(models.createDeviceModel(), "device");
+
+            // var sServiceUrl = this.getMetadata().getManifestEntry("sap.app").dataSources.wb.uri;
+            // var oWbModel = new sap.ui.model.odata.ODataModel(sServiceUrl, {json: true,loadMetadataAsync: true});
+            // this.setModel(oWbModel,"wb");
+            //this.getView().setModel(new ODataModel("/odata.svc"), "wb");
+
+            // create the views based on the url/hash
+            this.getRouter().initialize();
+
+            var url = this.isWindows() ? "/catalog/" : "/srv/catalog/";
+            var oModel = new ODataModel({
+                serviceUrl: url,
+                synchronizationMode: "None",
+                operationMode: "Server"
+            });
+            // set as default ?
+            this.setModel(oModel, "wb");
         },
 
         absolutePath: function (href) {

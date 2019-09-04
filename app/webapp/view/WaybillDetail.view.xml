@@ -1,0 +1,329 @@
+<mvc:View
+        controllerName="com.modekzWaybill.controller.WaybillDetail"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:f="sap.ui.layout.form"
+        xmlns:semantic="sap.m.semantic"
+        xmlns="sap.m">
+
+    <semantic:DetailPage title="{i18n>waybill}" showNavButton="true" navButtonPress="onNavBack">
+        <ObjectHeader title="{wb>Id} - ({wb>Werks})"
+                      number="{wb>Description}"
+                      numberUnit="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Id' } ], formatter: '.getStatusText' }"
+                      icon="sap-icon://bar-code">
+            <attributes>
+                <ObjectAttribute
+                        text="{i18n>planDates}: { path: 'wb>FromDate', targetType : 'any', formatter: '.toLocaleDate' } - { path: 'wb>ToDate', targetType : 'any', formatter: '.toLocaleDate' }"/>
+
+                <ObjectAttribute
+                        text="{i18n>changedBy}: {wb>ChangeUser} - { path: 'wb>ChangeDate', targetType : 'any', formatter: '.toLocaleDateTime' }"/>
+            </attributes>
+
+            <statuses>
+                <ObjectStatus
+                        text="{i18n>documAndAufnr}: { path: 'wb>Docum', formatter: '.alphaOut'} - { path: 'wb>Aufnr', formatter: '.alphaOut'}"
+                        visible="{= %{wb>Status}===%{status>/CLOSED}}"
+                        state="Success"/>
+
+                <ObjectStatus
+                        text="{i18n>created}: {i18n>noReqs2}"
+                        visible="{wb>WithNoReqs}"
+                        state="Warning"/>
+
+                <ObjectStatus
+                        text="{i18n>delayReason}: { path: 'wb>DelayReason', targetType : 'any', formatter: '.getDelayReasonText'}"
+                        visible="{= %{wb>DelayReason}!==${status>/DR_NO_DELAY}}"
+                        state="Warning"/>
+
+                <ObjectStatus
+                        text="{i18n>too}: {wb>TooName}"
+                        visible="{= %{wb>TooName}!=='-'}"
+                        state="Warning"/>
+            </statuses>
+        </ObjectHeader>
+
+        <semantic:customHeaderContent>
+            <Button press="on_wb_print" icon="sap-icon://print" text="{i18n>print}"/>
+        </semantic:customHeaderContent>
+
+        <semantic:customFooterContent>
+            <!--<Button id="id_bt_confirm" icon="sap-icon://accept"-->
+            <!--text="Confirm"/>-->
+            <Button id="id_bt_cancel" icon="sap-icon://decline" text="{i18n>canceling}"
+                    press="on_set_status"
+                    visible="{= %{wb>Status}!==%{status>/REJECTED}&amp;&amp;%{wb>Status}!==%{status>/ARRIVED}&amp;&amp;%{wb>Status}!==%{status>/CLOSED}&amp;&amp;%{wb>TooName}==='-'&amp;&amp;%{userInfo>/WbCancel}===true}"/>
+
+            <Button id="id_bt_dep_date" icon="sap-icon://journey-arrive" text="{i18n>outGarage}"
+                    press="on_set_status"
+                    visible="{= (%{wb>Status}===%{status>/CREATED}||%{wb>Status}===%{status>/REJECTED})&amp;&amp;%{wb>TooName}==='-'&amp;&amp;%{userInfo>/WbGarage}===true}"/>
+
+            <Button id="id_bt_arr_date" icon="sap-icon://journey-depart" text="{i18n>inGarage}"
+                    press="on_set_status"
+                    visible="{= %{wb>Status}===%{status>/IN_PROCESS}&amp;&amp;%{wb>TooName}==='-'&amp;&amp;%{userInfo>/WbGarage}===true}"/>
+
+            <Button id="id_bt_close" icon="sap-icon://complete" text="{i18n>close}"
+                    press="on_set_status"
+                    visible="{= %{wb>Status}===%{status>/ARRIVED}&amp;&amp;%{wb>TooName}==='-'&amp;&amp;%{userInfo>/WbClose}===true}"/>
+
+        </semantic:customFooterContent>
+
+
+        <IconTabBar id="id_all_tabs" select="on_tab_select" expanded="true">
+            <items>
+                <IconTabFilter id="id_eo_tab" key="id_eo_tab"
+                               icon="sap-icon://bus-public-transport" tooltip="{i18n>eo}">
+                    <OverflowToolbar design="Transparent">
+                        <Title text="{i18n>eo}"/>
+                        <ToolbarSpacer/>
+                    </OverflowToolbar>
+
+                    <f:Form editable="false">
+                        <f:layout>
+                            <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="{i18n>eoNum}">
+                                        <f:fields>
+                                            <Text text="{ path: 'wb>Equnr', formatter: '.alphaOut' }"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>name}">
+                                        <f:fields>
+                                            <Text text="{wb>Eqktx}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>objType}">
+                                        <f:fields>
+                                            <Text text="{wb>Eqart}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>gasType}">
+                                        <f:fields>
+                                            <Text text="{wb>Typbz}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>classNum}">
+                                        <f:fields>
+                                            <Text text="{wb>N_class}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>os}">
+                                        <f:fields>
+                                            <Text text="{wb>Anln1}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="IMEI">
+                                        <f:fields>
+                                            <Text text="{wb>Imei}"
+                                                  tooltip="{i18n>mp} { path: 'wb>Point', formatter: '.alphaOut' }&#xA;{i18n>mpType} {wb>Mptyp}&#xA;Wialon ID {wb>WialonId}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+
+                <IconTabFilter id="id_reqs_container" key="id_reqs_container" icon="sap-icon://multiselect-all"
+                               tooltip="{i18n>reqs}">
+                    <OverflowToolbar design="Transparent">
+                        <Title id="id_reqs_title" text="{i18n>reqs}"/>
+                        <ToolbarSpacer/>
+                        <Button press="on_add_reqs" icon="sap-icon://add-activity" tooltip="{i18n>addReqs}"
+                                visible="{= ((%{wb>WithNoReqs}&amp;&amp;${userInfo>/WbFillNoReq})||${userInfo>/WbLateAddReqs}===true)&amp;&amp;%{wb>Status}!==${status>/REJECTED}&amp;&amp;%{wb>Status}!==${status>/CLOSED}}"/>
+                    </OverflowToolbar>
+
+                    <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->
+                </IconTabFilter>
+
+                <IconTabFilter id="id_dr_tab" key="id_dr_tab"
+                               icon="sap-icon://employee-pane" tooltip="{i18n>driver}">
+                    <OverflowToolbar design="Transparent">
+                        <Title text="{i18n>driver}"/>
+                        <ToolbarSpacer/>
+                    </OverflowToolbar>
+
+                    <f:Form editable="false">
+                        <f:layout>
+                            <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="{i18n>pernr}">
+                                        <f:fields>
+
+                                            <!--valueHelpRequest="handle_dr_f4"-->
+                                            <Input id="id_driver_input"
+                                                   type="Number"
+                                                   value="{ path: 'wb>Pernr', formatter: '.alphaOut' }"
+
+                                                   showValueHelp="true"
+
+                                                   showSuggestion="true"
+                                                   suggestionItems="{wb>/VDrivers}"
+                                                   suggestionItemSelected="handle_dr_f4Selected"
+                                                   startSuggestion="3">
+                                                <suggestionItems>
+                                                    <core:Item text="{wb>Pernr} - {wb>Fio}"/>
+                                                </suggestionItems>
+                                            </Input>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>fio}" visible="false">
+                                        <f:fields>
+                                            <Text text="{wb>Fio}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>subdivision}">
+                                        <f:fields>
+                                            <Text text="{wb>Podr}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>position}">
+                                        <f:fields>
+                                            <Text text="{wb>Post}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>fromPeriod}">
+                                        <f:fields>
+                                            <Text text="{ path: 'wb>Datbeg', targetType : 'any', formatter: '.toLocaleDate' }"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+
+
+                <IconTabFilter id="id_close_tab" key="id_close_tab" icon="sap-icon://complete" tooltip="{i18n>closing}">
+
+                    <OverflowToolbar design="Transparent">
+                        <Title text="{i18n>closeAndSend}"/>
+                        <ToolbarSpacer/>
+                        <OverflowToolbarButton icon="sap-icon://cause" press="onGetPrevGasInfo"
+                                               tooltip="{i18n>getPrevGas}"
+                                               enabled="{= parseInt(%{wb>Gas_Cnt})===0&amp;&amp;%{wb>Status}===${status>/CREATED}}"/>
+
+                        <OverflowToolbarButton icon="sap-icon://mileage" id="wln_show_fuel" press="onWlnMessagePress"
+                                               tooltip="{i18n>gasWialon}"
+                                               enabled="{= %{wb>Status}>=${status>/ARRIVED}}"/>
+                        <OverflowToolbarButton icon="sap-icon://map-2" id="wln_show_map" press="onWlnMessagePress"
+                                               tooltip="{i18n>mapWialon}"
+                                               enabled="{= %{wb>Status}>=${status>/ARRIVED}}"/>
+                        <OverflowToolbarButton icon="sap-icon://synchronize" id="wln_load_spent"
+                                               press="onWlnMessagePress"
+                                               tooltip="{i18n>giveWilonData}"
+                                               enabled="{= %{wb>Status}===${status>/ARRIVED}}"/>
+                    </OverflowToolbar>
+
+                    <f:Form editable="true">
+                        <f:layout>
+                            <f:ResponsiveGridLayout columnsL="1" columnsM="1" columnsXL="1"
+                                                    singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer title="{i18n>sensors}">
+                                <f:formElements>
+                                    <f:FormElement label="{i18n>run} Δ">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>OdoDiff}"
+                                                   enabled="{= %{wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_odo_diff"/>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="{i18n>motoHour} Δ">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>MotoHour}"
+                                                   enabled="{= %{wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_moto_hour"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+
+                            <f:FormContainer title="{i18n>gasRun}">
+                                <f:formElements>
+                                    <f:FormElement>
+                                        <IconTabBar id="id_petrol_container" expanded="true">
+                                            <items/>
+                                        </IconTabBar>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+
+                <IconTabFilter id="id_date_tab" icon="sap-icon://calendar" tooltip="{i18n>dates}">
+                    <OverflowToolbar design="Transparent">
+                        <Title text="{i18n>dates}"/>
+                        <ToolbarSpacer/>
+                        <!--<Button press="on_save_dates" icon="sap-icon://accept" text="Save dates"/>-->
+                    </OverflowToolbar>
+
+                    <f:Form editable="false">
+                        <f:layout>
+                            <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="{i18n>created}">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates" valueFormat="yyyy-MM-ddTHH:mm:ss" id="idCreateDate"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                                            value="{ path: 'wb>CreateDate', targetType : 'any', formatter: '.toLocaleDateTime'}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <!--<f:FormElement label="Confirmed"-->
+                                    <!--visible="{= %{wb>Status}!==${status>/REJECTED}}">-->
+                                    <!--<f:fields>-->
+                                    <!--<DateTimePicker change="on_save_dates" valueFormat="yyyy-MM-ddTHH:mm:ss" id="idConfirmDate" enabled="{= ${userInfo>/WbChangeDate}===true}"-->
+                                    <!--value="{ path: 'wb>ConfirmDate', targetType : 'any', formatter: '.toLocaleDateTime'}"/>-->
+                                    <!--</f:fields>-->
+                                    <!--</f:FormElement>-->
+                                    <!--<f:FormElement label="Cancelled"-->
+                                    <!--visible="{= %{wb>Status}===${status>/REJECTED}}">-->
+                                    <!--<f:fields>-->
+                                    <!--<DateTimePicker change="on_save_dates" valueFormat="yyyy-MM-ddTHH:mm:ss" id="idConfirmDate" enabled="{= ${userInfo>/WbChangeDate}===true}"-->
+                                    <!--value="{ path: 'wb>ConfirmDate', targetType : 'any', formatter: '.toLocaleDateTime'}"/>-->
+                                    <!--</f:fields>-->
+                                    <!--</f:FormElement>-->
+                                    <f:FormElement label="{i18n>outGarage}">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates" valueFormat="yyyy-MM-ddTHH:mm:ss" id="idGarageDepDate"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                                            value="{ path: 'wb>GarageDepDate', targetType : 'any', formatter: '.toLocaleDateTime'}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>inGarage}">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates" valueFormat="yyyy-MM-ddTHH:mm:ss" id="idGarageArrDate"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                                            value="{ path: 'wb>GarageArrDate', targetType : 'any', formatter: '.toLocaleDateTime'}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{i18n>closed}">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates" valueFormat="yyyy-MM-ddTHH:mm:ss" id="idCloseDate"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                                            value="{ path: 'wb>CloseDate', targetType : 'any', formatter: '.toLocaleDateTime'}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+            </items>
+        </IconTabBar>
+
+    </semantic:DetailPage>
+</mvc:View>

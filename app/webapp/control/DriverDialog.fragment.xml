@@ -1,0 +1,99 @@
+    <core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog contentWidth="85%" showHeader="false" afterClose="onDriverAfterClose">
+
+        <customHeader design="Header">
+            <Bar>
+                <contentMiddle>
+                    <Title text="{i18n>drivers}"/>
+                </contentMiddle>
+
+                <contentRight>
+                    <Button icon="sap-icon://synchronize" tooltip="{i18n>updateDrivers}" press="onSyncDrivers"
+                            visible="{= ${userInfo>/WbLoaderDriver}===true}"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+
+        <subHeader>
+            <Bar>
+                <contentMiddle>
+                    <SearchField id="id_driver_search" width="100%" search="onSearch"/>
+                </contentMiddle>
+            </Bar>
+        </subHeader>
+
+        <content>
+            <Table id="id_driver_table"
+                   growing="true" growingScrollToLoad="true"
+                   mode="SingleSelectMaster" modeAnimationOn="false"
+                   noDataText="{i18n>noData}" items="{wb>/VDrivers}"
+                   selectionChange="onSelectionChange"
+                   sticky="ColumnHeaders,HeaderToolbar">
+
+                <columns>
+                    <Column>
+                        <header>
+                            <Text text="{i18n>pernr}"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="{i18n>fio}"/>
+                        </header>
+                    </Column>
+
+                    <Column visible="false">
+                        <header>
+                            <Text text="{i18n>iin}"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="{i18n>position} / {i18n>subdivision}"/>
+                        </header>
+                    </Column>
+
+
+                    <Column minScreenWidth="Tablet"
+                            demandPopin="true">
+                        <header>
+                            <Text text="{i18n>ownCard}"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="{i18n>validDate}"/>
+                        </header>
+                    </Column>
+                </columns>
+
+                <ColumnListItem>
+                    <cells>
+                        <ObjectIdentifier
+                                title="{wb>Pernr}"
+                                text="{wb>Bukrs}"/>
+
+                        <Text text="{wb>Fio}"/>
+
+                        <Text text="{wb>Stcd3}"/>
+
+                        <ObjectIdentifier title="{wb>Post}" text="{wb>Podr}"/>
+
+                        <Text text="{wb>Barcode}"/>
+
+                        <Text text="{ path: 'wb>ValidDate', targetType : 'any', formatter: '.owner.toLocaleDateTime' }"/>
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+
+        <beginButton>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onDriverCloseDialog"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

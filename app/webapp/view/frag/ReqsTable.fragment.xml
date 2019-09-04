@@ -1,0 +1,142 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Table updateStarted="onUpdateStartedReqs" growing="true" growingScrollToLoad="true"
+           noDataText="{i18n>noData}" items="{
+					                            path: 'wb>/VReqHeaders',
+					                            sorter : { path:'Gstrp',
+                                                           descending:true
+                                                }
+					                        }"
+           width="auto" enableBusyIndicator="true" mode="{ui>/selectMode}" selectionChange="onReqListSelectionChange"
+           sticky="ColumnHeaders,HeaderToolbar">
+
+        <headerToolbar>
+            <OverflowToolbar visible="{= ${ui>/showStatus} === true || ${ui>/showSortGroup} === true }">
+
+                <ComboBox selectionChange="onComboSelectionChange" visible="{ui>/showStatus}"
+                          items="{ui>/statuses}" width="10rem">
+                    <core:Item key="{ui>key}" text="{ui>text}"/>
+                </ComboBox>
+
+                <ComboBox selectionChange="onReqComboSelectionChange" visible="{ui>/showReqStatus}"
+                          items="{ui>/reqStatuses}" width="15rem">
+                    <core:Item key="{ui>key}" text="{ui>text}"/>
+                </ComboBox>
+
+                <DatePicker visible="{ui>/showStatus}" change="handleFromDateChange" displayFormat="short" width="7rem" tooltip="{i18n>planDates}"/>
+                <DatePicker visible="{ui>/showStatus}" change="handleToDateChange" displayFormat="short" width="7rem" tooltip="{i18n>planDates}"/>
+
+
+                <SearchField search="onTextSearch" visible="{ui>/showSortGroup}"
+                             placeholder="{i18n>findReqs}" showRefreshButton="false" width="10rem"/>
+
+                <ComboBox selectionChange="onWerksComboSelectionChange"
+                          visible="{= ${ui>/showStatus} &amp;&amp; ${userInfo>/werks}.length > 1}"
+                          items="{userInfo>/werks}" width="5rem">
+                    <core:Item key="{userInfo>}" text="{userInfo>}"/>
+                </ComboBox>
+
+                <Button press="onSortPress" visible="{ui>/showSortGroup}"
+                        icon="sap-icon://sort"/>
+                <Button press="onGroupPress" visible="{ui>/showSortGroup}"
+                        icon="sap-icon://group-2"/>
+
+                <ToolbarSpacer />
+                <Button icon="sap-icon://excel-attachment" press="onExcelExport" visible="{ui>/showReqStatus}"/>
+            </OverflowToolbar>
+        </headerToolbar>
+
+        <columns>
+            <Column demandPopin="true" hAlign="Left">
+                <header>
+                    <Label text="№{i18n>operation} / №{i18n>req}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left" visible="{ui>/showWbColumn}">
+                <header>
+                    <Label text="{i18n>wb} / {i18n>status}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left" visible="{ui>/showReason}">
+                <header>
+                    <Label text="{i18n>closeReqs}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left">
+                <header>
+                    <Label text="{i18n>planDatetime}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left" visible="{ui>/showActual}">
+                <header>
+                    <Label text="{i18n>actualDate} / {i18n>motoHour}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader"
+                    visible="{ui>/showOptColumn}">
+                <header>
+                    <Label text="{i18n>planGroupShort} / {i18n>prodAreaShort} / {i18n>techSpaceShort}"
+                           tooltip="{i18n>planGroup} / {i18n>prodArea} / {i18n>techSpace}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
+                <header>
+                    <Label text="{i18n>operText} / {i18n>workType}"/>
+                </header>
+            </Column>
+            <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader"
+                    visible="{ui>/showOptColumn}">
+                <header>
+                    <Label text="{i18n>class} / {i18n>place}"/>
+                </header>
+            </Column>
+        </columns>
+        <ColumnListItem vAlign="Middle"
+                        highlight="{ parts:[
+                                    { path: 'wb>StatusReason' }
+                                ], formatter: '.reqRowHighlight' }">
+            <cells>
+                <ObjectStatus title="{ path: 'wb>Aufnr', formatter: '.owner.alphaOut'} - ({wb>Iwerk})"
+                              active="{= ${userInfo>/WbRequestReject}===true&amp;&amp;${ui>/canReject}===true}"
+                              press="onRequestReject"
+
+                              text="&#xA;{ path: 'wb>Objnr', formatter: '.getOutObjnr'}"
+                              state="{
+                                    path: 'wb>Priok',
+                                    formatter: '.getPriority'
+                                }"
+                              icon="{
+                                    path: 'wb>Priok',
+                                    formatter: '.getPriorityIcon'
+                                }"
+                              tooltip="{wb>Priokx}"
+                />
+                <ObjectIdentifier title="{ path: 'wb>Waybill_Id', formatter: '.waybillOut'}"
+                                  titleActive="{= ${userInfo>/WbShowOne}===true}"
+                                  titlePress="onWaybillPress"
+                                  text="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Waybill_Id' } ], formatter: '.getStatusText' }"
+                                  visible="{ui>/showWbColumn}"/>
+
+                <ObjectIdentifier title="{ path: 'wb>StatusReason', formatter: '.getStatusReasonText'}"
+                                  titleActive="{= ${userInfo>/WbCloseReqs}===true&amp;&amp;%{wb>Status}!==${status>/CLOSED}&amp;&amp;%{wb>Waybill_Id}>0}"
+                                  titlePress="onStatusReasonPress"
+                                  text="{wb>Reason}"/>
+
+                <ObjectStatus
+                        title="{ path: 'wb>Gstrp', targetType : 'any', formatter: '.owner.toLocaleDate'} - { path: 'wb>Gltrp', targetType : 'any', formatter: '.owner.toLocaleDate'}"
+                        text="&#xA;{ path: 'wb>Hours' }{ path: 'wb>Duration', formatter: '.showDuration' }"/>
+
+                <ObjectStatus
+                        title="{ path: 'wb>FromDate', targetType : 'any', formatter: '.owner.toLocaleDateTime' } - { path: 'wb>ToDate', targetType : 'any', formatter: '.owner.toLocaleDateTime' }"
+                        text="&#xA;{ parts:[ { path: 'wb>FromDate', targetType : 'any' }, { path: 'wb>ToDate', targetType : 'any' } ], formatter: '.getHourDiff' }"
+                        visible="{= %{wb>FromDate}!==null}"/>
+
+                <ObjectStatus title="{wb>Innam}:&#xA;{wb>Fing}" text="&#xA;{wb>Pltxt}" visible="{ui>/showOptColumn}"/>
+                <ObjectIdentifier title="{wb>Ltxa1}" text="{wb>Ilatx}"/>
+                <ObjectStatus title="{wb>KtschTxt}" text="&#xA;{wb>Stand}" visible="{ui>/showOptColumn}"
+                              tooltip="{wb>Ktsch}"/>
+            </cells>
+        </ColumnListItem>
+    </Table>
+</core:FragmentDefinition>

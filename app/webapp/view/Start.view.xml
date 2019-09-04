@@ -1,0 +1,153 @@
+<mvc:View xmlns="sap.m"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:semantic="sap.m.semantic"
+          xmlns:layout="sap.ui.layout"
+          controllerName="com.modekzWaybill.controller.Start">
+
+    <semantic:FullscreenPage id="start" title="{i18n>title}">
+        <semantic:content>
+
+            <layout:VerticalLayout class="sapUiResponsiveMargin">
+
+                <Title
+                        titleStyle="H3"
+                        text="{i18n>reqsAndWb}"
+                        class="sapUiTinyMarginBegin"
+                        visible="{= ${userInfo>/WbShowNewReqs}===true||${userInfo>/WbShowFinishedReqs}===true||${userInfo>/WbShowList}===true}"/>
+                <layout:HorizontalLayout allowWrapping="true"
+                                         visible="{= ${userInfo>/WbShowNewReqs}===true||${userInfo>/WbShowFinishedReqs}===true||${userInfo>/WbShowList}===true}">
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>toroReqs}"
+                                 subheader="∑"
+                                 press="showToroRequest"
+                                 visible="{= ${userInfo>/WbShowNewReqs}===true}"
+                                 tooltip="{reqTile>/tooltip}">
+
+                        <TileContent unit="{i18n>transService}">
+                            <NumericContent busy="{reqTile>/busy}"
+                                            value="{reqTile>/count}"
+                                            valueColor="{= ${reqTile>/count}>70?'Error':${reqTile>/count}>50?'Critical':'Neutral'}"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>finishedReqs}"
+                                 press="showFinishedReqs"
+                                 visible="{= ${userInfo>/WbShowFinishedReqs}===true}">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://activity-2"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>waybills}"
+                                 subheader="∑"
+                                 press="showWayill"
+                                 visible="{= ${userInfo>/WbShowList}===true}"
+                                 tooltip="{wbTile>/tooltip}">
+
+                        <TileContent unit="{i18n>dispatcher}">
+                            <NumericContent busy="{wbTile>/busy}"
+                                            value="{wbTile>/count}"
+                                            icon="sap-icon://shipping-status"
+                                            valueColor="{= ${reqTile>/count}>50?'Error':${reqTile>/count}>40?'Critical':'Neutral'}"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:HorizontalLayout>
+
+                <Title
+                        titleStyle="H3"
+                        text="{i18n>checkHeader}"
+                        class="sapUiTinyMarginBegin sapUiMediumMarginTop"
+                        visible="{= ${userInfo>/WbDoctor}===true||${userInfo>/WbMechanic}===true}"/>
+                <layout:HorizontalLayout allowWrapping="true"
+                                         visible="{= ${userInfo>/WbDoctor}===true||${userInfo>/WbMechanic}===true}">
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>medCheck}"
+                                 press="setDriverValidDate"
+                                 visible="{= ${userInfo>/WbDoctor}===true}">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://syringe"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>checkEo}"
+                                 press="eoValidation"
+                                 visible="{= ${userInfo>/WbMechanic}===true}">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://vehicle-repair"/>
+                        </TileContent>
+                    </GenericTile>
+
+                </layout:HorizontalLayout>
+
+
+                <Title
+                        titleStyle="H3"
+                        text="{i18n>other}"
+                        class="sapUiTinyMarginBegin sapUiMediumMarginTop"/>
+                <layout:HorizontalLayout allowWrapping="true">
+
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Analytics Cloud"
+                                 subheader=""
+                                 press="openAnalytics"
+                                 visible="{= ${userInfo>/WbAnalyticsCloud}===true}">
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://kpi-corporate-performance"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>updateDict}"
+                                 press="importR3Tables"
+                                 visible="{= ${userInfo>/WbAdmin}===true}">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://synchronize"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>wbTemplate}"
+                                 press="showPdfTemplates"
+                                 visible="{= ${userInfo>/WbPdfTemplates}===true}">
+
+                        <TileContent unit="" footer="{i18n>blanks}">
+                            <ImageContent src="sap-icon://pdf-attachment"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{i18n>manual}"
+                                 subheader="{i18n>pdfDoc}"
+                                 press="showDocumentation">
+                        <TileContent unit="" footer="{i18n>transService}">
+                            <ImageContent src="sap-icon://hint"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="{userInfo>/firstName} {userInfo>/lastName}"
+                                 subheader=""
+                                 press="showUserInfo">
+                        <TileContent unit="" footer="{userInfo>/email}">
+                            <ImageContent src="sap-icon://account"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:HorizontalLayout>
+
+            </layout:VerticalLayout>
+
+        </semantic:content>
+
+    </semantic:FullscreenPage>
+
+</mvc:View>

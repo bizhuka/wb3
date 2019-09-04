@@ -1,0 +1,143 @@
+<mvc:View controllerName="com.modekzWaybill.controller.ToroRequest"
+          xmlns="sap.m"
+          xmlns:flex="sap.f"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:semantic="sap.m.semantic"
+>
+
+    <!--PS like UI SplitApp-->
+    <flex:FlexibleColumnLayout layout="{appView>/reqLayout}" stateChange="onReqStateChange">
+        <!--masterPages-->
+        <flex:beginColumnPages>
+            <!--reqHeader (left)  part of the screen-->
+            <semantic:MasterPage id="id_reqs_container" title="{i18n>toroReqs}" showNavButton="true"
+                                 navButtonPress="onNavBack">
+
+                <!--Search option-->
+                <!--<semantic:subHeader>-->
+                <!--<Bar>-->
+                <!--<contentMiddle>-->
+                <!--<SearchField search="onSearchOption"/>-->
+                <!--</contentMiddle>-->
+                <!--</Bar>-->
+                <!--</semantic:subHeader>-->
+
+                <semantic:customHeaderContent>
+                    <OverflowToolbarButton icon="sap-icon://activity-2" press="onNavToFinished"
+                                           tooltip="{i18n>finishedReqs}"
+                                           visible="{= ${userInfo>/WbShowFinishedReqs}===true}"/>
+                    <OverflowToolbarButton icon="sap-icon://synchronize" press="onReqUpdate"
+                                           tooltip="{i18n>updateReqs}"
+                                           visible="{= ${userInfo>/WbLoaderReq}===true}"/>
+                    <OverflowToolbarButton
+                            icon="sap-icon://exit-full-screen"
+                            press="navBackLayout"
+                            tooltip="{i18n>prevWindowMode}"
+                            visible="{= ${appView>/reqLayout} === 'OneColumn' }"/>
+                </semantic:customHeaderContent>
+
+
+                <!--List of all options-->
+                <semantic:content>
+                    <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->
+                </semantic:content>
+            </semantic:MasterPage>
+        </flex:beginColumnPages>
+
+        <!--Detailed view (Right part) detailPages-->
+        <flex:midColumnPages>
+            <!--Hide footer-->
+            <semantic:DetailPage title="{i18n>eoList}" showFooter="true">
+
+
+                <semantic:customHeaderContent>
+                    <OverflowToolbarButton icon="sap-icon://synchronize" press="onEoUpdate"
+                                           tooltip="{i18n>eoListUpdate}"
+                                           visible="{= ${userInfo>/WbLoaderEo}===true}"/>
+
+
+                    <OverflowToolbarButton
+                            icon="sap-icon://full-screen"
+                            press="navMidColumnFullScreen"
+                            tooltip="{i18n>eoOnly}"
+                            visible="{= ${appView>/reqLayout} !== 'MidColumnFullScreen' }"/>
+
+                    <OverflowToolbarButton
+                            icon="sap-icon://exit-full-screen"
+                            press="navBackLayout"
+                            tooltip="{i18n>prevWindowMode}"
+                            visible="{= ${appView>/reqLayout} === 'MidColumnFullScreen' }"/>
+
+                    <OverflowToolbarButton
+                            icon="sap-icon://decline"
+                            press="navOneColumn"
+                            tooltip="{i18n>hideEo}"/>
+                </semantic:customHeaderContent>
+
+                <semantic:content>
+                    <!--Hide at start-->
+                    <ObjectHeader id="id_detail_header"
+                                  title="{i18n>reqsSelected}"
+                                  number="0"
+                                  numberUnit=""
+                                  visible="true">
+                        <!--icon="{ path: '', formatter: '.' }"-->
+                        <!--<statuses>-->
+                        <!--<ObjectStatus text=""/>-->
+                        <!--</statuses>-->
+
+                        <!--<attributes>-->
+                        <!--</attributes>-->
+                    </ObjectHeader>
+
+
+                </semantic:content>
+
+                <Table id="id_eo_schedule"
+                       mode="{= ${userInfo>/WbMechanic}===true?'MultiSelect':'SingleSelect'}"
+                       items="{ path: 'wb>/Equipments', length: 1000 }"
+                       updateStarted="onUpdateStartedSchedule"
+                       selectionChange="onEquipSelected"
+                       growing="false" growingScrollToLoad="false"
+                       sticky="ColumnHeaders,HeaderToolbar">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <DatePicker id="dpFrom" change="onDatePickChange" displayFormat="short" width="7rem"/>
+                            <DatePicker id="dpTo" change="onDatePickChange" displayFormat="short" width="7rem"/>
+                            <SearchField id="id_eo_search" search="onUpdateStartedSchedule" showRefreshButton="true"
+                                         width="17.5rem"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="6rem">
+                            <Label text="{i18n>plateNum}"/>
+                        </Column>
+                        <Column>
+                            <Label text="{i18n>objNum}"/>
+                        </Column>
+                    </columns>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Label text="{wb>License_num}"
+                                   tooltip="{ parts:[ { path: 'wb>Equnr' }, { path: 'wb>N_class' }, { path: 'wb>TooName' }, { path: 'wb>NoDriverDate' } ], formatter: '.eoTooltip' }"/>
+                        </cells>
+
+                        <cells>
+                            <Label text="{wb>Eqktx}" tooltip="{wb>Eqktx}"/>
+                        </cells>
+                    </ColumnListItem>
+                </Table>
+
+
+                <!--Saving to DB-->
+                <semantic:customFooterContent>
+                    <Button id="id_wb_create_button" press="onCreateWaybill" visible="false"/>
+                    <Button id="id_add_schedule" icon="sap-icon://vehicle-repair" visible="false" type="Accept" press="onMassRepair(true)"/>
+                    <Button id="id_del_schedule" icon="sap-icon://vehicle-repair" visible="false" type="Reject" press="onMassRepair(false)"/>
+                </semantic:customFooterContent>
+
+            </semantic:DetailPage>
+        </flex:midColumnPages>
+    </flex:FlexibleColumnLayout>
+</mvc:View>

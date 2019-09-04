@@ -1,0 +1,95 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:f="sap.ui.layout.form">
+    <Dialog contentWidth="85%" title="{i18n>mapRun}" afterOpen="afterMapOpen">
+
+        <content>
+            <f:Form editable="false">
+                <f:layout>
+                    <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                </f:layout>
+                <f:formContainers>
+                    <f:FormContainer>
+                        <f:formElements>
+                            <f:FormElement label="{i18n>messagesCount}">
+                                <f:fields>
+                                    <Text text="{wialon>/count}"/>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>firstMessage}">
+                                <f:fields>
+                                    <Text text="{wialon>/from}"/>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>lastMessage}">
+                                <f:fields>
+                                    <Text text="{wialon>/to}"/>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>run}">
+                                <f:fields>
+                                    <Text text="{wialon>/mileage}"/>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>runInPeriod}">
+                                <f:fields>
+                                    <Text text="{wialon>/diff}"/>
+                                </f:fields>
+                            </f:FormElement>
+                        </f:formElements>
+                    </f:FormContainer>
+                </f:formContainers>
+            </f:Form>
+
+            <core:HTML content='&lt;div id=&quot;id_map&quot; class=&quot;content&quot;/&gt;'>
+            </core:HTML>
+
+            <Table growing="true"
+                   growingScrollToLoad="true"
+                   noDataText="{i18n>noData}" items="{wialon>/messages}"
+                   sticky="ColumnHeaders,HeaderToolbar">
+                <columns>
+                    <Column demandPopin="true" hAlign="Left">
+                        <header>
+                            <Label text="{i18n>dateTime}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right">
+                        <header>
+                            <Label text="{i18n>longitude}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right">
+                        <header>
+                            <Label text="{i18n>latitude}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right">
+                        <header>
+                            <Label text="{i18n>run}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right">
+                        <header>
+                            <Label text="{i18n>gasSensor}"/>
+                        </header>
+                    </Column>
+                </columns>
+                <ColumnListItem>
+                    <cells>
+                        <ObjectIdentifier title="{wialon>date}"/>
+                        <ObjectIdentifier title="{wialon>lon}"/>
+                        <ObjectIdentifier title="{wialon>lat}"/>
+                        <ObjectIdentifier title="{wialon>mileage}"/>
+                        <ObjectIdentifier title="{wialon>fuel}"/>
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+
+        <beginButton>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="closeMapDialog"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

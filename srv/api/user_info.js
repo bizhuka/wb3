@@ -1,5 +1,6 @@
 "use strict";
 
+const Db = require('../util/Db');
 const xssec = require("@sap/xssec");
 const util = require('util');
 const fs = require('fs');
@@ -74,11 +75,12 @@ async function getWerksR3Clause(req) {
 }
 
 async function getBukrsR3Clause(req, srv) {
-    const tx = cds.transaction(req);
     const {Werk} = srv.entities('wb.db');
     const query = 'SELECT Werks, Bukrs FROM ' + Werk["@cds.persistence.name"] + ' WHERE Werks ' + await getWerksR3Clause(req);
 
+    const tx = cds.transaction(req);
     const arrWerks = await tx.run(query);
+    await Db.close(tx);
 
     // No restriction
     if (arrWerks.length === 0)

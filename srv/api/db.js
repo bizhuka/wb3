@@ -1,19 +1,20 @@
 "use strict";
 
+const Db = require('../util/Db');
 const Status = require('../util/Status');
 const Time = require('../util/Time');
 
 
-module.exports = (srv) => {
+module.exports = (app, srv) => {
 
-    const {Waybill, ReqHeader, ReqHistory, Schedule, Equipment, GasSpent, Driver} = srv.entities('wb.db');
+    const {Waybill, ReqHeader, ReqHistory, Schedule, GasSpent} = srv.entities('wb.db');
 
     ////////////////////////////////////////////////////////////////////////////
     srv.before('UPDATE', 'Drivers', async (req) => {
         const driver = req.data;
 
         // {"ValidDate":"0001-01-01T00:00:01Z"}
-        if (driver.ValidDate === Time.C_NOW)
+        if (Time.isNow(driver.ValidDate))
             driver.ValidDate = Time.getNow();
 
         return driver;
@@ -23,7 +24,7 @@ module.exports = (srv) => {
     srv.before('UPDATE', 'Equipments', async (req) => {
         const equipment = req.data;
 
-        if (equipment.NoDriverDate === Time.C_NOW)
+        if (Time.isNow(equipment.NoDriverDate))
             equipment.NoDriverDate = Time.getNow();
 
         return equipment;
@@ -42,39 +43,49 @@ module.exports = (srv) => {
         const Waybill_Id = Number(arrReqheader[0].Waybill_Id);
 
         // No proper waybill
-        if (Waybill_Id === Status.WB_ID_NULL || Waybill_Id === Status.WB_ID_REJECTED)
-            return reqHeader;
+        if (Waybill_Id !== Status.WB_ID_NULL && Waybill_Id !== Status.WB_ID_REJECTED) {
+            // Find waybill status
+            const arrWaybill = await tx.run(
+                SELECT.from(Waybill)
+                    .where({id: Waybill_Id})
+            );
 
-        // Find waybill status
-        const arrWaybill = await tx.run(
-            SELECT.from(Waybill)
-                .where({id: Waybill_Id})
-        );
-        if (!arrWaybill)
-            return reqHeader;
+            const newReqHistory = {Waybill_Id: Waybill_Id, Objnr: reqHeader.Objnr};
 
-        // Only if is cancelled
-        if (arrWaybill[0].Status_Id < Status.ARRIVED)
-            tx.run(
-                INSERT.into(ReqHistory).entries({Waybill_Id: Waybill_Id, Objnr: reqHeader.Objnr})
-            )
+            if (arrWaybill && arrWaybill[0].Status < Status.ARRIVED)
+                try {
+                    await tx.run(
+                        INSERT.into(ReqHistory).entries(newReqHistory)
+                    );
+                } catch (e) {
+                    console.log(JSON.stringify(newReqHistory) + " " + e.toString())
+                }
+        }
     });
 
     //////////////////////////////////////////////////////////////////////////////
     srv.before(['CREATE', 'UPDATE'], 'Waybills', async (req) => {
-        debugger
+
         let waybill = req.data;
 
         for (let key in waybill) {
             // TODO type date?
             if (waybill.hasOwnProperty(key) && key.endsWith('Date')) {
-                if (waybill[key] === Time.C_NOW)
+                if (Time.isNow(waybill[key]))
                     waybill[key] = Time.getNow();
             }
         }
 
+        // TODO
+        if (!waybill.Id)
+            waybill.Id = (new Date()).getTime();
+
+        if (!waybill.DelayReason)
+            waybill.DelayReason = Status.DR_NO_DELAY;
+
         // Find old waybill
         const tx = cds.transaction(req);
+
         let dbWaybill = await tx.run(
             SELECT.from(Waybill)
                 .where({Id: waybill.Id})
@@ -83,7 +94,7 @@ module.exports = (srv) => {
         // Get first item and update based on status
         if (dbWaybill && dbWaybill.length === 1) {
             dbWaybill = dbWaybill[0];
-            dbWaybill.Status_Id = waybill.Status_Id ? waybill.Status_Id : dbWaybill.Status_Id;
+            dbWaybill.Status = waybill.Status ? waybill.Status : dbWaybill.Status;
             dbWaybill.FromDate = waybill.FromDate ? waybill.FromDate : dbWaybill.FromDate;
             dbWaybill.ToDate = waybill.ToDate ? waybill.ToDate : dbWaybill.ToDate;
             waybill = dbWaybill;
@@ -92,12 +103,12 @@ module.exports = (srv) => {
             waybill.WithNoReqs = waybill.WithNoReqs === undefined ? false : waybill.WithNoReqs;
         }
 
-        if (waybill.Status_Id !== Status.CREATED && waybill.Status_Id !== Status.IN_PROCESS && //AGREED &&
-            waybill.Status_Id !== waybill.Status_Id.REJECTED &&
-            waybill.Status_Id !== waybill.Status_Id.CLOSED)
+        if (waybill.Status !== Status.CREATED && waybill.Status !== Status.IN_PROCESS && //AGREED &&
+            waybill.Status !== waybill.Status.REJECTED &&
+            waybill.Status !== waybill.Status.CLOSED)
             return waybill;
 
-        switch (waybill.Status_Id) {
+        switch (waybill.Status) {
             case Status.CREATED:
             case Status.IN_PROCESS: //AGREED:
                 // Modify schedule
@@ -110,7 +121,7 @@ module.exports = (srv) => {
                     let schedule = {
                         Datum: Time.getSqlDate(fromDate),
                         Werks: waybill.Werks,
-                        Equnr: waybill.Equipment_Equnr,
+                        Equnr: waybill.Equnr,
                         Waybill_Id: waybill.Id
                     };
 
@@ -122,7 +133,7 @@ module.exports = (srv) => {
                         })
                     );
                     if (!isModified)
-                        tx.run(
+                        await tx.run(
                             INSERT.into(Schedule).entries(schedule)
                         );
 
@@ -133,15 +144,14 @@ module.exports = (srv) => {
 
             // Cancel WB
             case Status.REJECTED:
-                tx.run(DELETE.from(Schedule).where({Waybill_Id: waybill.Id}));
+                await tx.run(DELETE.from(Schedule).where({Waybill_Id: waybill.Id}));
                 break;
 
             // Close WB
             case Status.CLOSED:
-                tx.run(DELETE.from(ReqHistory).where({Waybill_Id: waybill.Id}));
+                await tx.run(DELETE.from(ReqHistory).where({Waybill_Id: waybill.Id}));
                 break;
         }
-
         return waybill;
     });
 
@@ -174,10 +184,10 @@ module.exports = (srv) => {
         // Fill virtual fields
         let statement =
             '  SELECT w.Id,\n' +
-            '    (SELECT COUNT (*) FROM _REQHEADER_ as r WHERE r.Waybill_Id = w.Id) AS req_cnt,\n' +
-            '    (SELECT COUNT (*) FROM _SCHEDULE_ as s WHERE s.Waybill_Id = w.Id) AS sch_cnt,\n' +
-            '    (SELECT COUNT (*) FROM _REQHISTORY_ as h WHERE h.Waybill_Id = w.Id) AS hist_cnt,\n' +
-            '    (SELECT COUNT (*) FROM _GASSPENT_ as g WHERE g.Waybill_Id = w.Id) AS gas_cnt\n' +
+            '    (SELECT COUNT (*) FROM _REQHEADER_ as r WHERE r.Waybill_Id = w.Id) AS Req_Cnt,\n' +
+            '    (SELECT COUNT (*) FROM _SCHEDULE_ as s WHERE s.Waybill_Id = w.Id) AS Sch_Cnt,\n' +
+            '    (SELECT COUNT (*) FROM _REQHISTORY_ as h WHERE h.Waybill_Id = w.Id) AS Hist_Cnt,\n' +
+            '    (SELECT COUNT (*) FROM _GASSPENT_ as g WHERE g.Waybill_Id = w.Id) AS Gas_Cnt\n' +
             '  FROM _WAYBILL_ as w\n' +
             '  WHERE w.Id IN (_LIST_ID_)';
 
@@ -191,6 +201,7 @@ module.exports = (srv) => {
 
         const tx = cds.transaction(context._.odataReq);
         const items = await tx.run(statement);
+        await Db.close(tx);
 
         // Add virtual fields info
         for (let i = 0; i < items.length; i++) {
@@ -198,10 +209,10 @@ module.exports = (srv) => {
             const resultItem = idsMap[item.Id];
 
             // write counts
-            resultItem.req_cnt = item.req_cnt;
-            resultItem.sch_cnt = item.sch_cnt;
-            resultItem.hist_cnt = item.hist_cnt;
-            resultItem.gas_cnt = item.gas_cnt;
+            resultItem.Req_Cnt = item.Req_Cnt;
+            resultItem.Sch_Cnt = item.Sch_Cnt;
+            resultItem.Hist_Cnt = item.Hist_Cnt;
+            resultItem.Gas_Cnt = item.Gas_Cnt;
         }
 
         // And return

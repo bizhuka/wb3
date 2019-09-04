@@ -2,7 +2,7 @@
 
 module.exports = function (srv) {
     // DB - updates
-    require('./api/db')(srv);
+    require('./api/db')(global.__express, srv);
 
     // Update from CSV
     require('./api/csv')(global.__express, srv);
@@ -24,4 +24,7 @@ module.exports = function (srv) {
 
     // runtime code
     require('./api/code')(global.__express, srv);
+
+    // other
+    require('./api/other')(global.__express, srv);
 };

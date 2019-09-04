@@ -1,0 +1,41 @@
+{
+  "pdf": [
+    {
+      "Id": "ZWB_CAR_KZ.PDF",
+      "Title": "Жеңіл көліктің жол парағы",
+      "Info": "kz"
+    },
+    {
+      "Id": "ZWB_CAR_RU.PDF",
+      "Title": "Путевой лист легкового автомобиля",
+      "Info": "ru"
+    },
+    {
+      "Id": "ZWB_BUS_KZ.PDF",
+      "Title": "Автобустың жол парағы",
+      "Info": "kz"
+    },
+    {
+      "Id": "ZWB_BUS_RU.PDF",
+      "Title": "Путевой лист автобуса",
+      "Info": "ru"
+    },
+    {
+      "Id": "ZWB_TRUCK_RU.PDF",
+      "Title": "Путевой лист грузового автомобиля",
+      "Info": "ru"
+    },
+    {
+      "Id": "ZWB_GENERAL_FULL.PDF",
+      "Title": "АВТОКӨЛІК ЖОЛДАМА ҚАҒАЗЫ",
+      "Desc": "ТАПСЫРЫС БЕРУШІНІҢ ТАЛОНЫ",
+      "Info": "kz"
+    },
+    {
+      "Id": "ZWB_GENERAL_PART.PDF",
+      "Title": "АВТОКӨЛІК ЖОЛДАМА ҚАҒАЗЫ",
+      "Desc": "-",
+      "Info": "kz"
+    }
+  ]
+}

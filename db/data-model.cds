@@ -18,6 +18,7 @@
     type TMatnr : String(18);
     type TKtsch : String(7);
     type TGuid : String(32);
+    type TStatusId : Integer;
 
     // Request confirm, Request reject, Waybill, Delay reason
     type TStype : String(2) enum { RC; RR; WB; DR; }
@@ -69,28 +70,86 @@
             Docum         : TMeasureDoc;
             Aufnr         : TAufnr;
             
-            // bukrs : TBukrs; driver: TPernr;
-            Driver : Association to Driver;
+            Bukrs  : TBukrs;
+            Driver : TPernr;
+            //Driver : Association [0..1] to Driver;
 
-            //Equnr: TEqunr;
-            Equipment : Association to Equipment;
+            Equnr: TEqunr;
+            //Equipment : Association [0..1] to Equipment;
             
             @Comment: 'stype = WB'
-            Status : Association to StatusText;
+            Status : TStatusId; //Association to StatusText;
 
             @Comment: 'stype = DR'
-            DelayReason: Association to StatusText;
+            DelayReason: TStatusId; // Association to StatusText;
 
-            ReqHeaders: Association to many ReqHeader on $self;
-            Schedules: Association to many Schedule on Schedules.Waybill_Id = $self.Id;
-            ReqHistories: Association to many ReqHistory on ReqHistories.Waybill_Id = $self.Id;
-            GasSpents: Association to many GasSpent on GasSpents.Waybill_Id = $self.Id;
+            // ReqHeaders: Association to many ReqHeader on $self;
+            // Schedules: Association to many Schedule on Schedules.Waybill_Id = $self.Id;
+            // ReqHistories: Association to many ReqHistory on ReqHistories.Waybill_Id = $self.Id;
+            // GasSpents: Association to many GasSpent on GasSpents.Waybill_Id = $self.Id;
 
             // Counts
-            virtual req_cnt  : Integer;
-            virtual sch_cnt  : Integer;
-            virtual hist_cnt : Integer;
-            virtual gas_cnt  : Integer;
+            virtual Req_Cnt  : Integer;
+            virtual Sch_Cnt  : Integer;
+            virtual Hist_Cnt : Integer;
+            virtual Gas_Cnt  : Integer;
+            virtual Spent0 : DecimalFloat;
+    };
+
+    define entity VWaybill AS SELECT FROM Waybill as w
+       left outer join Driver as d on w.Bukrs = d.Bukrs And w.Driver = d.Pernr
+       left outer join Equipment as e on w.Equnr = e.Equnr
+     {
+    key w.Id,
+        w.Description,
+        w.Werks,
+        w.FromDate,
+        w.ToDate,
+        w.WithNoReqs,
+        w.CreateDate,
+        w.ConfirmDate,
+        w.GarageDepDate,
+        w.GarageArrDate,
+        w.CloseDate,
+        w.ChangeUser,
+        w.ChangeDate,
+        w.Spent0,
+        w.Spent1,
+        w.Spent2,
+        w.Spent4,
+        w.MotoHour,
+        w.OdoDiff,
+        w.Docum,
+        w.Aufnr,
+        w.Bukrs,
+        w.Driver,
+        w.Equnr,
+        w.Status,
+        w.DelayReason,
+        w.Req_Cnt,
+        w.Sch_Cnt,
+        w.Hist_Cnt,
+        w.Gas_Cnt,
+
+        d.Fio,
+        d.Datbeg,
+        d.Pernr,
+        d.Post,
+        d.Podr,
+
+        e.Eqktx,
+        e.Point,
+        e.Imei,
+        e.Mptyp,
+        e.WialonId,
+        e.License_num,
+        e.TooName,
+        e.PetrolMode,
+        e.Anln1,
+        e.KtschTxt,
+        e.Eqart,
+        e.Typbz,
+        e.N_class
     };
 
     @Comment: 'Works for authority checks'
@@ -110,10 +169,10 @@
 
     entity Driver {
             @R3_FIELD : 'DR_BE'
-        key Bukrs     : TBukrs not null;
+        key Bukrs     : TBukrs;
 
             @R3_FIELD : 'DR_TN'
-        key Pernr     : TPernr not null;
+        key Pernr     : TPernr;
 
             @Comment : 'Load from 1C'
             Barcode   : TBarcode;
@@ -241,7 +300,7 @@
 
     entity StatusText {
         @R3_FIELD       : 'STATUS_ID'
-        key Id          : Integer;
+        key Id          : TStatusId;
 
             @R3_FIELD   : 'MESSAGE_TYPE'
             MessageType : TMessagetype;
@@ -273,11 +332,11 @@
         key Waybill_Id : TWaybill;
         key PtType     : TPtType;
         key Pos        : Integer;
-            GasBefore  : DecimalFloat;
-            GasGive    : DecimalFloat;
-            GasGiven   : DecimalFloat;
-            GasLgort   : Association to Lgort;
-            GasMatnr   : Association to GasType;
+            GasBefore  : DecimalFloat default 0.0;
+            GasGive    : DecimalFloat default 0.0;
+            GasGiven   : DecimalFloat default 0.0;
+            GasLgort   : TLgort default ''; // Association to Lgort; TODO do not have Werks 
+            GasMatnr   : TMatnr; // Association to GasType;
     };
 
     entity GasType {
@@ -310,16 +369,18 @@
             Aufnr        : String(12);
 
             @R3_FIELD : 'AFIH_IWERK'
-            Werks        : TWerks; // Association to Werk;
+            Iwerk        : TWerks; // Association to Werk;
 
-            //Waybill_Id   : TWaybill;
-            Waybill      : Association [0..1] to Waybill;
+            Waybill_Id   : TWaybill;
+            //Waybill      : Association [0..1] to Waybill;
 
             FromDate     : Timestamp;
             ToDate       : Timestamp;
 
             Reason       : String(100);
-            Status       : Association to StatusText;
+
+            @Comment: 'stype = RC || RR'
+            StatusReason : TStatusId; // Association to StatusText;
 
             @R3_FIELD : 'AFVC_KTSCH'
             Ktsch        : TKtsch; // Association to EqunrGrp;
@@ -379,6 +440,44 @@
             Hours        : String(11);
     };
 
+    define entity VReqHeader AS SELECT FROM ReqHeader as r
+                      left outer join Waybill as w on r.Waybill_Id = w.Id
+                      left outer join StatusText as s on r.StatusReason = s.Id {
+        key r.Objnr,
+            r.Waybill_Id,
+            r.Aufnr,
+            r.Iwerk,
+            r.FromDate,
+            r.ToDate,
+            r.Reason,
+            r.StatusReason,
+            r.Ktsch,
+            r.KtschTxt,
+            r.Beber,
+            r.Duration,
+            r.Equnr,
+            r.Gltrp,
+            r.Gstrp ,
+            r.Ilart ,
+            r.Ilatx,
+            r.Ingpr ,
+            r.Innam ,
+            r.Ltxa1,
+            r.Pltxt ,
+            r.Priok ,
+            r.Priokx,
+            r.Stand,
+            r.Tplnr,
+            r.Fing,
+            r.Hours,
+        
+            w.Status as Status,
+            w.Description as Description,
+            
+            s.Kz as StatusReason_kz,
+            s.Ru as StatusReason_ru
+    };
+
     entity ReqHistory {
         key Waybill_Id : TWaybill;
         key Objnr      : TObjnr;
@@ -429,46 +528,23 @@
             Rs485_fls22 : DecimalFloat;
     };
 
-    define entity VWaybill AS SELECT FROM Waybill  {
-        *,
-        Driver.Fio,
-
-        Equipment.Eqktx,
-        Equipment.Point,
-        Equipment.Imei,
-        Equipment.Mptyp,
-        Equipment.WialonId,
-        Equipment.License_num,
-        Equipment.TooName,
-        Equipment.PetrolMode,
-        Equipment.Anln1,
-        Equipment.KtschTxt
-    } ;
-
-    define entity VReqHeader AS SELECT FROM ReqHeader{
-        *,
-        Waybill.Status as Status,
-        Waybill.Description as Description
-        
-        // Status.Kz as StatusReason_kz,
-        // Status.Ru as StatusReason_ru
-    };
-
     define entity VDriver as SELECT FROM Driver { * };
 
-    define entity VGasSpent AS SELECT FROM GasSpent left outer join Waybill as w on Waybill_Id = w.Id {
+    define entity VGasSpent AS SELECT FROM GasSpent left outer join Waybill as w on Waybill_Id = w.Id
+                                                    left outer join GasType as g on GasMatnr = g.Matnr
+                                                    left outer join Equipment as e on w.Equnr = e.Equnr{
         key Waybill_Id,
         key PtType,
         key Pos,
         GasBefore, GasGive, GasGiven, GasLgort, GasMatnr,
 
-        GasMatnr.Maktx,
+        g.Maktx,
 
         w.Id, w.Werks, w.CreateDate, w.OdoDiff, w.MotoHour, w.Description, w.Status,
 
-        w.Equipment.Equnr, w.Equipment.Eqktx, w.Equipment.Point, w.Equipment.Imei, w.Equipment.Mptyp,
-        w.Equipment.WialonId, w.Equipment.License_num, w.Equipment.TooName, w.Equipment.PetrolMode,
-        w.Equipment.Anln1, w.Equipment.KtschTxt,
+        e.Equnr, e.Eqktx, e.Point, e.Imei, e.Mptyp,
+        e.WialonId, e.License_num, e.TooName, e.PetrolMode,
+        e.Anln1, e.KtschTxt,
 
       CASE
         WHEN PtType = 1 THEN 'Негізгі бак'
@@ -484,12 +560,12 @@
     } ORDER BY Waybill_Id, PtType, Pos;
 
     define entity VCountREQ AS SELECT FROM ReqHeader{
-        key Werks as Werks,
-        key Status as Status,
+        key Iwerk as Werks,
+        key StatusReason as Status,
         count(*) as cnt   : Integer
     }
-    group by Werks, Status
-    order by Werks, Status;
+    group by Iwerk, StatusReason
+    order by Iwerk, StatusReason;
 
 
     define entity VCountWB AS SELECT FROM Waybill{

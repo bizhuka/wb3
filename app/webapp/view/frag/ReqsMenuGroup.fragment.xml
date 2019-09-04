@@ -1,0 +1,24 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:u="sap.ui.unified">
+
+    <u:Menu itemSelect="onSortGroupClick">
+        <u:MenuItem id="id_group_"
+                    text="{i18n>noGroups}"/>
+        <u:MenuItem id="id_group_KtschTxt"
+                    text="{i18n>class}"/>
+        <u:MenuItem id="id_group_Stand"
+                    text="{i18n>space}"/>
+        <u:MenuItem id="id_group_Priokx"
+                    text="{i18n>priority}"/>
+        <u:MenuItem id="id_group_Ilatx"
+                    text="{i18n>workType}"/>
+        <u:MenuItem id="id_group_Innam"
+                    text="{i18n>planGroup}"/>
+        <u:MenuItem id="id_group_Pltxt"
+                    text="{i18n>techSpace}"/>
+        <u:MenuItem id="id_group_Fing"
+                    text="{i18n>prodArea}"/>
+    </u:Menu>
+</core:FragmentDefinition>

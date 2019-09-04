@@ -1,6 +1,8 @@
 "use strict";
 
+const Db = require('../util/Db');
 const Status = require('../util/Status');
+
 const {getWerksR3Clause} = require('./user_info')();
 
 module.exports = (app, srv) => {
@@ -12,9 +14,9 @@ module.exports = (app, srv) => {
         let statement =
             "SELECT w.id, w.Spent1, w.Spent2, w.Spent4, p.*\n" +
             "FROM _WAYBILL_ as w Right JOIN _GASSPENT_ as p ON p.Waybill_Id = w.Id\n" +
-            "WHERE w.Equipment_Equnr = '_EQUNR_' AND p.PtType IN (1, 2, 4) AND w.CloseDate = (SELECT max(i.CloseDate)\n" +
+            "WHERE w.Equnr = '_EQUNR_' AND p.PtType IN (1, 2, 4) AND w.CloseDate = (SELECT max(i.CloseDate)\n" +
             "FROM _WAYBILL_ as i\n" +
-            "WHERE i.Status_Id = _STATUS_ID_ AND i.Equipment_Equnr = w.Equipment_Equnr)\n" +
+            "WHERE i.Status = _STATUS_ID_ AND i.Equnr = w.Equnr)\n" +
             "ORDER BY p.PtType, p.Pos;";
 
         // replace with data
@@ -27,6 +29,7 @@ module.exports = (app, srv) => {
         // Read from DB
         const tx = cds.transaction(req);
         const rows = await tx.run(statement);
+        await Db.close(tx);
 
         let prevPetrol = null;
         const prevPetrolList = [];
@@ -68,9 +71,9 @@ module.exports = (app, srv) => {
 
 async function doCount(req, res, Entity) {
     const result = [];
-    
+
     let statement =
-        "SELECT Status_Id, sum(cnt) AS cnt FROM _VIEW_NAME_ _WHERE_ GROUP BY Status_Id ORDER BY Status_Id;";
+        "SELECT Status, sum(cnt) AS cnt FROM _VIEW_NAME_ _WHERE_ GROUP BY Status ORDER BY Status;";
 
     // Based on rights
     let where = await getWerksR3Clause(req);
@@ -83,6 +86,7 @@ async function doCount(req, res, Entity) {
 
     const tx = cds.transaction(req);
     const items = await tx.run(statement);
+    await Db.close(tx);
 
     res.json(items);
 }

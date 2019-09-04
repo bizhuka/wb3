@@ -1,0 +1,14 @@
+<mvc:View controllerName="com.modekzWaybill.controller.FinishedReqs"
+          xmlns:core="sap.ui.core"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns="sap.m">
+    <Page id="id_reqs_container" title="{i18n>finishedReqs}" showNavButton="true" navButtonPress="onNavBack">
+
+        <content>
+            <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->
+        </content>
+        <!--<footer>-->
+        <!--<Bar/>-->
+        <!--</footer>-->
+    </Page>
+</mvc:View>

@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog contentWidth="70%" contentHeight="60%" title="{i18n>sapMessages}"
+            verticalScrolling="false"
+            resizable="true"
+            afterClose="onMessageAfterClose">
+
+        <content>
+            <MessageView items="{mes>/items}">
+                <items>
+                    <MessageItem
+                            title="{mes>message}"
+                            description=""
+                            type="{mes>type}"
+                    />
+                </items>
+            </MessageView>
+        </content>
+
+        <beginButton>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onMessageClose"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

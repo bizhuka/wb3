@@ -1,0 +1,13 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:u="sap.ui.unified">
+
+    <u:Menu itemSelect="onSortGroupClick">
+        <u:MenuItem id="id_sort_"
+                    text="{i18n>noSort}"/>
+        <u:MenuItem id="id_sort_Gstrp"
+                    text="{i18n>begDate}"/>
+
+    </u:Menu>
+</core:FragmentDefinition>

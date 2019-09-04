@@ -1,11 +1,18 @@
 "use strict";
 
+const Db = require('../util/Db');
 const Time = require('../util/Time');
+
 const util = require('util');
 
-const Client = require('node-rfc').Client;
-const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
-const rfcClient = new Client(sapSystem);
+let rfcClient = null;
+try {
+    // const Client = require('node-rfc').Client;
+    // const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
+    // rfcClient = new Client(sapSystem);
+} catch (e) {
+    console.error(e);
+}
 
 
 async function persist(req, res, Entity, params) {
@@ -32,7 +39,9 @@ async function persist(req, res, Entity, params) {
             IV_WHERE: (params.R3_WHERE ? params.R3_WHERE : '')
         };
     }
-    // open connection & call RFC fm
+    //TODO open connection & call RFC fm
+    if (!rfcClient)
+        return
     await rfcClient.open(); // if (err) return console.error('could not connect to server', err);
     const sapResult = await rfcClient.call(params.FM, params.RFC_PARAMS);
 
@@ -102,8 +111,7 @@ async function persist(req, res, Entity, params) {
                 result.deleted++;
             }
 
-    // Save to DB
-    await tx.commit();
+    await Db.close(tx, true);
 
     // And return info
     res.json(result);

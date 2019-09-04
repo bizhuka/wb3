@@ -1,0 +1,128 @@
+<mvc:View controllerName="com.modekzWaybill.controller.Waybill"
+          xmlns:core="sap.ui.core"
+          xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m">
+    <Page title="{i18n>waybills}" showNavButton="true" navButtonPress="onNavBack">
+        <!--<headerContent>-->
+        <!--	<Button icon="sap-icon://my-sales-order" id="btnOrdersId" press="onOrdersButtonPressed" tooltip="{i18n>home.salesOrder}"/>-->
+        <!--	<Button icon="sap-icon://cart" id="btnProductListHeader" press="onShoppingCartPressed" text="{TotalQunatity}"-->
+        <!--		tooltip="{i18n>home.cart}"/>-->
+        <!--</headerContent>-->
+        <content>
+            <Table id="id_waybill_table"
+                   class="sapUiResponsiveMargin"
+                   growing="true" growingScrollToLoad="true"
+                   noDataText="{i18n>noData}" items="{
+					                            path: 'wb>/VWaybills',
+					                            sorter : { path:'CreateDate',
+                                                           descending:true
+                                                }
+					                        }"
+                   updateStarted="onUpdateStartedTable" width="auto" enableBusyIndicator="true"
+                   sticky="ColumnHeaders,HeaderToolbar">
+                <!--, sorter: {path: 'NUM', descending: false}-->
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <!--<Title text="{catalogTitle}" visible="{= !${device>/system/phone}}"/>-->
+                        <!--<ToolbarSpacer visible="{= !${device>/system/phone}}"/>-->
+                        <ComboBox id="id_wb_status_combo" selectionChange="handleSelection"
+                                  items="{path: '/'}">
+                            <core:Item key="{key}" text="{text}"/>
+                        </ComboBox>
+                        <DatePicker id="id_date_from" change="handleSelection" displayFormat="short" width="7rem" tooltip="{i18n>createDate}"/>
+                        <DatePicker id="id_date_to" change="handleSelection" displayFormat="short" width="7rem" tooltip="{i18n>createDate}"/>
+                        <Switch id="id_by_too"
+                                state="false"
+                                change="handleSelection"
+                                tooltip="{i18n>tooCars}"
+                                customTextOn="{i18n>too}"
+                                customTextOff="{i18n>too}"/>
+                        <SearchField id="id_wb_search_field" placeholder="{i18n>findWB}" search="handleSelection"
+                                     showRefreshButton="false" width="17.5rem"/>
+                        <ComboBox id="id_werks_filter"
+                                  selectionChange="handleSelection"
+                                  visible="{= ${ui>/showStatus} &amp;&amp; ${userInfo>/werks}.length > 1}"
+                                  items="{userInfo>/werks}" width="5rem">
+                            <core:Item key="{userInfo>}" text="{userInfo>}"/>
+                        </ComboBox>
+                        <!--text="{i18n>home.sort}"-->
+                        <OverflowToolbarButton icon="sap-icon://sort" press="onSortPressed"
+                                               tooltip="{i18n>sort}"/>
+                        <OverflowToolbarButton icon="sap-icon://refresh" press="onResetPressed"
+                                               tooltip="{i18n>clearFiltration}"/>
+
+                        <ToolbarSpacer />
+                        <Button icon="sap-icon://excel-attachment" press="onExcelExport"/>
+                        <Button icon="sap-icon://mileage" press="onExcelExportGas"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column demandPopin="true" hAlign="Left">
+                        <header>
+                            <Label text="№ {i18n>waybill}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Left">
+                        <header>
+                            <Label text="{i18n>driver} / {i18n>vehicle}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right">
+                        <header>
+                            <Label text="{i18n>codes}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
+                        <header>
+                            <Label text="∑ {i18n>request} / {i18n>days}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
+                        <header>
+                            <Label text="∑ {i18n>exReqs} / {i18n>gas}"/>
+                        </header>
+                    </Column>
+                    <Column demandPopin="true" hAlign="Right" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
+                        <header>
+                            <Label text="{i18n>status} / {i18n>description}"/>
+                        </header>
+                    </Column>
+                </columns>
+                <ColumnListItem id="columnListItem" press="onLineItemPressed"
+                                type="{= ${userInfo>/WbShowOne}===true?'Navigation':'Inactive'}" vAlign="Middle"
+                                highlight="{ parts:[
+                                    { path: 'wb>Status', targetType : 'any' },
+                                    { path: 'wb>Req_Cnt', targetType : 'any' },
+                                    { path: 'wb>Sch_Cnt', targetType : 'any' },
+                                    { path: 'wb>Hist_Cnt', targetType : 'any' },
+                                    { path: 'wb>Gas_Cnt', targetType : 'any' },
+                                    { path: 'wb>DelayReason', targetType : 'any' },
+                                    { path: 'wb>TooName', targetType : 'any' }
+                                ], formatter: '.rowHighlight' }">
+                    <cells>
+                        <ObjectIdentifier title="{wb>Id} - ({wb>Werks})" tooltip="{ parts:[
+                                    { path: 'wb>Status', targetType : 'any' },
+                                    { path: 'wb>Req_Cnt', targetType : 'any' },
+                                    { path: 'wb>Sch_Cnt', targetType : 'any' },
+                                    { path: 'wb>Hist_Cnt', targetType : 'any' },
+                                    { path: 'wb>Gas_Cnt', targetType : 'any' },
+                                    { path: 'wb>DelayReason', targetType : 'any' },
+                                    { path: 'wb>TooName', targetType : 'any' }
+                                ], formatter: '.errorDesc' }"/>
+                        <ObjectIdentifier title="{wb>Fio}" text="{wb>Eqktx}"
+                                          tooltip="{i18n>eo} { path: 'wb>Equnr', formatter: '.alphaOut' }"/>
+                        <ObjectIdentifier title="{ path: 'wb>Driver', formatter: '.alphaOut' }"
+                                          text="{wb>License_num}"/>
+                        <ObjectIdentifier title="{wb>Req_Cnt}" text="{wb>Sch_Cnt}"/>
+                        <ObjectIdentifier title="{wb>Hist_Cnt}" text="{wb>Gas_Cnt}"/>
+                        <ObjectIdentifier
+                                title="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Id' } ], formatter: '.getStatusText' }"
+                                text="{wb>Description}"/>
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+        <footer>
+            <Bar/>
+        </footer>
+    </Page>
+</mvc:View>

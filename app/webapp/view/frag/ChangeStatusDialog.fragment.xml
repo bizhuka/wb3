@@ -1,0 +1,54 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="{gui>/title}" afterClose="onChangeStatusAfterClose" type="Message">
+
+        <content>
+
+            <Label text="{i18n>actualDate}" visible="{gui>/dateEdit}"/>
+
+            <HBox visible="{= ${gui>/origin}===${status>/DR_STATUS}}">
+
+                <DatePicker
+                        change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
+                        value="{ path: 'gui>/fromDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                <DatePicker
+                        change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
+                        value="{ path: 'gui>/toDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true}}"/>
+            </HBox>
+
+            <HBox visible="{= ${gui>/origin}===${status>/RC_STATUS}}">
+                <DateTimePicker
+                        change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
+                        value="{ path: 'gui>/fromDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
+                <DateTimePicker
+                        change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
+                        value="{ path: 'gui>/toDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
+            </HBox>
+
+            <VBox>
+                <Label text="{gui>/reasonLabel}"/>
+                <ComboBox id="id_reason_combo" items="{gui>/reasons}"
+                          selectedKey="{gui>/reason}"
+                          selectionChange="checkOkEnabled">
+                    <core:Item key="{gui>key}" text="{gui>text}"/>
+                </ComboBox>
+            </VBox>
+
+            <TextArea value="{gui>/text}" width="100%" placeholder="{i18n>descRequired}" liveChange="onTextChange"/>
+        </content>
+
+        <beginButton>
+            <Button text="{gui>/ok_text}" press="onChangeStatusConfirm"/>
+            <!--enabled="{= ${gui>/text}!==''}"-->
+        </beginButton>
+
+        <endButton>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onChangeStatusClose"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

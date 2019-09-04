@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <SelectDialog
+            title="{i18n>chooseTempl}"
+            search="pdfSearch"
+            confirm="pdfClose"
+            cancel="pdfClose"
+            items="{
+			path: '/pdf'
+		}">
+        <StandardListItem
+                title="{Title}"
+                description="{Desc}"
+                type="Active"
+                info="{Info}"/>
+    </SelectDialog>
+</core:FragmentDefinition>

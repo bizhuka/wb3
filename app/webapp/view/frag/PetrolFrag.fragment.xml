@@ -1,0 +1,101 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+
+    <IconTabFilter icon="{petrol>/icon}" tooltip="">
+        <OverflowToolbar design="Transparent">
+            <Input type="Number" width="10rem" visible="{petrol>/inputEnabled}"
+                   enabled="{ parts:[ { path: 'wb>Status' }, { path: 'wb>CreateDate' }, { path: 'userInfo>/WbChangeWialonData' }, { path: 'userInfo>/WbChangeWialonDataClose' }, { path: 'petrol>/noSource' } ], formatter: '.spentIsEnabled' }"
+                   liveChange="onDataChange"
+                   valueLiveUpdate="true"
+                   value="{{SPENT_PATH}}"
+                   id="{{SPENT_ID}}"/>
+            <Title text="{petrol>/title}"/>
+        </OverflowToolbar>
+        <Table items="{petrol>/data}" sticky="ColumnHeaders,HeaderToolbar">
+            <columns>
+                <Column width="15rem">
+                    <header>
+                        <Label text="{i18n>gasType}"/>
+                    </header>
+                </Column>
+                <Column visible="{petrol>/inputEnabled}" width="7rem">
+                    <header>
+                        <Label text="{i18n>remOut}"
+                               tooltip="{i18n>remOutLong}"/>
+                    </header>
+                </Column>
+                <Column visible="{petrol>/inputEnabled}" width="7rem">
+                    <header>
+                        <Label text="{i18n>give}"/>
+                    </header>
+                </Column>
+                <Column width="5rem">
+                    <header>
+                        <Label text="{i18n>fromLgort}"/>
+                    </header>
+                </Column>
+                <Column visible="{petrol>/inputEnabled}" width="7rem">
+                    <header>
+                        <Label text="{i18n>actual}" tooltip="{i18n>actualGiven}"/>
+                    </header>
+                </Column>
+                <Column width="7rem">
+                    <header>
+                        <Label text="{i18n>consumption}"
+                               tooltip="{i18n>consumption}"/>
+                    </header>
+                </Column>
+                <Column visible="{petrol>/inputEnabled}" width="7rem">
+                    <header>
+                        <Label text="{i18n>remIn}"
+                               tooltip="{i18n>remInLong}"/>
+                    </header>
+                </Column>
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <!--%{wb>Status}===${status>/AGREED}||-->
+                    <!--enabled="{= ${petrol>/inputEnabled}&amp;&amp;(%{wb>Status}===${status>/CREATED}||%{wb>Status}===${status>/ARRIVED})}"-->
+                    <ComboBox items="{path:'wb>/GasTypes', templateShareable:false}"
+                              selectedKey="{petrol>GasMatnr}"
+                              enabled="{ parts:[ { path: 'petrol>/inputEnabled' }, { path: 'petrol>GasMatnr' }, { path: 'wb>Status' }, { path: 'wb>CreateDate' }, { path: 'userInfo>/WbChangeWialonData' }, { path: 'userInfo>/WbChangeWialonDataClose' }, { path:'i18n>_GasMatnr' } ], formatter: '.inputIsEnabled' }"
+                              selectionChange="onMatnrChange"
+                              width="100%">
+                        <core:Item key="{wb>Matnr}" text="{wb>Maktx}"/>
+                    </ComboBox>
+
+                    <!--%{wb>Status}===${status>/AGREED}&amp;&amp;-->
+                    <!--enabled="{= ${petrol>/inputEnabled}&amp;&amp;%{wb>Status}===${status>/CREATED}&amp;&amp;${petrol>GasMatnr}.length>0}"-->
+                    <Input type="Number" value="{petrol>GasBefore}"
+                           enabled="{ parts:[ { path: 'petrol>/inputEnabled' }, { path: 'petrol>GasMatnr' }, { path: 'wb>Status' }, { path: 'wb>CreateDate' }, { path: 'userInfo>/WbChangeWialonData' }, { path: 'userInfo>/WbChangeWialonDataClose' }, { path:'i18n>_GasBefore' } ], formatter: '.inputIsEnabled' }"
+                           liveChange="onDataChange"
+                           valueLiveUpdate="true"/>
+                    <!--%{wb>Status}===${status>/AGREED}&amp;&amp;-->
+                    <Input type="Number" value="{petrol>GasGive}"
+                           enabled="{= ${petrol>/inputEnabled}&amp;&amp;%{wb>Status}===${status>/CREATED}&amp;&amp;${petrol>GasMatnr}.length>0}"
+                           liveChange="onDataChange"
+                           valueLiveUpdate="true"/>
+
+                    <!--%{wb>Status}===${status>/AGREED} ||-->
+                    <!--enabled="{= ${petrol>/inputEnabled}&amp;&amp;(%{wb>Status}===${status>/CREATED}||%{wb>Status}===${status>/ARRIVED})&amp;&amp;${petrol>GasMatnr}.length>0}"-->
+                    <Input type="Text" value="{petrol>GasLgort}"
+                           enabled="{ parts:[ { path: 'petrol>/inputEnabled' }, { path: 'petrol>GasMatnr' }, { path: 'wb>Status' }, { path: 'wb>CreateDate' }, { path: 'userInfo>/WbChangeWialonData' }, { path: 'userInfo>/WbChangeWialonDataClose' }, { path:'i18n>_GasLgort' } ], formatter: '.inputIsEnabled' }"
+                           liveChange="onDataChange"
+                           valueLiveUpdate="true"
+
+                           showValueHelp="true"
+                           valueHelpRequest="handle_lgort_f4"/>
+
+                    <!--enabled="{= ${petrol>/inputEnabled}&amp;&amp;%{wb>Status}===${status>/ARRIVED}&amp;&amp;${petrol>GasMatnr}.length>0}"-->
+                    <Input type="Number" value="{petrol>GasGiven}"
+                           enabled="{ parts:[ { path: 'petrol>/inputEnabled' }, { path: 'petrol>GasMatnr' }, { path: 'wb>Status' }, { path: 'wb>CreateDate' }, { path: 'userInfo>/WbChangeWialonData' }, { path: 'userInfo>/WbChangeWialonDataClose' }, { path:'i18n>_GasGiven' } ], formatter: '.inputIsEnabled' }"
+                           liveChange="onDataChange"
+                           valueLiveUpdate="true"/>
+                    <Input type="Number" value="{petrol>GasSpent}" enabled="false"/>
+                    <Input type="Number" value="{petrol>GasAfter}" enabled="false"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+    </IconTabFilter>
+</core:FragmentDefinition>

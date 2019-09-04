@@ -1,0 +1,17 @@
+{
+  "columns": [
+    { "label_kz": "Тапсырыс нөмірі","label_ru": "Номер заявки","property": "Aufnr","type": "string" },
+    { "label_kz": "Күннен басрап","label_ru": "Дата c","property": "Gstrp","type": "date" },
+    { "label_kz": "Күнге дейін","label_ru": "Дата по","property": "Gltrp","type": "date" },
+    { "label_kz": "НГДУ","label_ru": "НГДУ","property": "Iwerk","type": "string" },
+    { "label_kz": "СТ тобы","label_ru": "Класс СТ","property": "KtschTxt","type": "string" },
+    { "label_kz": "СТ тапсырмасы","label_ru": "Задание СТ","property": "Ltxa1","type": "string" },
+    { "label_kz": "Цех","label_ru": "Цех","property": "Pltxt","type": "string" },
+    { "label_kz": "ЖҚ нөмірі","label_ru": "Номер ПЛ","property": "Waybill_Id","type": "number" },
+    { "label_kz": "Тапсырыс күйі","label_ru": "Статус заявки","property": "Statusreason_{locale}","type": "string" },
+    { "label_kz": "SAP көлігінің нөмірі","label_ru": "№ ЕО ТОРО","property": "Equnr","type": "string" },
+    { "label_kz": "Тапсырыстың жоспарланған уақыты","label_ru": "Плановая время Заявки","property": "Hours","type": "string" },
+    { "label_kz": "Тапсырыстың нақты басталу уақыты","label_ru": "Фактическая время Заявки начало","property": "FromDate","type": "datetime" },
+    { "label_kz": "Тапсырыстың нақты аяқталу уақыты","label_ru": "Фактическая время Заявки конец","property": "ToDate","type": "datetime" }
+  ]
+}

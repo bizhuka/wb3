@@ -1,0 +1,35 @@
+<mvc:View
+        controllerName="com.modekzWaybill.controller.ImportR3"
+        xmlns:l="sap.ui.layout"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns="sap.m">
+    <l:VerticalLayout
+            class="sapUiContentPadding"
+            width="100%">
+        <l:content>
+            <Link text="{i18n>werksBukrs} (Sap)"
+                  press="importWerks"/>
+
+            <Link text="{i18n>gasType} (Sap)"
+                  press="importGasType"/>
+
+            <Link text="{i18n>statusText} (Sap)"
+                  press="uploadStatusText"/>
+
+            <Link text="{i18n>equnrGrp} (Sap)"
+                  press="uploadEqunrGrp"/>
+
+            <Link text="{i18n>sensors} (Wialon)"
+                  press="loadWlnVehicle"/>
+
+            <Link text="{i18n>medCards} ({i18n>textFile})"
+                  press="uploadDriverMedCards"/>
+
+            <Link text="{i18n>tooCars} ({i18n>textFile})"
+                  press="uploadEquipment"/>
+
+            <!--<Link text="{i18n>grpRoles} ({i18n>textFile})"-->
+                  <!--press="uploadGroupRoles"/>-->
+        </l:content>
+    </l:VerticalLayout>
+</mvc:View>

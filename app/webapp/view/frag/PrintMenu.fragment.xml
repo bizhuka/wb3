@@ -1,0 +1,37 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Popover placement="Bottom">
+        <customHeader>
+            <VBox>
+                <Button text="{i18n>print}" press="do_wb_print" width="100%"/>
+                <Button text="{i18n>download}" press="do_wb_download" width="100%"/>
+            </VBox>
+        </customHeader>
+
+        <content>
+            <Table items="{po>/list}" width="17rem"
+                   sticky="ColumnHeaders,HeaderToolbar">
+                <columns>
+                    <Column>
+                        <header>
+                            <Label text="{i18n>watermarks}"/>
+                        </header>
+                    </Column>
+                </columns>
+
+                <ColumnListItem>
+                    <cells>
+                        <HBox>
+                            <VBox>
+                                <Input value="{po>kzText}" enabled="{po>enabled}"/>
+                                <Input value="{po>ruText}" enabled="{po>enabled}"/>
+                            </VBox>
+                            <Switch state="{po>enabled}"/>
+                        </HBox>
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+    </Popover>
+</core:FragmentDefinition>

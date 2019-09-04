@@ -1,5 +1,6 @@
 "use strict";
 
+const Db = require('../util/Db');
 const multer = require('multer');
 const upload = multer({storage: multer.memoryStorage()});
 
@@ -32,7 +33,7 @@ module.exports = (app, srv) => {
                 item.status = C_UPDATED;
             }
         }
-        await tx.commit();
+        await Db.close(tx, true);
 
         res.status(200).json(result);
     });
@@ -99,9 +100,10 @@ module.exports = (app, srv) => {
                     break;
             }
         }
-        await tx.commit();
+        await Db.close(tx, true);
 
         res.status(200).json(result);
+
     });
 };
 

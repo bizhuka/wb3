@@ -1,6 +1,9 @@
 module.exports = {
+
     // From js 1 seconds
-    C_NOW: "0001-01-01T00:00:01.000Z",
+    isNow: function (value) {
+        return value === "1970-01-01T00:00:00.001Z" || value === "0001-01-01T00:00:01.000Z";
+    },
 
     getNow: function () {
         return (new Date()).toISOString()

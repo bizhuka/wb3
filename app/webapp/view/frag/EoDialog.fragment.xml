@@ -1,0 +1,103 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog afterClose="onEoAfterClose"
+            contentWidth="85%"
+            showHeader="false">
+
+        <customHeader design="Header">
+            <Bar>
+                <contentMiddle>
+                    <Title text="{i18n>eoList}"/>
+                </contentMiddle>
+
+                <contentRight>
+                    <Button icon="sap-icon://synchronize" press="onEoUpdate"
+                            tooltip="{i18n>eoListUpdate}"
+                            visible="{= ${userInfo>/WbLoaderEo}===true}"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+
+        <subHeader>
+            <Bar>
+                <contentMiddle>
+                    <SearchField id="id_eo_search" width="100%" search="eoSearch"/>
+                </contentMiddle>
+            </Bar>
+        </subHeader>
+
+        <content>
+            <Table id="id_eo_table"
+                   growing="true" growingScrollToLoad="true"
+                   mode="MultiSelect" modeAnimationOn="false"
+                   noDataText="{i18n>noData}" items="{wb>/Equipments}"
+                   sticky="ColumnHeaders,HeaderToolbar">
+
+                <columns>
+                    <Column width="6rem">
+                        <Label text="{i18n>plateNum}"/>
+                    </Column>
+                    <Column>
+                        <Label text="{i18n>objNum}"/>
+                    </Column>
+                    <Column width="7rem">
+                        <Label text="{i18n>objType}"/>
+                    </Column>
+                    <Column width="9rem">
+                        <Label text="{i18n>gasType}"/>
+                    </Column>
+                    <Column width="9rem">
+                        <Label text="IMEI"/>
+                    </Column>
+                    <Column>
+                        <Label text="{i18n>techSpace}"/>
+                    </Column>
+                    <!--<Column width="9rem">-->
+                        <!--<Label text="{i18n>noDriverDate}"/>-->
+                    <!--</Column>-->
+                </columns>
+
+                <ColumnListItem
+                        highlight="{= %{wb>Expelled}==='X'? 'Warning' : 'None'}">
+                    <cells>
+                        <Label text="{wb>License_num}"
+                               tooltip="{i18n>eo} { path: 'wb>Equnr', formatter: '.alphaOut' }&#xA;{i18n>class} {wb>N_class}"/>
+                    </cells>
+
+                    <cells>
+                        <Label text="{wb>Eqktx}" tooltip="{wb>Eqktx}"/>
+                    </cells>
+
+                    <cells>
+                        <Label text="{wb>Eqart}"/>
+                    </cells>
+
+                    <cells>
+                        <Label text="{wb>Typbz}"/>
+                    </cells>
+
+                    <cells>
+                        <Label text="{wb>Imei}"/>
+                    </cells>
+
+                    <cells>
+                        <Label text="{wb>Pltxt}" tooltip="{wb>Pltxt}"/>
+                    </cells>
+
+                    <!--<cells>-->
+                        <!--<Label text="{ path: 'wb>NoDriverDate', formatter: '.toLocaleDateTime' }"/>-->
+                    <!--</cells>-->
+                </ColumnListItem>
+            </Table>
+        </content>
+
+
+        <buttons>
+            <!--<Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>-->
+            <!--<Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>-->
+            <!--<Button icon="sap-icon://vehicle-repair" press="onShowRepairDialog"/>-->
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onEoCloseDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

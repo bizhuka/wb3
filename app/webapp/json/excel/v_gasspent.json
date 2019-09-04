@@ -1,0 +1,20 @@
+{
+  "columns": [
+    { "label_kz": "Мем.№","label_ru": "Гос.№","property": "License_num","type": "string" },
+    { "label_kz": "Жабдықтау бірлігі","label_ru": "Единица оборудования","property": "Equnr","type": "string" },
+    { "label_kz": "№ НҚ","label_ru": "№ ОС","property": "Anln1","type": "string" },
+    { "label_kz": "IMEI","label_ru": "IMEI","property": "Imei","type": "string" },
+    { "label_kz": "Сұрып","label_ru": "Класс","property": "KtschTxt","type": "string" },
+    { "label_kz": "Зауыт","label_ru": "Завод","property": "Werks","type": "string" },
+    { "label_kz": "№ ЖҚ","label_ru": "№ ПЛ","property": "Id","type": "number" },
+    { "label_kz": "Жасалған күні","label_ru": "Дата создания","property": "CreateDate","type": "Date" },
+    { "label_kz": "Сапар","label_ru": "Пробег","property": "OdoDiff","type": "number" },
+    { "label_kz": "Мотосағ","label_ru": "Моточасы","property": "MotoHour","type": "number" },
+
+    { "label_kz": "Жанармай түрі","label_ru": "Вид ГСМ","property": "Maktx","type": "string" },
+    { "label_kz": "Бак түрі","label_ru": "Тип бака","property": "Pttype_{locale}","type": "string" },
+    { "label_kz": "Реттік нөмірі","label_ru": "Позиция","property": "Pos","type": "number" },
+    { "label_kz": "Берілген мөлшер","label_ru": "Выдано ГСМ","property": "GasGiven","type": "number" },
+    { "label_kz": "Кеткендегі қалдық","label_ru": "Остаток на начало","property": "GasBefore","type": "number" }
+  ]
+}

@@ -7,9 +7,9 @@ const util = require('util');
 
 let rfcClient = null;
 try {
-    // const Client = require('node-rfc').Client;
-    // const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
-    // rfcClient = new Client(sapSystem);
+    const Client = require('node-rfc').Client;
+    const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
+    rfcClient = new Client(sapSystem);
 } catch (e) {
     console.error(e);
 }

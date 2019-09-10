@@ -98,10 +98,10 @@ sap.ui.define([
 
             // ToDate ?
             if (fromDate)
-                oFilter.push(new Filter("GarageDepDate", FilterOperator.GE, fromDate));
+                oFilter.push(new Filter("ToDate", FilterOperator.GE, fromDate));
             // FromDate ?
             if (toDate)
-                oFilter.push(new Filter("GarageDepDate", FilterOperator.LE, toDate));
+                oFilter.push(new Filter("FromDate", FilterOperator.LE, toDate));
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
 

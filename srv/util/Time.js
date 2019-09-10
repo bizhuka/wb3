@@ -18,6 +18,20 @@ module.exports = {
         return d.toISOString().substr(0, 10)
     },
 
+    getSapDate: function (d) {
+        if (typeof d !== 'string')
+            d = d.toISOString();
+        return d.replace(/-/g, '').substr(0, 8);
+    },
+
+    diffInDays: function (dTo, dFrom) {
+        if (typeof dTo === 'string')
+            dTo = Date.parse(dTo);
+        if (typeof dFrom === 'string')
+            dFrom = Date.parse(dFrom);
+        return parseInt((dTo - dFrom) / (3600 * 24 * 1000));
+    },
+
     // TODO check date offset
     getSqlDateTime: function (d) {
         if (!d)

@@ -1,6 +1,7 @@
 /*eslint no-console: 0, no-unused-vars: 0*/
 "use strict";
 
+const Db = require('util/Db');
 const cds = require("@sap/cds");
 const express = require("express");
 
@@ -13,10 +14,8 @@ async function start() {
     const app = express();
     global.__express = app;
 
-    const isLocalHost = !!process.env.WB_IS_TEST;//process.platform === 'win32';
-
     // Security options
-    if (!isLocalHost) {
+    if (!Db.isTest()) {
         passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
             uaa: {
                 tag: "xsuaa"
@@ -26,7 +25,7 @@ async function start() {
         app.use(passport.authenticate("JWT", {session: false}));
     }
 
-    const options = process.platform === 'win32' ?
+    const options = Db.isWindows() ?
         {
             kind: "sqlite",
             logLevel: "error",

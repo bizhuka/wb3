@@ -540,7 +540,7 @@
 
         g.Maktx,
 
-        w.Id, w.Werks, w.CreateDate, w.OdoDiff, w.MotoHour, w.Description, w.Status,
+        w.Id, w.Werks, w.CreateDate, w.FromDate, w.ToDate, w.OdoDiff, w.MotoHour, w.Description, w.Status,
 
         e.Equnr, e.Eqktx, e.Point, e.Imei, e.Mptyp,
         e.WialonId, e.License_num, e.TooName, e.PetrolMode,

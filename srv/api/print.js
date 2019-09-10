@@ -1,13 +1,17 @@
 "use strict";
 
+const Db = require('../util/Db');
+const Time = require('../util/Time');
 const Status = require('../util/Status');
 // Synchronization with R3
 const {rfcClient} = require('./sync')();
 
-module.exports = (app, srv) => {
-    const {Waybill, GasSpent, VCountWB, VCountREQ} = srv.entities('wb.db');
+const util = require('util');
+const fs = require('fs');
+const readFile = util.promisify(fs.readFile);
 
-    //////////////////////////////////////////////////////////////////////////////
+module.exports = (app, srv) => {
+    const {Waybill, Driver, Werk, Equipment, ReqHeader, GasSpent} = srv.entities('wb.db');
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/print/template", async (req, res) => {
@@ -22,168 +26,177 @@ module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/print/doc", async (req, res) => {
-            // // Only 1 parameter ?
-            // const waybillId = Number(req.query.id);
-            // const setFile = Number(req.query.d);
-            //
-            // const docs = [];
-            // const reqs = [];
-            // const gasSpents = [];
-            //
-            // let orig_class = null;
-            // try {
-            //     let statement =
-            //         "SELECT CURRENT_DATE as Datum, w.Butxt, d.Fio, e.Eqktx, e.License_num, e.Speed_max, e.Pltxt, e.OrigClass, e.TooName, e.Typbz, e.Anln1, waybill.*\n" +
-            //         "FROM _WAYBILL_ as waybill\n" +
-            //         "left outer join _WERK_ as w on waybill.Werks = w.Werks\n" +
-            //         "left outer join _DRIVER_ as d on waybill.Bukrs = d.bukrs and waybill.driver = d.pernr\n" +
-            //         "left outer join _EQUIPMENT_ as e on waybill.equnr = e.equnr\n" +
-            //         "WHERE waybill.id = _ID_";
-            //
-            //     // replace with data
-            //     statement = statement
-            //         .replace(/_WAYBILL_/g, Waybill["@cds.persistence.name"])
-            //         .replace('_ID_', waybillId);
-            //
-            //     // Read from DB
-            //     const tx = cds.transaction(req);
-            //     const rows = await tx.run(statement);
-            //     await Db.close(tx);
-            //
-            //     // Add single item
-            //     let root = null;
-            //     for (let i = 0; i < rows.length; i++) {
-            //         // Original document
-            //         JSONObject json = new JSONObject(getFileAsString("/json/printOption.json"));
-            //         JSONArray jsonArr = json.getJSONArray("list");
-            //
-            //         // Destination
-            //         root = new WBPrintDoc.PrintDoc();
-            //         Field[] fieldArr = WBPrintDoc.PrintDoc.class.getDeclaredFields();
-            //         Map<String, Field> fieldMap = new HashMap<>();
-            //         for (Field field : fieldArr)
-            //         fieldMap.put(field.getName(), field);
-            //
-            //         // From js 16 base -> 2 base
-            //         String n = Integer.toBinaryString(Integer.parseInt(request.getParameter("n"), 16));
-            //         for (int i = 1; i <= n.length(); i++) {
-            //             // to empty string
-            //             if (n.charAt(i - 1) == '0')
-            //                 continue;
-            //
-            //             Field kField = fieldMap.get("k" + i);
-            //             Field rField = fieldMap.get("r" + i);
-            //             json = jsonArr.getJSONObject(i - 1);
-            //
-            //             // get from file
-            //             kField.set(root, json.getString("kzText"));
-            //             rField.set(root, json.getString("ruText"));
-            //
-            //             // kz text - from url
-            //             String k = request.getParameter("k" + i);
-            //             if (k != null)
-            //                 kField.set(root, k);
-            //
-            //             // ru text - from url
-            //             String r = request.getParameter("r" + i);
-            //             if (r != null)
-            //                 rField.set(root, r);
-            //         }
-            //
-            //         orig_class = rs.getString("orig_class");
-            //
-            //         root.id = rs.getString("id");
-            //         root.datum = rs.getDate("datum");
-            //         root.bukrsName = rs.getString("butxt");
-            //         root.pltxt = rs.getString("pltxt");
-            //         root.driverFio = rs.getString("fio");
-            //         root.eqktx = rs.getString("eqktx");
-            //         root.licenseNum = rs.getString("license_num");
-            //         root.speedMax = BigDecimal.valueOf(rs.getDouble("speed_max"));
-            //         root.fromDate = rs.getDate("fromdate");
-            //         root.toDate = rs.getDate("todate");
-            //         root.tooName = rs.getString("tooname");
-            //         root.typbz = rs.getString("typbz");
-            //         root.anln1 = rs.getString("anln1");
-            //
-            //         // Delete leading zeros
-            //         try {
-            //             root.driver = Integer.parseInt(rs.getString("driver"));
-            //         } catch (Exception e) {
-            //             root.driver = 0;
-            //         }
-            //
-            //         docs.add(root);
-            //     }
-            //
-            //     // Requests
-            //     if (root != null) {
-            //         statement = connection.prepareStatement("select * from wb.dbt::pack.reqheader where waybill_id = ?");
-            //         statement.setLong(1, waybillId);
-            //         rs = statement.executeQuery();
-            //         int num = 0;
-            //         while (rs.next()) {
-            //             WBPrintDoc.PrintReq req = new WBPrintDoc.PrintReq();
-            //
-            //             req.num = String.valueOf(++num);
-            //             req.waybill_id = rs.getString("waybill_id");
-            //             req.gstrp = rs.getDate("gstrp");
-            //             req.gltrp = rs.getDate("gltrp");
-            //
-            //             // Copy from wb for too
-            //             if (!root.tooName.equals("-")) {
-            //                 req.gstrp = root.fromDate;
-            //                 req.gltrp = root.toDate;
-            //             }
-            //
-            //             req.dateDiff = String.valueOf(
-            //                 TimeUnit.DAYS.convert(req.gltrp.getTime() - req.gstrp.getTime(), TimeUnit.MILLISECONDS) + 1);
-            //             BigDecimal hours = rs.getBigDecimal("duration");
-            //             if (BigDecimal.ZERO.compareTo(hours) != 0)
-            //                 req.duration = "(" + hours + ")";
-            //             req.pltxt = rs.getString("pltxt");
-            //             req.stand = rs.getString("stand");
-            //             req.beber = rs.getString("beber");
-            //             req.ilatx = rs.getString("ilatx");
-            //             req.ltxa1 = rs.getString("ltxa1");
-            //
-            //             reqs.add(req);
-            //         }
-            //
-            //         // Just fill with something
-            //         List<GasSpent> gasSpentList = em.createQuery(
-            //             "SELECT t FROM GasSpent t WHERE t.Waybill_Id = " + waybillId, GasSpent.class).getResultList();
-            //
-            //         Map<String, GasSpent> petrolMap = new HashMap<>(gasSpentList.size());
-            //         for (GasSpent gasSpent : gasSpentList)
-            //         if (!petrolMap.containsKey(gasSpent.GasMatnr))
-            //             petrolMap.put(gasSpent.GasMatnr, gasSpent);
-            //         else {
-            //             GasSpent prevGasSpent = petrolMap.get(gasSpent.GasMatnr);
-            //             prevGasSpent.GasBefore.add(gasSpent.GasBefore);
-            //             prevGasSpent.GasGive.add(gasSpent.GasGive);
-            //             prevGasSpent.GasGiven.add(gasSpent.GasGiven);
-            //         }
-            //         // Pass overalls
-            //         gasSpents = new ArrayList<>(petrolMap.values());
-            //     }
-            // } catch (Exception e) {
-            //     e.printStackTrace();
-            //     throw new ServletException(e);
-            // } finally {
-            //     em.close();
-            // }
-            //
-            // // Pass data for template
-            // WBPrintDoc printDoc = new WBPrintDoc(waybillId, orig_class, docs, reqs, gasSpents);
-            //
-            // try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
-            //     session.execute(printDoc);
-            //
-            //     // Specify the filename
-            //     sendFile(response, printDoc.data, printDoc.contentType,
-            //         setFile == 1 ? printDoc.filename : null);
-            // }
+        // Only 1 parameter ?
+        const waybillId = Number(req.query.id);
+        const setFile = Number(req.query.d);
+
+        const docs = [];
+        const reqs = [];
+        const gasSpents = [];
+
+        let orig_class = null;
+
+        const root = {};
+        const tx = cds.transaction(req);
+        try {
+            let statement =
+                "SELECT CURRENT_DATE as Datum, w.Butxt, d.Fio, e.Eqktx, e.License_num, e.Speed_max, e.Pltxt, e.OrigClass, e.TooName, e.Typbz, e.Anln1, waybill.*\n" +
+                "FROM _WAYBILL_ as waybill\n" +
+                "left outer join _WERK_ as w on waybill.Werks = w.Werks\n" +
+                "left outer join _DRIVER_ as d on waybill.Bukrs = d.bukrs and waybill.driver = d.pernr\n" +
+                "left outer join _EQUIPMENT_ as e on waybill.equnr = e.equnr\n" +
+                "WHERE waybill.id = _ID_";
+
+            // replace with data
+            statement = statement
+                .replace('_WAYBILL_', Waybill["@cds.persistence.name"])
+                .replace('_WERK_', Werk["@cds.persistence.name"])
+                .replace('_DRIVER_', Driver["@cds.persistence.name"])
+                .replace('_EQUIPMENT_', Equipment["@cds.persistence.name"])
+                .replace('_ID_', waybillId);
+
+            // Read from DB
+            const rows = await tx.run(statement);
+
+            // Add single item
+            const json = JSON.parse(await readFile(Db.getFilePath('json/printOption.json'), 'utf8'));
+            for (let i = 0; i < rows.length; i++) {
+                const rs = rows[i];
+
+                // From js 16 base -> 2 base
+                const n = parseInt(req.query.n, 16).toString(2);
+                for (let i = 1; i <= n.length; i++) {
+                    // to empty string
+                    if (n.charAt(i - 1) === '0')
+                        continue;
+
+                    // get from file
+                    root["WM_KZ" + i] = json.list[i - 1].kzText;
+                    root["WM_RU" + i] = json.list[i - 1].ruText;
+
+                    // kz text - from url
+                    const k = req.query["k" + i];
+                    if (k)
+                        root["WM_KZ" + i] = k;
+
+                    // ru text - from url
+                    const r = req.query["r" + i];
+                    if (r)
+                        root["WM_RU" + i] = r;
+                }
+
+                orig_class = rs.orig_class;
+
+                root.ID = String(rs.Id);
+                root.DATUM = Time.getSapDate(rs.Datum);
+                root.BUKRS_NAME = rs.Butxt;
+                root.PLTXT = rs.Pltxt;
+                root.DRIVER_FIO = String(rs.Fio);
+                root.EQKTX = rs.Eqktx;
+                root.LICENSE_NUM = rs.License_num;
+                root.SPEED_MAX = rs.Speed_max; //Double
+                root.FROM_DATE = Time.getSapDate(rs.FromDate);
+                root.TO_DATE = Time.getSapDate(rs.ToDate);
+                root.TOO_NAME = rs.TooName;
+                root.TYPBZ = rs.Typbz;
+                root.ANLN1 = rs.Anln1;
+
+                // Delete leading zeros
+                root.DRIVER = parseInt(rs.Driver);
+                if (!root.DRIVER)
+                    root.DRIVER = 0;
+
+                docs.push(root);
+            }
+
+            // Requests
+            if (docs.length > 0) {
+                statement = "select * from _REQHEADER_ where waybill_id = _ID_";
+                // replace with data
+                statement = statement
+                    .replace('_REQHEADER_', ReqHeader["@cds.persistence.name"])
+                    .replace('_ID_', waybillId);
+
+                // Read from DB
+                const rows = await tx.run(statement);
+                for (let i = 0; i < rows.length; i++) {
+                    const rs = rows[i];
+                    const req = {};
+
+                    req.NUM = String(i + 1);
+                    req.WAYBILL_ID = String(rs.Waybill_Id);
+                    req.GSTRP = Time.getSapDate(rs.Gstrp);
+                    req.GLTRP = Time.getSapDate(rs.Gltrp);
+
+                    // Copy from wb for too
+                    if (root.tooName !== "-") {
+                        req.GSTRP = root.FROM_DATE;
+                        req.GLTRP = root.TO_DATE;
+                    }
+
+                    req.DATE_DIFF = String(Time.diffInDays(
+                        Time.getSqlDate(req.GLTRP), Time.getSqlDate(req.GSTRP)) + 1);
+                    if (rs.Duration)
+                        req.DAUNO = "(" + rs.Duration + ")";
+                    req.PLTXT = rs.Pltxt;
+                    req.STAND = rs.Stand;
+                    req.BEBER = rs.Beber;
+                    req.ILATX = rs.Ilatx;
+                    req.LTXA1 = rs.Ltxa1;
+
+                    reqs.push(req);
+                }
+
+                // Just fill with something
+                const gasSpentList = await tx.run(
+                    SELECT.from(GasSpent)
+                        .where({
+                            Waybill_Id: waybillId
+                        }));
+
+                const petrolMap = {};
+                for (let g = 0; g < gasSpentList.length; g++) {
+                    const gasSpent = gasSpentList[g];
+                    const gasSpentSap = {
+                        BEFORE: gasSpent.GasBefore,
+                        GIVE: gasSpent.GasGive,
+                        GIVEN: gasSpent.GasGiven
+                    };
+
+                    if (!petrolMap[gasSpent.GasMatnr]) {
+                        petrolMap[gasSpent.GasMatnr] = gasSpentSap;
+                        gasSpents.push(gasSpentSap);
+                    } else {
+                        const prevGasSpent = petrolMap[gasSpent.GasMatnr];
+                        prevGasSpent.BEFORE += gasSpentSap.BEFORE;
+                        prevGasSpent.GIVE += gasSpentSap.GIVE;
+                        prevGasSpent.GIVEN += gasSpentSap.GIVEN;
+                    }
+                }
+            }
+        } catch (e) {
+            res.json(e.toString());
+        } finally {
+            await Db.close(tx);
+        }
+
+        // Send error
+        if (docs.length === 0)
+            return;
+
+        await rfcClient.open();
+        const result = await rfcClient.call('Z_WB_PRINT_DOC', {
+            IV_WAYBILL_ID: String(waybillId),
+            IV_CLASS: String(orig_class),
+            IT_DOC: docs,
+            IT_REQ: reqs,
+            IT_GAS: gasSpents
+        });
+
+        res.setHeader('Content-Type', result.EV_CONTENT_TYPE);
+        if (setFile === 1)
+            res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURI(result.EV_FILENAME));
+        res.send(result.EV_BIN_DATA);
     });
 };
 

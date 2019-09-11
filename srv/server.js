@@ -1,12 +1,13 @@
 /*eslint no-console: 0, no-unused-vars: 0*/
 "use strict";
 
-const Db = require('util/Db');
+const Db = require('./util/Db');
 const cds = require("@sap/cds");
 const express = require("express");
 
 const xsenv = require("@sap/xsenv");
 const xssec = require("@sap/xssec");
+const xsHDBConn = require("@sap/hdbext");
 const passport = require("passport");
 
 async function start() {
@@ -16,13 +17,6 @@ async function start() {
 
     // Security options
     if (!Db.isTest()) {
-        passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
-            uaa: {
-                tag: "xsuaa"
-            }
-        }).uaa));
-        app.use(passport.initialize());
-        app.use(passport.authenticate("JWT", {session: false}));
     }
 
     const options = Db.isWindows() ?
@@ -37,7 +31,25 @@ async function start() {
             kind: "hana",
             logLevel: "error"
         };
-
+        
+    if(options.kind === 'hana'){
+    	passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
+            uaa: {
+                tag: "xsuaa"
+            }
+        }).uaa));
+        app.use(passport.initialize());
+        app.use(passport.authenticate("JWT", {session: false}));
+    	
+    	var hanaOptions = xsenv.getServices({
+			hana: {
+				plan: "hdi-shared"
+			}
+		});
+		hanaOptions.hana.pooling = true;
+    	app.use(xsHDBConn.middleware(hanaOptions.hana));
+    }
+    
     await cds.connect(options);
     const srv = await  cds.serve("gen/csn.json", {
         crashOnError: false

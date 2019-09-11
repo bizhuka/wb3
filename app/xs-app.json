@@ -3,13 +3,11 @@
 	"authenticationMethod": "route",
 	"routes": [
 	{
-		"scope": "wbr!t6614.WbAuthorized",
 		"source": "^/srv/(.*)$",
 		"target": "$1",
 		"destination": "srv_api"
 	},
 	{
-		"scope": "wbr!t6614.WbAuthorized",
 		"source": "^/app/(.*)$",
 		"target": "$1",
 		"localDir": "webapp"

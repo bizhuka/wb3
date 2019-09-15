@@ -1,5 +1,5 @@
 {
-  "xsappname": "TODO",
+  "xsappname": "wb3",
   "tenant-mode": "shared",
   "oauth2-configuration": {
     "system-attributes": ["groups", "rolecollections"]

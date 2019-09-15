@@ -1,0 +1,29 @@
+{
+  "list": [
+    {
+      "kzText": "Сақ бол, тұман!",
+      "ruText": "Осторожно туман!",
+      "enabled": false
+    },
+    {
+      "kzText": "Сақ бол, мұздақ!",
+      "ruText": "Осторожно гололед!",
+      "enabled": false
+    },
+    {
+      "kzText": "Сақ бол, боран!",
+      "ruText": "Осторожно снегопад!",
+      "enabled": false
+    },
+    {
+      "kzText": "Жылдамдық 30км/сағ!",
+      "ruText": "Скорость 30км/час!",
+      "enabled": false
+    },
+    {
+      "kzText": "Қауіпті жүк!",
+      "ruText": "Опасный груз!",
+      "enabled": false
+    }
+  ]
+}

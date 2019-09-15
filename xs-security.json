@@ -4,6 +4,7 @@
   "oauth2-configuration": {
     "system-attributes": ["groups", "rolecollections"]
   },
+
   "attributes": [
     {
       "name": "Werks",
@@ -11,6 +12,7 @@
       "valueType": "string"
     }
   ],
+
   "scopes": [
     {
       "name": "$XSAPPNAME.Callback",

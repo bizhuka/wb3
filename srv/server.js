@@ -1,45 +1,23 @@
 /*eslint no-console: 0, no-unused-vars: 0*/
 "use strict";
 
-const Db = require('util/Db');
+const Db = require('./util/Db');
 const cds = require("@sap/cds");
 const express = require("express");
 
-const xsenv = require("@sap/xsenv");
-const xssec = require("@sap/xssec");
-const passport = require("passport");
-
-async function start() {
+if (Db.isWindows()) {
     // Save in global var
     const app = express();
     global.__express = app;
 
-    // Security options
-    if (!Db.isTest()) {
-        passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
-            uaa: {
-                tag: "xsuaa"
-            }
-        }).uaa));
-        app.use(passport.initialize());
-        app.use(passport.authenticate("JWT", {session: false}));
-    }
-
-    const options = Db.isWindows() ?
-        {
-            kind: "sqlite",
-            logLevel: "error",
-            credentials: {
-                database: "../db/wb.db"
-            }
-        } :
-        {
-            kind: "hana",
-            logLevel: "error"
-        };
-
-    await cds.connect(options);
-    const srv = await  cds.serve("gen/csn.json", {
+    cds.connect({
+        kind: "sqlite", // hana
+        logLevel: "error",
+        credentials: {
+            database: "../db/wb.db"
+        }
+    });
+    cds.serve("gen/csn.json", {
         crashOnError: false
     }).at("/catalog")
         .with(require("./cat-service.js"))
@@ -49,7 +27,6 @@ async function start() {
             process.exit(1);
         });
 
-
     const server = require("http").createServer();
     const port = process.env.PORT || 4004;
 
@@ -57,8 +34,7 @@ async function start() {
     server.listen(port, function () {
         console.info("srv: " + server.address().port);
     });
-
-    return true;
+} else {
+    const cds_bin = require("@sap/cds/bin/cds");
+    cds_bin('serve', 'gen/csn.json', '--at', '/catalog', '--with', require("./cat-service.js"));
 }
-
-start();

@@ -1,6 +1,6 @@
 ID: wb3
 _schema-version: '2.1'
-description: 'Waybill Node.js + CD&S'
+description: 'Waybill Node'
 version: 0.0.3
 modules:
   - name: wb3-db
@@ -11,6 +11,7 @@ modules:
       disk-quota: 256M
     requires:
       - name: wb3-hdi-container
+
   - name: wb3-srv
     type: nodejs
     path: srv
@@ -54,5 +55,4 @@ resources:
 #    type: org.cloudfoundry.managed-service
 #    parameters:
 #      path: ./xs-security.json
-#      service-plan: application
 #      service: xsuaa

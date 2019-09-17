@@ -1,11 +1,15 @@
 "use strict";
 
 const Db = require('./util/Db');
+const express = require('express');
 
 module.exports = function (srv) {
-    const express = global.__express;
+    const app = global.__express;
 
-    if(!Db.isTest()){
+    // Default folder
+    app.use('/', express.static(__dirname + '/web'));
+
+    if (!Db.isTest()) {
         const xsenv = require("@sap/xsenv");
         const xssec = require("@sap/xssec");
         const xsHDBConn = require("@sap/hdbext");
@@ -16,8 +20,8 @@ module.exports = function (srv) {
                 tag: "xsuaa"
             }
         }).uaa));
-        express.use(passport.initialize());
-        express.use(passport.authenticate("JWT", {session: false}));
+        app.use(passport.initialize());
+        app.use(passport.authenticate("JWT", {session: false}));
 
         const hanaOptions = xsenv.getServices({
             hana: {
@@ -25,33 +29,33 @@ module.exports = function (srv) {
             }
         });
         hanaOptions.hana.pooling = true;
-        express.use(xsHDBConn.middleware(hanaOptions.hana));
+        app.use(xsHDBConn.middleware(hanaOptions.hana));
     }
-    
+
     // DB - updates
-    require('./api/db')(express, srv);
+    require('./api/db')(app, srv);
 
     // Update from CSV
-    require('./api/csv')(express, srv);
+    require('./api/csv')(app, srv);
 
     // Synchronization with R3
-    require('./api/sync')(express, srv);
+    require('./api/sync')(app, srv);
 
     // Information about current user
-    require('./api/user_info')(express);
+    require('./api/user_info')(app);
 
     // Wialon
-    require('./api/wialon')(express, srv);
+    require('./api/wialon')(app, srv);
 
     // Select data from DB
-    require('./api/select')(express, srv);
+    require('./api/select')(app, srv);
 
     // PDF & word
-    require('./api/print')(express, srv);
+    require('./api/print')(app, srv);
 
     // runtime code
-    require('./api/code')(express, srv);
+    require('./api/code')(app, srv);
 
     // other
-    require('./api/other')(express, srv);
+    require('./api/other')(app, srv);
 };

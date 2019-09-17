@@ -23,7 +23,6 @@ gen/
 mergedManifestDescriptor.json
 mock_preview_sapui5.html
 mta_archives/
-node_modules/
 package-lock.json
 sap-ui-cachebuster-info.json
 target/

@@ -148,6 +148,10 @@ function itemsTransform(Entity, items, toR3) {
                     switch (field.type) {
                         case 'cds.Date':
                             value = Time.getSqlDate(value);
+
+                            // Do not save
+                            if(value === '0000-00-00')
+                                value = undefined;
                             break;
                     }
                     newItem[field.name] = value;

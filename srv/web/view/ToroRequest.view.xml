@@ -98,7 +98,8 @@
                        items="{ path: 'wb>/Equipments', length: 1000 }"
                        updateStarted="onUpdateStartedSchedule"
                        selectionChange="onEquipSelected"
-                       growing="false" growingScrollToLoad="false"
+                       growing="true" growingScrollToLoad="true"
+                       growingThreshold="1000"
                        sticky="ColumnHeaders,HeaderToolbar">
                     <headerToolbar>
                         <OverflowToolbar>

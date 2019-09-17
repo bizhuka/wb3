@@ -1,7 +1,7 @@
 ID: wb3
 _schema-version: '2.1'
 description: 'Waybill Node'
-version: 0.0.3
+version: 0.0.4
 modules:
   - name: wb3-db
     type: hdb
@@ -46,8 +46,8 @@ modules:
           name: srv_api
           url: '~{url}'
           forwardAuthToken: true
-    properties:
-      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
+#    properties:
+#      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
       
 resources:
   - name: wb3-hdi-container

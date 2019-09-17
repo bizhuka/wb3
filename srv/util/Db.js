@@ -17,6 +17,6 @@ module.exports = {
     },
 
     getFilePath: function (relPath) {
-        return path.resolve('./srv/' + relPath);
+        return path.resolve('./srv/web/' + relPath);
     }
 };

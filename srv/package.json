@@ -7,7 +7,6 @@
     "@sap/xsenv": "latest",
     "@sap/xssec": "latest",
     "@sap/hdbext": "latest",
-    
     "express": "^4.17.1",
     "hdb": "^0.17.1",
     "axios": "^0.19.0",
@@ -26,8 +25,7 @@
   "devDependencies": {},
   "scripts": {
     "postinstall": "npm dedupe && node .build.js",
-    "start": "node server.js",
-    "start_old": "node ../node_modules/@sap/cds/bin/cds.js serve gen/csn.json",
+    "start": "node ../node_modules/@sap/cds/bin/cds.js serve gen/csn.json",
     "watch": "nodemon -w . -i node_modules/**,.git/** -e cds -x npm run build"
   },
   "private": true,

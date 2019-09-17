@@ -1,7 +1,7 @@
 ID: wb3
 _schema-version: '2.1'
 description: 'Waybill Node'
-version: 0.0.4
+version: 0.0.8
 modules:
   - name: wb3-db
     type: hdb
@@ -12,23 +12,24 @@ modules:
     requires:
       - name: wb3-hdi-container
 
-  - name: wb3-srv
-    type: nodejs
-    path: srv
-    parameters:
-      memory: 512M
-      disk-quota: 256M
-    properties:
-      WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"MTO@2018","lang":"ru","ashost":"172.20.16.88","sysnr":"20","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
-      WIALON_OPT: '{"host": "http://188.127.32.26:8022/", "user": "dlcguest", "password": "kEFEHUMFFE", "templateId":19, "resourceId": 291, "tzOffset": 134239328}'
-      WB_IS_TEST: 'true'
-    provides:
-      - name: srv_api
-        properties:
-          url: '${default-url}'
-    requires:
-      - name: wb3-hdi-container
-#      - name: wb3-uaa
+#   - name: wb3-srv
+#     type: nodejs
+#     path: srv
+#     port: 51062
+#     parameters:
+#       memory: 512M
+#       disk-quota: 256M
+#     properties:
+#       WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"MTO@2018","lang":"ru","ashost":"172.20.16.88","sysnr":"20","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
+#       WIALON_OPT: '{"host": "http://188.127.32.26:8022/", "user": "dlcguest", "password": "kEFEHUMFFE", "templateId":19, "resourceId": 291, "tzOffset": 134239328}'
+#       WB_IS_TEST: 'true'
+#     provides:
+#       - name: srv_api
+#         properties:
+#           url: '${default-url}'
+#     requires:
+#       - name: wb3-hdi-container
+# #      - name: wb3-uaa
       
   - name: wb3-app
     type: html5
@@ -39,24 +40,29 @@ modules:
     build-parameters:
       builder: grunt
     requires:
-#      - name: wb3-uaa
-      - name: srv_api
-        group: destinations
-        properties:
-          name: srv_api
-          url: '~{url}'
-          forwardAuthToken: true
-#    properties:
+      - name: wb3-uaa
+      #- name: srv_api
+      #  group: destinations
+      #  properties:
+      #    name: srv_api
+      #    url: '~{url}'
+      #    forwardAuthToken: true
+    properties:
 #      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
-      
+      destinations: >
+        [
+          {"name":"wb-server", "url":"https://hxehost:51062", "forwardAuthToken": true },
+          {"name":"wb-analytics", "url":"https://wb-analytics.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true }
+        ]
+        
 resources:
   - name: wb3-hdi-container
     type: com.sap.xs.hdi-container
     properties:
       hdi-container-name: '${service-name}'
-      
-#  - name: wb3-uaa
-#    type: org.cloudfoundry.managed-service
-#    parameters:
-#      path: ./xs-security.json
-#      service: xsuaa
+
+  - name: wb3-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+     path: ./xs-security.json
+     service: xsuaa

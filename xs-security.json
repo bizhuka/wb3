@@ -1,6 +1,6 @@
 {
   "xsappname": "wb3",
-  "tenant-mode": "shared",
+  "tenant-mode": "dedicated",
   "oauth2-configuration": {
     "system-attributes": ["groups", "rolecollections"]
   },

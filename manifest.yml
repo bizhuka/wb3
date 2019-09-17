@@ -3,18 +3,19 @@ _schema-version: '2.1'
 version: 0.0.4
 description: 'Waybill Node'
 applications:
-  - name: wb3-db
-    type: hdb
-    path: db
-    no-route: true
-    memory: 256M
-    disk-quota: 256M
-    services:
-      - wb3-hdi-container
+#  - name: wb3-db
+#    type: hdb
+#    path: db
+#    no-route: true
+#    memory: 256M
+#    disk-quota: 256M
+#    services:
+#      - wb3-hdi-container
 
   - name: wb3-srv
     type: nodejs
     path: srv
+    port: 51062
     memory: 1500M
     disk-quota: 1500M
     env:
@@ -29,29 +30,29 @@ applications:
       - wb3-hdi-container
       - wb3-uaa
       
-  - name: wb3-app
-    type: html5
-    path: app
-    disk-quota: 128M
-    memory: 128M
-    build-parameters:
-      builder: grunt
-    services:
-      - wb3-uaa
-    env:
-#      TENANT_HOST_PATTERN: '^(.*).cfapps.eu10.hana.ondemand.com'
-      CORS: '[{"uriPattern": "^/sap/bc/ina/(.*)$", "allowedOrigin": [{"host":"erp-service.eu1.sapanalytics.cloud", "protocol":"https"}], "allowedMethods": ["GET", "POST", "HEAD", "OPTIONS"], "allowedHeaders": ["Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "X-Sap-Cid", "X-Csrf-Token"], "exposeHeaders": ["Accept", "Authorization", "X-Requested-With", "X-Sap-Cid", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Csrf-Token", "Content-Type"]}]'
-      destinations: >
-        [
-          {"name":"wb-server", "url":"https://hxehost:51057", "forwardAuthToken": true },
-          {"name":"wb-analytics", "url":"https://wb-analytics.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true }
-        ]
-#    requires:
-#      - name: srv_api
-#        group: destinations
-#        properties:
-#          name: srv_api
-#          url: '~{url}'
-#          forwardAuthToken: true
-#    properties:
-#      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
+#  - name: wb3-app
+#    type: html5
+#    path: app
+#    disk-quota: 128M
+#    memory: 128M
+#    build-parameters:
+#      builder: grunt
+#    services:
+#      - wb3-uaa
+#    env:
+##      TENANT_HOST_PATTERN: '^(.*).cfapps.eu10.hana.ondemand.com'
+#      CORS: '[{"uriPattern": "^/sap/bc/ina/(.*)$", "allowedOrigin": [{"host":"erp-service.eu1.sapanalytics.cloud", "protocol":"https"}], "allowedMethods": ["GET", "POST", "HEAD", "OPTIONS"], "allowedHeaders": ["Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "X-Sap-Cid", "X-Csrf-Token"], "exposeHeaders": ["Accept", "Authorization", "X-Requested-With", "X-Sap-Cid", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Csrf-Token", "Content-Type"]}]'
+#      destinations: >
+#        [
+#          {"name":"wb-server", "url":"https://hxehost:51062", "forwardAuthToken": true },
+#          {"name":"wb-analytics", "url":"https://wb-analytics.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true }
+#        ]
+##    requires:
+##      - name: srv_api
+##        group: destinations
+##        properties:
+##          name: srv_api
+##          url: '~{url}'
+##          forwardAuthToken: true
+##    properties:
+##      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'

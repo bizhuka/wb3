@@ -1,4 +1,3 @@
-
 const path = require('path');
 
 module.exports = {
@@ -17,6 +16,6 @@ module.exports = {
     },
 
     getFilePath: function (relPath) {
-        return path.resolve('./srv/web/' + relPath);
+        return path.resolve(__dirname, '../web/' + relPath);
     }
 };

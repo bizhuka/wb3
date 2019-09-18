@@ -53,8 +53,7 @@ sap.ui.define([
             allTabs = this.byId("id_all_tabs");
             driverInput = this.byId("id_driver_input");
 
-            var oRouter = UIComponent.getRouterFor(this);
-            oRouter.getRoute("waybillDetail").attachPatternMatched(this._onObjectMatched, this);
+            this.getRouter().getRoute("waybillDetail").attachPatternMatched(this._onObjectMatched, this);
         },
 
         getBindingPath(forUpdate) {

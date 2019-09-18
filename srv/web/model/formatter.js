@@ -4,8 +4,8 @@ sap.ui.define([], function () {
     return {
 
         getUrl: function (relPath) {
-            if (this.isNodeJs())
-                return "/webapp" + relPath;
+            // if (this.isNodeJs())
+            //     return "/" + relPath;
             return relPath;
         },
 
@@ -26,10 +26,10 @@ sap.ui.define([], function () {
                 if (path.indexOf("wb-router") > 0 || path.indexOf("http://localhost:8080") === 0)
                     this._isNode = false;
                 // Node js
-                else if (path.indexOf("wb3-router") > 0 || path.indexOf("http://localhost:4004") === 0)
+                else if (path.indexOf("wb3-router") > 0 || path.indexOf("http://localhost:4004") === 0 || path.indexOf("https://hxehost") === 0)
                     this._isNode = true;
                 else
-                    throw "Unknown host";
+                    throw "isNodeJs() Unknown host";
             }
 
             return this._isNode;

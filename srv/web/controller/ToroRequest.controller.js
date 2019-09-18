@@ -84,8 +84,7 @@ sap.ui.define([
                 }
             });
 
-            var oRouter = UIComponent.getRouterFor(this);
-            oRouter.getRoute("toroRequest").attachPatternMatched(this._onObjectMatched, this);
+            this.getRouter().getRoute("toroRequest").attachPatternMatched(this._onObjectMatched, this);
         },
 
         _onObjectMatched: function () {
@@ -137,19 +136,17 @@ sap.ui.define([
 
         readSchedule: function () {
             var _this = this;
-            var eoItems = _this.tbSchedule.getBinding("items").getContexts();
+            var eoItems = _this.tbSchedule.getItems();
             if (!eoItems.length)
                 return;
-
-            var oWbModel = _this.getModel("wb");
 
             var items = {};
             var werksArr = [], werksKeys = [];
             var equnrArr = [];
 
             for (var i = 0; i < eoItems.length; i++) {
-                var context = eoItems[i];
-                var item = context.getObject();//TODO was oWbModel.getProperty(context.sPath);
+                var context = eoItems[i].getBindingContext('wb');
+                var item = context.getObject();
 
                 // Save for changing
                 items[item.Equnr] = {
@@ -176,12 +173,14 @@ sap.ui.define([
             ];
 
             // TODO check
-            if (!formatter.isWindows() || !formatter.isNodeJs())
+            if (!formatter.isWindows() || !formatter.isNodeJs()){
+                console.log('EO filter added')
                 filters.push(
                     new Filter({
                         filters: equnrArr,
                         and: false
                     }));
+            }
 
             _this.getOwnerComponent().readWrapper("Schedules",
                 filters,

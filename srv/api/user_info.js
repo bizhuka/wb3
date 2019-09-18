@@ -89,7 +89,8 @@ async function getBukrsR3Clause(req, srv) {
     for (let i = 0; i < arrWerks.length; i++) {
         if (i !== 0)
             clause += ", ";
-        clause += ("'" + arrWerks[i].Bukrs + "'");
+        const bukrs = arrWerks[i].BUKRS || arrWerks[i].Bukrs;
+        clause += ("'" + bukrs + "'");
     }
     return clause + ')';
 }

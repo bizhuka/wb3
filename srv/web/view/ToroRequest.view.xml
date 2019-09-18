@@ -95,11 +95,11 @@
 
                 <Table id="id_eo_schedule"
                        mode="{= ${userInfo>/WbMechanic}===true?'MultiSelect':'SingleSelect'}"
-                       items="{ path: 'wb>/Equipments', length: 1000 }"
+                       items="{ path: 'wb>/Equipments', length: 200 }"
                        updateStarted="onUpdateStartedSchedule"
                        selectionChange="onEquipSelected"
                        growing="true" growingScrollToLoad="true"
-                       growingThreshold="1000"
+                       growingThreshold="200"
                        sticky="ColumnHeaders,HeaderToolbar">
                     <headerToolbar>
                         <OverflowToolbar>

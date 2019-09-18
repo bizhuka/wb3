@@ -3,7 +3,8 @@
 const Db = require('../util/Db');
 const Status = require('../util/Status');
 const Time = require('../util/Time');
-
+// Synchronization with R3
+const {rfcClient} = require('./sync')();
 
 module.exports = (app, srv) => {
 
@@ -68,17 +69,23 @@ module.exports = (app, srv) => {
 
         let waybill = req.data;
 
+        // Status changed
         for (let key in waybill) {
-            // TODO type date?
             if (waybill.hasOwnProperty(key) && key.endsWith('Date')) {
                 if (Time.isNow(waybill[key]))
                     waybill[key] = Time.getNow();
             }
         }
 
-        // TODO
-        if (!waybill.Id)
-            waybill.Id = (new Date()).getTime();
+        // Generate new key
+        if (!waybill.Id) {
+            // waybill.Id = (new Date()).getTime(); create option ?
+            await rfcClient.open();
+            const result = await rfcClient.call('Z_WB_NEXT_WAYBILL_ID', {});
+
+            // from SAP
+            waybill.Id = result.EV_WAYBILL_ID;
+        }
 
         if (!waybill.DelayReason)
             waybill.DelayReason = Status.DR_NO_DELAY;

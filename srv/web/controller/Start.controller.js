@@ -16,7 +16,7 @@ sap.ui.define([
             // call base init
             BaseController.prototype.onInit.apply(this, arguments);
 
-            UIComponent.getRouterFor(this).getRoute("main").attachPatternMatched(this._onObjectMatched, this);
+            this.getRouter().getRoute("main").attachPatternMatched(this._onObjectMatched, this);
         },
 
         _onObjectMatched: function () {

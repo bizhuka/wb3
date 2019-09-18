@@ -93,8 +93,9 @@ async function persist(req, res, Entity, params) {
             }
 
         // Update fields in DB
+        const sKeyNew = createKey(Entity, newItem, true);
         await tx.run(
-            UPDATE(Entity).set(newItem).where(createKey(Entity, newItem, true))
+            UPDATE(Entity).set(newItem).where(sKeyNew)
         );
         result.updated++;
 
@@ -127,7 +128,7 @@ function itemsTransform(Entity, items, toR3) {
         const oldItem = items[i];
 
         // Save for result
-        const newItem = {};
+        let newItem = {};
         result.push(newItem);
 
         for (let elem in Entity.elements) {
@@ -151,7 +152,7 @@ function itemsTransform(Entity, items, toR3) {
 
                             // Do not save
                             if(value === '0000-00-00')
-                                value = undefined;
+                                value = '';
                             break;
                     }
                     newItem[field.name] = value;
@@ -295,7 +296,7 @@ module.exports = (app, srv) => {
         // Werks by rights
         const where = await getWerksR3Clause(req, srv);
         const filter = {
-            DB_WHERE: where ? ' WHERE Werks ' + where + ' AND ' : '',
+            DB_WHERE: where ? ' WHERE Iwerk ' + where + ' AND ' : '',
             R3_WHERE: where ? ' AFIH~IWERK ' + where + ' AND ' : ''
         };
 

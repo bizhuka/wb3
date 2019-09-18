@@ -214,7 +214,7 @@
 
             NoDriverDate : Timestamp;
 
-            TooName      : String(50);
+            TooName      : String(50) default '-';
 
             @R3_FIELD : 'ILOA_ANLNR'
             Anln1        : String(12);
@@ -371,7 +371,7 @@
             @R3_FIELD : 'AFIH_IWERK'
             Iwerk        : TWerks; // Association to Werk;
 
-            Waybill_Id   : TWaybill;
+            Waybill_Id   : TWaybill default -1;
             //Waybill      : Association [0..1] to Waybill;
 
             FromDate     : Timestamp;

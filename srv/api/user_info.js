@@ -75,7 +75,7 @@ async function getWerksR3Clause(req) {
 
 async function getBukrsR3Clause(req, srv) {
     const {Werk} = srv.entities('wb.db');
-    const query = 'SELECT Werks, Bukrs FROM ' + Werk["@cds.persistence.name"] + ' WHERE Werks ' + await getWerksR3Clause(req);
+    const query = 'SELECT Bukrs FROM ' + Werk["@cds.persistence.name"] + ' WHERE Werks ' + await getWerksR3Clause(req);
 
     const tx = cds.transaction(req);
     const arrWerks = await tx.run(query);
@@ -89,7 +89,8 @@ async function getBukrsR3Clause(req, srv) {
     for (let i = 0; i < arrWerks.length; i++) {
         if (i !== 0)
             clause += ", ";
-        const bukrs = arrWerks[i].BUKRS || arrWerks[i].Bukrs;
+
+        const bukrs = Db.readProperty(arrWerks[i], 'Bukrs');
         clause += ("'" + bukrs + "'");
     }
     return clause + ')';

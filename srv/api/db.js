@@ -180,7 +180,7 @@ module.exports = (app, srv) => {
                 idsList = ('' + item.Id);
 
             // What to change
-            idsMap[item.Id] = item;
+            idsMap[String(item.Id)] = item;
         }
 
         // Oops
@@ -213,13 +213,13 @@ module.exports = (app, srv) => {
         // Add virtual fields info
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
-            const resultItem = idsMap[item.Id];
+            const resultItem = idsMap[String(Db.readProperty(item, 'Id'))];
 
             // write counts
-            resultItem.Req_Cnt = item.Req_Cnt;
-            resultItem.Sch_Cnt = item.Sch_Cnt;
-            resultItem.Hist_Cnt = item.Hist_Cnt;
-            resultItem.Gas_Cnt = item.Gas_Cnt;
+            resultItem.Req_Cnt = Db.readProperty(item, 'Req_Cnt');
+            resultItem.Sch_Cnt = Db.readProperty(item, 'Sch_Cnt');
+            resultItem.Hist_Cnt = Db.readProperty(item, 'Hist_Cnt');
+            resultItem.Gas_Cnt = Db.readProperty(item, 'Gas_Cnt');
         }
 
         // And return

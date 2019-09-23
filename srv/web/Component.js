@@ -19,6 +19,9 @@ sap.ui.define([
 
         metaData: {},
 
+        // For sending post
+        csrfToken: null,
+
         readModel: null,
 
         /**
@@ -69,6 +72,29 @@ sap.ui.define([
 
             // set as default ?
             this.setModel(oModel, "wb");
+
+            // All post request would be checked (So send GET first)
+            var csrfToken;
+            $.ajax({
+                url: oModel.sServiceUrl,
+                type: "GET",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRF-Token", "Fetch");
+                    xhr.setRequestHeader("cache", "false")
+                },
+                complete: function (xhr) {
+                    _this.csrfToken = xhr.getResponseHeader("X-CSRF-Token");
+                }
+            });
+
+            // send for POST, PATCH ...
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRF-Token", _this.csrfToken);
+                    }
+                }
+            });
         },
 
         _createModelV4: function () {

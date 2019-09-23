@@ -119,8 +119,9 @@ function dbUpdateInfoPlus(data, count) {
         dbcnt: 0
     };
 
-    const lines = text.split("\\r?\\n");
-    for (let i = 0; i < lines.length; i++) { // TODO from 1 or JSON ?
+    const lines = text.split(/\r\n/);
+    // Skip header
+    for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         const parts = line.split(";");
         if (parts.length !== count)

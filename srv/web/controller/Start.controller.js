@@ -57,14 +57,14 @@ sap.ui.define([
                 data.tooltip = _this.toLocaleDateTime(new Date());
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i];
-                    if (item.status === params.tileStatus)
-                        data.count = item.cnt;
+                    if (item.STATUS === params.tileStatus)
+                        data.count = item.CNT;
 
                     // WB or REQ
-                    var name = params.model === "wbTile" ? status.WB_STATUS : item.status < 0 ? status.RR_STATUS : status.RC_STATUS;
-                    var row = status.findStatus(name, item.status);
+                    var name = params.model === "wbTile" ? status.WB_STATUS : item.STATUS < 0 ? status.RR_STATUS : status.RC_STATUS;
+                    var row = status.findStatus(name, item.STATUS);
                     if (row && row.inTile)
-                        data.tooltip += "\n" + row.text + " - " + item.cnt;
+                        data.tooltip += "\n" + row.text + " - " + item.CNT;
                 }
 
                 // Update ui

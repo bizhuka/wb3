@@ -428,13 +428,6 @@ sap.ui.define([
 
                         // TODO test defaults
                         var isUpdate = spents.length > 0;
-                        if (!isUpdate) {
-                            var zero = formatter.isNodeJs() ? 0 : "0";
-                            newObject.GasBefore = zero;
-                            newObject.GasGive = zero;
-                            newObject.GasGiven = zero;
-                            newObject.GasLgort = "";
-                        }
                         owner.getOwnerComponent().modifyWrapper(
                             isUpdate ? "UPDATE" : "CREATE",
                             isUpdate ? path : "/GasSpents",

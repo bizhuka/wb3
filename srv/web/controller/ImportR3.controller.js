@@ -104,20 +104,6 @@ sap.ui.define([
         loadFromFile: function (params) {
             var _this = this;
 
-            // All post request would be checked (So send GET first)
-            var csrfToken;
-            $.ajax({
-                url: './odata.svc/',
-                type: "GET",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("X-CSRF-Token", "Fetch");
-                    xhr.setRequestHeader("cache", "false")
-                },
-                complete: function (xhr) {
-                    csrfToken = xhr.getResponseHeader("X-CSRF-Token");
-                }
-            });
-
             // Dynamic columns
             var columns = [];
             var cells = [];
@@ -219,7 +205,7 @@ sap.ui.define([
                             // Pass anti forgery token
                             fileUploader.addHeaderParameter(new FileUploaderParameter({
                                 name: "x-csrf-token",
-                                value: csrfToken
+                                value: _this.getOwnerComponent().csrfToken
                             }));
 
                             fileUploader.upload();

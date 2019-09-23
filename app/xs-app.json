@@ -24,7 +24,8 @@
       "source": "/print",
       "destination": "wb-server",
       "httpMethods": [
-        "GET"
+        "GET",
+        "POST"
       ],
       "authenticationType": "none"
     },
@@ -32,6 +33,12 @@
       "source": "^/",
       "target": "/",
       "authenticationType": "xsuaa",
+      "httpMethods": [
+        "GET",
+        "POST",
+        "PATCH",
+        "DELETE"
+      ],
       "destination": "wb-server",
       "scope": "$XSAPPNAME.WbAuthorized"
     }

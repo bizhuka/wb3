@@ -5,6 +5,6 @@ module.exports = function (grunt) {
 		compatVersion: "edge"
 	});
 	grunt.registerTask("default", [
-		"lint"
+		// "lint"
 	]);
 };

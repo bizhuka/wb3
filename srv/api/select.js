@@ -35,10 +35,11 @@ module.exports = (app, srv) => {
         const prevPetrolList = [];
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            if (row.pos === 0) {
+            if (Db.readProperty(row, 'Pos') === 0) {
+                const ptType = Db.readProperty(row, 'PtType');
                 prevPetrol = {
-                    PtType: row.PtType,
-                    GasBefore: row['Spent' + row.PtType],
+                    PtType: ptType,
+                    GasBefore: Db.readProperty(row, 'Spent' + ptType),
                     GasMatnr: ''
                 };
                 prevPetrolList.push(prevPetrol);
@@ -46,8 +47,9 @@ module.exports = (app, srv) => {
             if (prevPetrol == null)
                 continue;
 
-            prevPetrol.GasMatnr = row.GasMatnr;
-            prevPetrol.GasBefore -= (row.GasBefore + row.GasGiven);
+            prevPetrol.GasMatnr = Db.readProperty(row, 'GasMatnr');
+            prevPetrol.GasBefore -= (
+                Db.readProperty(row, 'GasBefore') + Db.readProperty(row, 'GasGiven'));
         }
 
         // Change sign
@@ -73,7 +75,7 @@ async function doCount(req, res, Entity) {
     const result = [];
 
     let statement =
-        "SELECT Status, sum(cnt) AS cnt FROM _VIEW_NAME_ _WHERE_ GROUP BY Status ORDER BY Status;";
+        "SELECT Status as STATUS, sum(cnt) AS CNT FROM _VIEW_NAME_ _WHERE_ GROUP BY Status ORDER BY Status;";
 
     // Based on rights
     let where = await getWerksR3Clause(req);

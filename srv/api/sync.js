@@ -4,8 +4,17 @@ const Db = require('../util/Db');
 const Time = require('../util/Time');
 
 const util = require('util');
+const path = require('path');
+const fs = require("fs");
 
+// Initialize library
 let rfcClient = null;
+
+
+const libPath = path.resolve(__dirname, '../node_modules/node-rfc/lib/binding/linux-x64-node-v57');
+process.env.NLSUI_INIT_TRACE_LEVEL = 'high';
+process.env.NLSUI_7BIT_FALLBACK = 'YES';
+
 try {
     const Client = require('node-rfc').Client;
     const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
@@ -151,8 +160,8 @@ function itemsTransform(Entity, items, toR3) {
                             value = Time.getSqlDate(value);
 
                             // Do not save
-                            if(value === '0000-00-00')
-                                value = '';
+                            if (value === '0000-00-00')
+                                continue;
                             break;
                     }
                     newItem[field.name] = value;

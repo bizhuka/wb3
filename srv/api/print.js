@@ -85,24 +85,24 @@ module.exports = (app, srv) => {
                         root["WM_RU" + i] = r;
                 }
 
-                orig_class = rs.orig_class;
+                orig_class = Db.readProperty(rs, 'orig_class');
 
-                root.ID = String(rs.Id);
-                root.DATUM = Time.getSapDate(rs.Datum);
-                root.BUKRS_NAME = rs.Butxt;
-                root.PLTXT = rs.Pltxt;
-                root.DRIVER_FIO = String(rs.Fio);
-                root.EQKTX = rs.Eqktx;
-                root.LICENSE_NUM = rs.License_num;
-                root.SPEED_MAX = rs.Speed_max; //Double
-                root.FROM_DATE = Time.getSapDate(rs.FromDate);
-                root.TO_DATE = Time.getSapDate(rs.ToDate);
-                root.TOO_NAME = rs.TooName;
-                root.TYPBZ = rs.Typbz;
-                root.ANLN1 = rs.Anln1;
+                root.ID = String(Db.readProperty(rs, 'Id'));
+                root.DATUM = Time.getSapDate(Db.readProperty(rs, 'Datum'));
+                root.BUKRS_NAME = Db.readProperty(rs, 'Butxt');
+                root.PLTXT = Db.readProperty(rs, 'Pltxt');
+                root.DRIVER_FIO = String(Db.readProperty(rs, 'Fio'));
+                root.EQKTX = Db.readProperty(rs, 'Eqktx');
+                root.LICENSE_NUM = Db.readProperty(rs, 'License_num');
+                root.SPEED_MAX = Number(Db.readProperty(rs, 'Speed_max')); //Double
+                root.FROM_DATE = Time.getSapDate(Db.readProperty(rs, 'FromDate'));
+                root.TO_DATE = Time.getSapDate(Db.readProperty(rs, 'ToDate'));
+                root.TOO_NAME = Db.readProperty(rs, 'TooName');
+                root.TYPBZ = Db.readProperty(rs, 'Typbz');
+                root.ANLN1 = Db.readProperty(rs, 'Anln1');
 
                 // Delete leading zeros
-                root.DRIVER = parseInt(rs.Driver);
+                root.DRIVER = parseInt(Db.readProperty(rs, 'Driver'));
                 if (!root.DRIVER)
                     root.DRIVER = 0;
 
@@ -124,9 +124,9 @@ module.exports = (app, srv) => {
                     const req = {};
 
                     req.NUM = String(i + 1);
-                    req.WAYBILL_ID = String(rs.Waybill_Id);
-                    req.GSTRP = Time.getSapDate(rs.Gstrp);
-                    req.GLTRP = Time.getSapDate(rs.Gltrp);
+                    req.WAYBILL_ID = String(Db.readProperty(rs, 'Waybill_Id'));
+                    req.GSTRP = Time.getSapDate(Db.readProperty(rs, 'Gstrp'));
+                    req.GLTRP = Time.getSapDate(Db.readProperty(rs, 'Gltrp'));
 
                     // Copy from wb for too
                     if (root.tooName !== "-") {
@@ -136,13 +136,13 @@ module.exports = (app, srv) => {
 
                     req.DATE_DIFF = String(Time.diffInDays(
                         Time.getSqlDate(req.GLTRP), Time.getSqlDate(req.GSTRP)) + 1);
-                    if (rs.Duration)
-                        req.DAUNO = "(" + rs.Duration + ")";
-                    req.PLTXT = rs.Pltxt;
-                    req.STAND = rs.Stand;
-                    req.BEBER = rs.Beber;
-                    req.ILATX = rs.Ilatx;
-                    req.LTXA1 = rs.Ltxa1;
+                    if (Db.readProperty(rs, 'Duration'))
+                        req.DAUNO = "(" + Db.readProperty(rs, 'Duration') + ")";
+                    req.PLTXT = Db.readProperty(rs, 'Pltxt');
+                    req.STAND = Db.readProperty(rs, 'Stand');
+                    req.BEBER = Db.readProperty(rs, 'Beber');
+                    req.ILATX = Db.readProperty(rs, 'Ilatx');
+                    req.LTXA1 = Db.readProperty(rs, 'Ltxa1');
 
                     reqs.push(req);
                 }
@@ -158,9 +158,9 @@ module.exports = (app, srv) => {
                 for (let g = 0; g < gasSpentList.length; g++) {
                     const gasSpent = gasSpentList[g];
                     const gasSpentSap = {
-                        BEFORE: gasSpent.GasBefore,
-                        GIVE: gasSpent.GasGive,
-                        GIVEN: gasSpent.GasGiven
+                        BEFORE: Number(gasSpent.GasBefore),
+                        GIVE: Number(gasSpent.GasGive),
+                        GIVEN: Number(gasSpent.GasGiven)
                     };
 
                     if (!petrolMap[gasSpent.GasMatnr]) {

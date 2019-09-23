@@ -17,5 +17,12 @@ module.exports = {
 
     getFilePath: function (relPath) {
         return path.resolve(__dirname, '../web/' + relPath);
+    },
+
+    readProperty: function (item, property) {
+        if (item[property] === undefined)
+            return item[property.toUpperCase()];
+
+        return item[property];
     }
 };

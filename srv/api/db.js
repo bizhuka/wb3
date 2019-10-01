@@ -225,4 +225,34 @@ module.exports = (app, srv) => {
         // And return
         return result;
     });
+
+    //////////////////////////////////////////////////////////////////////////////
+    srv.on('UPDATE', 'VWaybills', async (context) => {
+        const wb = {};
+        for (let prop in context.data)
+            if (context.data.hasOwnProperty(prop)) {
+                switch (prop) {
+                    case "OdoDiff":
+                    case "MotoHour":
+                    case "Spent1":
+                    case "Spent2":
+                    case "Spent4":
+                        wb[prop] = context.data[prop];
+                        break;
+                }
+            }
+
+        // No need
+        if (Object.keys(wb).length === 0)
+            return;
+
+        const tx = cds.transaction(context._.odataReq);
+        await tx.run(
+            UPDATE(Waybill).set(wb).where({
+                Id: context.data.Id
+            })
+        );
+
+        await Db.close(tx);
+    });
 };

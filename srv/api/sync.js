@@ -254,7 +254,7 @@ module.exports = (app, srv) => {
     //////////////////////////////////////////////////////////////////////////////
     app.all("/r3/EQUIPMENT", async (req, res) => {
         // Werks by rights
-        const where = await getWerksR3Clause(req, srv);
+        const where = await getWerksR3Clause(req);
 
         await persist(req, res, Equipment, {
             DB_WHERE: where ? ' WHERE Swerk ' + where : '',
@@ -269,7 +269,7 @@ module.exports = (app, srv) => {
         let sapDateTo = req.query.TO_DATE.replace(/-/g, '');
 
         // Werks by rights
-        const where = await getWerksR3Clause(req, srv);
+        const where = await getWerksR3Clause(req);
         const filter = {
             DB_WHERE: where ? ' WHERE Werks ' + where + ' AND ' : '',
             R3_WHERE: where ? ' AFIH~IWERK ' + where + ' AND ' : '',
@@ -284,6 +284,9 @@ module.exports = (app, srv) => {
                     if (datum > sapDateTo)
                         sapDateTo = datum;
                 }
+
+                if(!filter.DB_WHERE)
+                    filter.DB_WHERE = ' WHERE ';
 
                 filter.DB_WHERE += ("Datum <= '" + Time.getSqlDate(sapDateTo) +
                     "' AND Datum >= '" + Time.getSqlDate(sapDateFrom) + "'");
@@ -303,7 +306,7 @@ module.exports = (app, srv) => {
         const sapDateTo = req.query.TO_DATE.replace(/-/g, '');
 
         // Werks by rights
-        const where = await getWerksR3Clause(req, srv);
+        const where = await getWerksR3Clause(req);
         const filter = {
             DB_WHERE: where ? ' WHERE Iwerk ' + where + ' AND ' : '',
             R3_WHERE: where ? ' AFIH~IWERK ' + where + ' AND ' : ''

@@ -9,10 +9,23 @@ module.exports = function (srv) {
     // Default folder
     app.use('/', express.static(__dirname + '/web'));
 
-    if (!Db.isTest()) {
-        const xsenv = require("@sap/xsenv");
-        const xssec = require("@sap/xssec");
+    const xsenv = require("@sap/xsenv");
+
+    // Use hana
+    if (!Db.isWindows()) {
         const xsHDBConn = require("@sap/hdbext");
+        const hanaOptions = xsenv.getServices({
+            hana: {
+                plan: "hdi-shared"
+            }
+        });
+        hanaOptions.hana.pooling = true;
+        app.use(xsHDBConn.middleware(hanaOptions.hana));
+    }
+
+    // Use xsuaa
+    if (!Db.isTest()) {
+        const xssec = require("@sap/xssec");
         const passport = require("passport");
 
         passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
@@ -22,14 +35,6 @@ module.exports = function (srv) {
         }).uaa));
         app.use(passport.initialize());
         app.use(passport.authenticate("JWT", {session: false}));
-
-        const hanaOptions = xsenv.getServices({
-            hana: {
-                plan: "hdi-shared"
-            }
-        });
-        hanaOptions.hana.pooling = true;
-        app.use(xsHDBConn.middleware(hanaOptions.hana));
     }
 
     // DB - updates
@@ -52,6 +57,9 @@ module.exports = function (srv) {
 
     // PDF & word
     require('./api/print')(app, srv);
+
+    // PDF & word
+    require('./api/closeWb')(app, srv);
 
     // runtime code
     require('./api/code')(app, srv);

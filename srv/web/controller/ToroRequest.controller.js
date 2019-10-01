@@ -146,6 +146,9 @@ sap.ui.define([
 
             for (var i = 0; i < eoItems.length; i++) {
                 var context = eoItems[i].getBindingContext('wb');
+                // TODO not prepared?
+                if (!context || !context.getObject())
+                    continue;
                 var item = context.getObject();
 
                 // Save for changing
@@ -173,7 +176,7 @@ sap.ui.define([
             ];
 
             // TODO check
-            if (!formatter.isWindows() || !formatter.isNodeJs()){
+            if (!formatter.isWindows() || !formatter.isNodeJs()) {
                 console.log('EO filter added')
                 filters.push(
                     new Filter({
@@ -208,7 +211,11 @@ sap.ui.define([
                             link.setEnabled(_this.checkWithDate(new Date(link.getTarget()), wbMechanic));
                         }
 
-                        var equnr = items[i].getBindingContext("wb").getObject().Equnr;
+                        var context = items[i].getBindingContext("wb");
+                        // TODO not prepared?
+                        if (!context || !context.getObject())
+                            continue;
+                        var equnr = context.getObject().Equnr;
 
                         for (var s = 0; s < schedules.length; s++) {
                             var schedule = schedules[s];
@@ -278,8 +285,8 @@ sap.ui.define([
             var now = new Date();
             _this.updateDbFrom({
                 link: "/r3/REQ_HEADER?_persist=true" +
-                    "&TO_DATE=" + _this.toSqlDate(_this.addDays(now, +29)) +
-                    "&FROM_DATE=" + _this.toSqlDate(_this.addDays(now, -29)),
+                "&TO_DATE=" + _this.toSqlDate(_this.addDays(now, +29)) +
+                "&FROM_DATE=" + _this.toSqlDate(_this.addDays(now, -29)),
                 title: _this.getBundle().getText("reqs"),
 
                 afterUpdate: function () {
@@ -417,8 +424,8 @@ sap.ui.define([
                 else
                     _this.updateDbFrom({
                         link: "/r3/SCHEDULE?_persist=true" +
-                            "&TO_DATE=" + _this.toSqlDate(_this.dpTo.getDateValue()) +
-                            "&FROM_DATE=" + _this.toSqlDate(_this.dpFrom.getDateValue()),
+                        "&TO_DATE=" + _this.toSqlDate(_this.dpTo.getDateValue()) +
+                        "&FROM_DATE=" + _this.toSqlDate(_this.dpFrom.getDateValue()),
 
                         title: _this.getBundle().getText("journal"),
 
@@ -524,7 +531,8 @@ sap.ui.define([
             var selectedItems = this.libReqs.reqTable.getSelectedItems();
             var userInfo = this.getModel("userInfo");
 
-            if (!eoItem || !userInfo.getProperty("/WbCreateNew")) {
+            // TODO not bind yet?
+            if (!eoItem || !eoItem.getBindingContext("wb") || !userInfo.getProperty("/WbCreateNew")) {
                 createButton.setVisible(false);
                 return;
             }

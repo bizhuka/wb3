@@ -460,9 +460,10 @@ sap.ui.define([
                     cnt++;
 
                     // Modify to new WAYBILL
+                    var waybillId = params.unset ? owner.status.WB_ID_NULL : params.waybillId;
                     var reqHeader = {
                         Objnr: item.Objnr,
-                        Waybill_Id: params.unset ? String(owner.status.WB_ID_NULL) : params.waybillId,
+                        Waybill_Id: formatter.isNodeJs() ? Number(waybillId) : String(waybillId),
                         StatusReason: params.unset ? owner.status.RC_NEW : owner.status.RC_SET
                     };
                     owner.getOwnerComponent().modifyWrapper('UPDATE', "/ReqHeaders('" + item.Objnr + "')", reqHeader, {

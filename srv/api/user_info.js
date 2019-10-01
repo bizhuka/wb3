@@ -7,11 +7,11 @@ const fs = require('fs');
 
 const readFile = util.promisify(fs.readFile);
 
-async function getUserInfo() {
+async function getUserInfo(req) {
     // get from json
     const token = Db.isTest() ?
-        JSON.parse(await readFile(Db.getFilePath('json/token.json'), 'utf8')) :
-        getHanaAuthInfo();
+        JSON.parse(await readFile(Db.getFilePath('json/tokenInfo.json'), 'utf8')) :
+        JSON.parse(req.authInfo.ssojwt.getJWPayload());
 
     // Parsed info
     const result = {
@@ -29,17 +29,18 @@ async function getUserInfo() {
     // Get scopes
     for (let i = 0; i < token.scope.length; i++) {
         const arr = token.scope[i].split('.');
-        if (arr.length === 2) {
-            const scopeName = arr[1];
-            result.scopes.push(scopeName);
+        if (arr.length !== 2)
+            continue;
 
-            // For speed
-            result[scopeName] = true;
-        }
+        const scopeName = arr[1];
+        result.scopes.push(scopeName);
+
+        // For speed
+        result[scopeName] = true;
     }
 
     // Rights by values
-    const items = token["xs.system.attributes"]["xs.saml.groups"];
+    const items = ((token["xs.system.attributes"] || {})["xs.saml.groups"] || []);
 
     // All scopes and
     for (let i = 0; i < items.length; i++) {
@@ -57,7 +58,7 @@ async function getUserInfo() {
 }
 
 async function getWerksR3Clause(req) {
-    const userInfo = await getUserInfo();
+    const userInfo = await getUserInfo(req);
 
     // No restriction
     if (userInfo.werks.length === 0)
@@ -94,18 +95,6 @@ async function getBukrsR3Clause(req, srv) {
         clause += ("'" + bukrs + "'");
     }
     return clause + ')';
-}
-
-function getHanaAuthInfo() {
-    let parsedPayload = null;
-    try {
-        parsedPayload = JSON.parse(xssec.ssojwt.getJWPayload());
-    } catch (er) {
-        const errorString = 'Access token payload could not be parsed successfully.\n'
-            + 'Error: ' + er.message;
-        return console.error(errorString);
-    }
-    return parsedPayload;
 }
 
 // Public Fm

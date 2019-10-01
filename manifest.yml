@@ -12,41 +12,55 @@ applications:
 #    services:
 #      - wb3-hdi-container
 
-  - name: wb3-srv
-    type: nodejs
-    path: srv
+#  - name: wb3-srv
+#    type: nodejs
+#    path: srv
 #    port: 51062
+#    memory: 512M
+#    disk-quota: 512M
+#    env:
+#      WB_IS_TEST: true
+#      WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"MTO@2018","lang":"ru","ashost":"172.20.16.88","sysnr":"20","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
+#      WIALON_OPT: '{"host": "http://188.127.32.26:8022/", "user": "dlcguest", "password": "kEFEHUMFFE", "templateId":19, "resourceId": 291, "tzOffset": 134239328}'
+##    provides:
+##      - name: srv_api
+##        properties:
+##          url: '${default-url}'
+#    services:
+#      - wb3-hdi-container
+#      - wb3-uaa
+
+  - name: wb3-xsjs
+    type: nodejs
+    path: xsjs
+    port: 51072
     memory: 512M
     disk-quota: 512M
-    env:
-      WB_IS_TEST: true
-      WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"MTO@2018","lang":"ru","ashost":"172.20.16.88","sysnr":"20","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
-      WIALON_OPT: '{"host": "http://188.127.32.26:8022/", "user": "dlcguest", "password": "kEFEHUMFFE", "templateId":19, "resourceId": 291, "tzOffset": 134239328}'
-    provides:
-      - name: srv_api
-        properties:
-          url: '${default-url}'
     services:
       - wb3-hdi-container
       - wb3-uaa
-      
-  - name: wb3-app
-    type: html5
-    path: app
-    disk-quota: 256M
-    memory: 256M
-#    build-parameters:
-#      builder: grunt
-    services:
-      - wb3-uaa
-    env:
-#      TENANT_HOST_PATTERN: '^(.*).cfapps.eu10.hana.ondemand.com'
-      CORS: '[{"uriPattern": "^/sap/bc/ina/(.*)$", "allowedOrigin": [{"host":"erp-service.eu1.sapanalytics.cloud", "protocol":"https"}], "allowedMethods": ["GET", "POST", "HEAD", "OPTIONS"], "allowedHeaders": ["Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "X-Sap-Cid", "X-Csrf-Token"], "exposeHeaders": ["Accept", "Authorization", "X-Requested-With", "X-Sap-Cid", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Csrf-Token", "Content-Type"]}]'
-      destinations: >
-        [
-          {"name":"wb-server", "url":"nhttps://wb3-srv.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true },
-          {"name":"wb-analytics", "url":"https://wb-analytics.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true }
-        ]
+      - wb3-auditlog
+
+#  - name: wb3-app
+#    type: html5
+#    path: app
+#    disk-quota: 256M
+#    memory: 256M
+##    build-parameters:
+##      builder: grunt
+#    services:
+#      - wb3-uaa
+#    env:
+#      TENANT_HOST_PATTERN: '^(.*)-wb3-app.cfapps.eu10.hana.ondemand.com'
+#      CORS: '[{"uriPattern": "^/sap/bc/ina/(.*)$", "allowedOrigin": [{"host":"erp-service.eu1.sapanalytics.cloud", "protocol":"https"}], "allowedMethods": ["GET", "POST", "HEAD", "OPTIONS"], "allowedHeaders": ["Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "X-Sap-Cid", "X-Csrf-Token"], "exposeHeaders": ["Accept", "Authorization", "X-Requested-With", "X-Sap-Cid", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Csrf-Token", "Content-Type"]}]'
+#      destinations: >
+#        [
+#          {"name":"wb-server", "url":"https://wb3-srv.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true },
+#          {"name":"wb-analytics", "url":"https://wb-analytics.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true }
+#        ]
+##        https://wb3-srv.cfapps.eu10.hana.ondemand.com
+##        https://hxehost:51062
+
 #    requires:
 #      - name: srv_api
 #        group: destinations
@@ -56,3 +70,10 @@ applications:
 #          forwardAuthToken: true
 #    properties:
 #      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
+
+#resources:
+#  - name: wb3-log
+#    type: org.cloudfoundry.managed-service
+#    parameters:
+#      service: auditlog
+#      service-plan: free

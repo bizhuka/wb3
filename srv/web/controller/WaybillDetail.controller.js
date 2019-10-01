@@ -62,13 +62,13 @@ sap.ui.define([
             return "/VWaybills(" + waybillId + formatter.getLongPostfix() + ")";
         },
 
-        getBindingObject() {
-            return bindingObject;
+        getViewBindingObject: function() {
+            return this.getView().getBindingContext("wb").getObject();
         },
 
         onDataReceived: function (oEvent) {
             var _this = this;
-            bindingObject = oEvent.getSource().getBoundContext().getObject();
+            bindingObject = _this.getViewBindingObject();
 
             var userModel = _this.getModel("userInfo");
 
@@ -91,11 +91,10 @@ sap.ui.define([
                 _this.getOwnerComponent().readWrapper("ReqHistorys",
                     [filter],
 
-                    function (error, data) {
+                    function (error, arr) {
                         if (error)
                             return;
 
-                        var arr = data.results;
                         var objnrFilter = [];
                         // Add new history filter
                         for (var i = 0; i < arr.length; i++)
@@ -223,8 +222,8 @@ sap.ui.define([
                 wialonId: bindingObject.WialonId,
 
                 // Date in linux format
-                fromDate: parseInt(bindingObject.GarageDepDate.getTime() / 1000),
-                toDate: parseInt(bindingObject.GarageArrDate.getTime() / 1000),
+                fromDate: parseInt(formatter.checkDate(bindingObject.GarageDepDate).getTime() / 1000),
+                toDate: parseInt(formatter.checkDate(bindingObject.GarageArrDate).getTime() / 1000),
 
                 wlnOk: function () {
                     MessageToast.show(_this.getBundle().getText("okWialon"));
@@ -244,7 +243,8 @@ sap.ui.define([
                     objExt.wlnCallback = function (json) {
                         var oWbModel = _this.getModel("wb");
                         var path = _this.getBindingPath();
-                        bindingObject = oWbModel.getProperty(path);
+                        // debugger
+                        bindingObject = _this.getViewBindingObject();
 
                         // In meters
                         json.OdoDiff /= 1000;
@@ -262,13 +262,12 @@ sap.ui.define([
                         if (json.Spent4 > 0)
                             bindingObject.Spent4 = json.Spent4;
 
-
-                        // Set in model
-                        oWbModel.setProperty(path, bindingObject);
-
                         // Set in UI
                         _this.byId("id_wb_odo_diff").setValue(bindingObject.OdoDiff);
                         _this.byId("id_wb_moto_hour").setValue(bindingObject.MotoHour);
+                        _this.findById("id_input_spent1").setValue(bindingObject.Spent1);
+                        _this.findById("id_input_spent2").setValue(bindingObject.Spent2);
+                        _this.findById("id_input_spent4").setValue(bindingObject.Spent4);
                         _this.libPetrol.setNewSpent(bindingObject);
                     };
                     break;
@@ -456,9 +455,10 @@ sap.ui.define([
                         return;
                     }
 
-                    var bindObj = oWbModel.getProperty(_this.getBindingPath());
+                    var bindObj = _this.getView().getBindingContext("wb").getObject();// TODO WAS oWbModel.getProperty(_this.getBindingPath());
                     var odoEmpty = (!parseFloat(bindObj.OdoDiff) && !parseFloat(bindObj.MotoHour));
                     var fuelEmpty = !parseFloat(bindObj.Spent1);
+
                     if (odoEmpty || fuelEmpty) {
                         this.showError(null, this.getBundle().getText("errEnterSensors"));
                         return;
@@ -530,11 +530,11 @@ sap.ui.define([
                                 obj.CloseDate = new Date(1);
                                 obj.Status = _this.status.CLOSED;
                                 // From sensors
-                                obj.OdoDiff = bindObj.OdoDiff;
-                                obj.MotoHour = bindObj.MotoHour;
-                                obj.Spent1 = bindObj.Spent1;
-                                obj.Spent2 = bindObj.Spent2;
-                                obj.Spent4 = bindObj.Spent4;
+                                obj.OdoDiff = formatter.isNodeJs() ? Number(bindObj.OdoDiff) : String(bindObj.OdoDiff);
+                                obj.MotoHour = formatter.isNodeJs() ? Number(bindObj.MotoHour) : String(bindObj.MotoHour);
+                                obj.Spent1 = formatter.isNodeJs() ? Number(bindObj.Spent1) : String(bindObj.Spent1);
+                                obj.Spent2 = formatter.isNodeJs() ? Number(bindObj.Spent2) : String(bindObj.Spent2);
+                                obj.Spent4 = formatter.isNodeJs() ? Number(bindObj.Spent4) : String(bindObj.Spent4);
                                 obj.Docum = doc.docum;
                                 obj.Aufnr = doc.aufnr;
                                 _this.setNewStatus(obj);
@@ -707,7 +707,7 @@ sap.ui.define([
 
                 getFilter: function () {
                     // "0" & Ktsch === N_class
-                    var txtKtsch = oWbModel.getProperty("/Equipments('" + bindingObject.Equnr + "')").N_class; //.substr(1);
+                    var txtKtsch = bindingObject.N_class; // TODO WAS oWbModel.getProperty("/Equipments('" + bindingObject.Equnr + "')").N_class; //.substr(1);
 
                     return _this.makeAndFilter(
                         // Only use curtain class
@@ -730,7 +730,7 @@ sap.ui.define([
 
         on_save_dates: function (oEvent) {
             var _this = this;
-            bindingObject = _this.getView().getBindingContext("wb").getObject();
+            bindingObject = _this.getViewBindingObject();
 
             // new value
             var value = new Date(oEvent.getParameter('value'));

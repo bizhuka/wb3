@@ -42,11 +42,15 @@ sap.ui.define([
 
         // Create new with And
         makeAndFilter: function (mainFilter, addFilter) {
+            if (!mainFilter)
+                return addFilter;
+
             if (addFilter)
                 return new Filter({
                     filters: [mainFilter, addFilter],
                     and: true
                 });
+
             return mainFilter;
         },
 
@@ -79,7 +83,7 @@ sap.ui.define([
             }
 
             // Return filter
-            params.ok.call(this, new Filter({filters: total, and: true}));
+            params.ok.call(this, total.length === 0 ? null : new Filter({filters: total, and: true}));
         },
 
         filterItemsByUserBukrs: function (params) {

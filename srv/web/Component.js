@@ -7,8 +7,9 @@ sap.ui.define([
     "com/modekzWaybill/model/formatter",
     "sap/ui/model/odata/v2/ODataModel",
     "sap/ui/model/odata/v4/ODataModel",
-    "sap/ui/model/odata/ODataModel"
-], function (UIComponent, Device, Filter, MessageToast, models, formatter, ODataV2, ODataV4, ODataModel) {
+    "sap/ui/model/odata/ODataModel",
+    "sap/ui/model/BindingMode"
+], function (UIComponent, Device, Filter, MessageToast, models, formatter, ODataV2, ODataV4, ODataModel, BindingMode) {
     "use strict";
 
     return UIComponent.extend("com.modekzWaybill.Component", {
@@ -89,7 +90,7 @@ sap.ui.define([
 
             // send for POST, PATCH ...
             $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
+                beforeSend: function (xhr, settings) {
                     if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
                         xhr.setRequestHeader("X-CSRF-Token", _this.csrfToken);
                     }
@@ -98,12 +99,17 @@ sap.ui.define([
         },
 
         _createModelV4: function () {
-            return new ODataV4({
+            var oModel = new ODataV4({
                 serviceUrl: formatter.isWindows() ? "/catalog/" : "/srv/catalog/"
                 , synchronizationMode: "None"
                 , operationMode: "Server"
                 , groupId: formatter.isWindows() && formatter.isNodeJs() ? "$direct" : undefined
-            })
+            });
+
+            // Error in UI 2 way binding
+            // oModel.setDefaultBindingMode(BindingMode.OneWay);
+
+            return oModel;
         },
 
         readWrapper: function (entityName, filters, callback) {
@@ -188,15 +194,15 @@ sap.ui.define([
             return value;
         },
 
-        modifyWrapper: function (opration, path, value, callback) {
+        modifyWrapper: function (operation, path, value, callback) {
             var _this = this;
             var oModel = _this.getModel("wb");
 
-            if (opration !== "UPDATE" && opration !== "CREATE" && opration !== "DELETE")
+            if (operation !== "UPDATE" && operation !== "CREATE" && operation !== "DELETE")
                 throw ("Wrong parameter");
 
             if (oModel instanceof ODataV2) {
-                switch (opration) {
+                switch (operation) {
                     case "UPDATE":
                         oModel.update(path, value, callback);
                         break;
@@ -209,7 +215,7 @@ sap.ui.define([
                 }
             } else {
                 var httpType = null;
-                switch (opration) {
+                switch (operation) {
                     case "UPDATE":
                         httpType = 'PATCH';
                         break;

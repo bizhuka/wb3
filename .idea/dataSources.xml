@@ -10,5 +10,12 @@
         <property name="enable_load_extension" value="true" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="Express - hxehost" uuid="661f3fba-1796-4792-8866-8a2af144071b">
+      <driver-ref>java.sql.Driver</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.sap.db.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:sap://hxehost:39013/?currentschema=47FB9AC5ACA44471B59FD9F1220C2178</jdbc-url>
+    </data-source>
   </component>
 </project>

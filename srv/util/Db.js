@@ -8,7 +8,7 @@ module.exports = {
     },
 
     isTest: function () {
-        return !!process.env.WB_IS_TEST;
+        return process.env.WB_IS_TEST === 'true';
     },
 
     isWindows: function () {

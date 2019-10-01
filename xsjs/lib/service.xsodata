@@ -1,0 +1,4 @@
+
+service {
+	"WB_DB_WAYBILL" as "Waybills";
+}

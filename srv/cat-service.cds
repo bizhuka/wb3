@@ -16,7 +16,7 @@ service CatalogService {
   entity Schedules as projection on path.Schedule;
   entity WlnVehicles as projection on path.WlnVehicle;
 
-  entity VWaybills @readonly as projection on path.VWaybill;
+  entity VWaybills as projection on path.VWaybill; // @readonly manual update
   entity VReqHeaders @readonly as projection on path.VReqHeader;
   entity VDrivers @readonly as projection on path.VDriver;
   entity VCountWBs @readonly as projection on path.VCountWB;

@@ -119,7 +119,7 @@ sap.ui.define([
                         return;
 
                     // Update in parent
-                    var bindObj = _this.owner.getBindingObject();
+                    var bindObj = _this.owner.getViewBindingObject();
                     bindObj.Gas_Cnt = spents.length;
 
                     for (var i = 0; i < spents.length; i++) {
@@ -179,8 +179,7 @@ sap.ui.define([
                     var context = input.getBindingContext("petrol");
 
                     // Get current object
-                    // var oWbModel = owner.getModel("wb");
-                    var bindObj = owner.getBindingObject(); // TODO WAS oWbModel.getProperty(owner.getBindingPath());
+                    var bindObj = owner.getViewBindingObject();
 
                     _this._lgortDialog.openLgortDialog({
                         lgort: input.getValue(),
@@ -264,9 +263,7 @@ sap.ui.define([
                         ptType.model.setProperty("/data", ptType.data);
                     }
 
-                //var oWbModel = owner.getModel("wb");
-                var bindObj = owner.getBindingObject(); // TODO WAS oWbModel.getProperty(owner.getBindingPath());
-
+                var bindObj = owner.getViewBindingObject();
                 var hasErrors = false;
                 for (p = 0; p < this.arrPtTypes.length; p++) {
                     ptType = this.arrPtTypes[p];

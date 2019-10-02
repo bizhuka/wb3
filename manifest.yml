@@ -30,6 +30,7 @@ applications:
       - wb3-hdi-container
       - wb3-uaa
 
+
 #  - name: wb3-app
 #    type: html5
 #    path: app

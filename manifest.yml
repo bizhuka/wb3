@@ -30,17 +30,6 @@ applications:
       - wb3-hdi-container
       - wb3-uaa
 
-#  - name: wb3-xsjs
-#    type: nodejs
-#    path: xsjs
-#    port: 51072
-#    memory: 512M
-#    disk-quota: 512M
-#    services:
-#      - wb3-hdi-container
-#      - wb3-uaa
-#      - wb3-auditlog
-
 #  - name: wb3-app
 #    type: html5
 #    path: app

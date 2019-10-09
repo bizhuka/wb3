@@ -446,6 +446,7 @@ sap.ui.define([
                 }
 
                 // Load async
+                console.log(oRowBinding.getDownloadUrl())
                 sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
                     var oSettings = {
                         workbook: {

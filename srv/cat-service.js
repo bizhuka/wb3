@@ -6,6 +6,10 @@ const express = require('express');
 module.exports = function (srv) {
     const app = global.__express;
 
+    // oData V2 wrapper
+    const odatav2proxy = require("@sap/cds-odata-v2-adapter-proxy");
+    app.use(odatav2proxy({ port: process.env.PORT || 4004 }));
+
     // Default folder
     app.use('/', express.static(__dirname + '/web'));
 

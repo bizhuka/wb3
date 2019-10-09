@@ -9,6 +9,17 @@ module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/measureDoc", async (req, res) => {
+        // // Send as json
+        // res.json({
+        //     docum: '001',
+        //     aufnr: '111',
+        //     messages: [{
+        //         messageType : 'I',
+        //         message: 'Ok'
+        //     }]
+        // });
+        // return;
+
         // From js
         const measureDoc = JSON.parse(req.query.doc);
 

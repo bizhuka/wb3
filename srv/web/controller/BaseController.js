@@ -446,7 +446,11 @@ sap.ui.define([
                 }
 
                 // Load async
-                console.log(oRowBinding.getDownloadUrl())
+                // console.log(table)
+                // console.log(oModelInterface)
+                console.log(oRowBinding);
+            debugger;
+
                 sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
                     var oSettings = {
                         workbook: {
@@ -457,7 +461,7 @@ sap.ui.define([
                             dataUrl: oRowBinding.getDownloadUrl ? oRowBinding.getDownloadUrl() : null,
                             serviceUrl: oModelInterface.sServiceUrl,
                             headers: oModelInterface.getHeaders ? oModelInterface.getHeaders() : null,
-                            count: oRowBinding.getLength ? oRowBinding.getLength() : null,
+                            //count: oRowBinding.getLength(), ALL
                             useBatch: oModelInterface.bUseBatch,
                             sizeLimit: oModelInterface.iSizeLimit
                         }

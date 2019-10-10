@@ -48,7 +48,7 @@ sap.ui.define([
 
             if (!formatter.isNodeJs())
                 oModel = new ODataV2({
-                    serviceUrl: "/odata.svc/"
+                    serviceUrl: _this._getServiceUrl(true) // "/odata.svc/"
                 });
             else {
                 oModel = _this._createModelV4();
@@ -98,9 +98,13 @@ sap.ui.define([
             });
         },
 
+        _getServiceUrl: function (v2) {
+            return (v2 ? "/v2" : "") + (formatter.isWindows() ? "/catalog/" : "/srv/catalog/");
+        },
+
         _createModelV4: function () {
             var oModel = new ODataV4({
-                serviceUrl: formatter.isWindows() ? "/catalog/" : "/srv/catalog/"
+                serviceUrl: this._getServiceUrl(false)
                 , synchronizationMode: "None"
                 , operationMode: "Server"
                 , groupId: formatter.isWindows() && formatter.isNodeJs() ? "$direct" : undefined

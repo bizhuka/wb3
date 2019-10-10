@@ -4,8 +4,6 @@ sap.ui.define([], function () {
     return {
 
         getUrl: function (relPath) {
-            // if (this.isNodeJs())
-            //     return "/" + relPath;
             return relPath;
         },
 

@@ -56,7 +56,7 @@ sap.ui.define([
             this.getRouter().getRoute("waybillDetail").attachPatternMatched(this._onObjectMatched, this);
         },
 
-        getBindingPath(forUpdate) {
+        getBindingPath: function(forUpdate) {
             if (forUpdate)
                 return "/Waybills(" + waybillId + formatter.getLongPostfix() + ")";
             return "/VWaybills(" + waybillId + formatter.getLongPostfix() + ")";

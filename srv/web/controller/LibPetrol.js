@@ -118,10 +118,6 @@ sap.ui.define([
                     if (error)
                         return;
 
-                    // Update in parent
-                    var bindObj = _this.owner.getViewBindingObject();
-                    bindObj.Gas_Cnt = spents.length;
-
                     for (var i = 0; i < spents.length; i++) {
                         var spent = spents[i];
                         var ptType = _this.mapPtTypes[spent.PtType];
@@ -146,8 +142,10 @@ sap.ui.define([
 
                 return {
                     success: function () {
-                        if (updateCount)
+                        if (updateCount) {
+                            _owner.getModel("wb").refresh();
                             _this._readGasSpents();
+                        }
                     },
 
                     // Show error

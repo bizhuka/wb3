@@ -3,7 +3,7 @@
 const Time = require('../util/Time');
 
 // Synchronization with R3
-const {rfcClient} = require('./sync')();
+const {getRfcClient} = require('./sync')();
 
 module.exports = (app, srv) => {
 
@@ -44,8 +44,9 @@ module.exports = (app, srv) => {
         };
 
         // Call SAP FM
-        await rfcClient.open();
+        const rfcClient = await getRfcClient();
         const sapResult = await rfcClient.call('Z_WB_MEASURE_DOC', params);
+        rfcClient.close();
 
         // SAP -> JS
         const result = {

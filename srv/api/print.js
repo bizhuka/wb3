@@ -4,7 +4,7 @@ const Db = require('../util/Db');
 const Time = require('../util/Time');
 const Status = require('../util/Status');
 // Synchronization with R3
-const {rfcClient} = require('./sync')();
+const {getRfcClient} = require('./sync')();
 
 const util = require('util');
 const fs = require('fs');
@@ -15,10 +15,11 @@ module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/print/template", async (req, res) => {
-        await rfcClient.open();
+        const rfcClient = await getRfcClient();
         const result = await rfcClient.call('Z_WB_PRINT_DOC', {
             IV_OBJID: req.query.objid
         });
+        rfcClient.close();
 
         res.contentType(req.query.contentType);
         res.send(result.EV_BIN_DATA);
@@ -184,7 +185,7 @@ module.exports = (app, srv) => {
         if (docs.length === 0)
             return;
 
-        await rfcClient.open();
+        const rfcClient = await getRfcClient();
         const result = await rfcClient.call('Z_WB_PRINT_DOC', {
             IV_WAYBILL_ID: String(waybillId),
             IV_CLASS: String(orig_class),
@@ -192,6 +193,7 @@ module.exports = (app, srv) => {
             IT_REQ: reqs,
             IT_GAS: gasSpents
         });
+        rfcClient.close();
 
         res.setHeader('Content-Type', result.EV_CONTENT_TYPE);
         if (setFile === 1)

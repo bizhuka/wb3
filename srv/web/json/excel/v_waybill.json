@@ -7,6 +7,8 @@
     { "label_kz": "Сұрып","label_ru": "Класс","property": "KtschTxt","type": "string" },
     { "label_kz": "Зауыт","label_ru": "Завод","property": "Werks","type": "string" },
     { "label_kz": "№ ЖҚ","label_ru": "№ ПЛ","property": "Id","type": "number" },
+    { "label_kz": "Жоспарланған күні (Шығу)","label_ru": "Плановая дата (Выезд)","property": "FromDate","type": "date" },
+    { "label_kz": "Жоспарланған күні (Кіру)","label_ru": "Плановая дата (Заезд)","property": "ToDate","type": "date" },
     { "label_kz": "Жасалған күні","label_ru": "Дата создания","property": "CreateDate","type": "date" },
     { "label_kz": "Гараждан шығу","label_ru": "Выезд из гаража","property": "GarageDepDate","type": "date" },
     { "label_kz": "Гаражға кіру","label_ru": "Заезд в гараж","property": "GarageArrDate","type": "date" },

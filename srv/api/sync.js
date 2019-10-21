@@ -7,22 +7,23 @@ const util = require('util');
 const path = require('path');
 const fs = require("fs");
 
-// Initialize library
-let rfcClient = null;
-
-
-const libPath = path.resolve(__dirname, '../node_modules/node-rfc/lib/binding/linux-x64-node-v57');
+// For RFC
 process.env.NLSUI_INIT_TRACE_LEVEL = 'high';
 process.env.NLSUI_7BIT_FALLBACK = 'YES';
 
-try {
-    const Client = require('node-rfc').Client;
-    const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
-    rfcClient = new Client(sapSystem);
-} catch (e) {
-    console.error(e);
+async function getRfcClient() {
+    // Always new ?
+    try {
+        const Client = require('node-rfc').Client;
+        const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
+        const rfcClient = new Client(sapSystem);
+        await rfcClient.open();
+        return rfcClient;
+    } catch (e) {
+        console.error(e);
+    }
+    return null;
 }
-
 
 async function persist(req, res, Entity, params) {
 
@@ -48,11 +49,13 @@ async function persist(req, res, Entity, params) {
             IV_WHERE: (params.R3_WHERE ? params.R3_WHERE : '')
         };
     }
-    //TODO open connection & call RFC fm
+
+    // open connection & call RFC fm
+    const rfcClient = await getRfcClient();
     if (!rfcClient)
-        return
-    await rfcClient.open(); // if (err) return console.error('could not connect to server', err);
+        return;
     const sapResult = await rfcClient.call(params.FM, params.RFC_PARAMS);
+    rfcClient.close();
 
     // Get from R3
     if (params.FM === 'Z_WB_READ')
@@ -195,7 +198,7 @@ function createKey(Entity, dbItem, asObject) {
 const exportObject = {
     persist: persist,
     itemsTransform: itemsTransform,
-    rfcClient: rfcClient
+    getRfcClient: getRfcClient
 };
 
 module.exports = (app, srv) => {
@@ -285,7 +288,7 @@ module.exports = (app, srv) => {
                         sapDateTo = datum;
                 }
 
-                if(!filter.DB_WHERE)
+                if (!filter.DB_WHERE)
                     filter.DB_WHERE = ' WHERE ';
 
                 filter.DB_WHERE += ("Datum <= '" + Time.getSqlDate(sapDateTo) +
@@ -321,7 +324,7 @@ module.exports = (app, srv) => {
         const newList = await persist(req, res, ReqHeader, filter);
 
         // open connection & call RFC fm
-        await rfcClient.open(); // if (err) return console.error('could not connect to server', err);
+        const rfcClient = await getRfcClient();
         const arrObjnr = [];
         for (let i = 0; i < newList.length; i++)
             arrObjnr.push("OR" + newList[i].Aufnr);
@@ -331,5 +334,6 @@ module.exports = (app, srv) => {
             IV_INACT: '',
             IT_OBJNR: arrObjnr
         });
+        rfcClient.close();
     });
 };

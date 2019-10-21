@@ -107,7 +107,7 @@ sap.ui.define([
                 serviceUrl: this._getServiceUrl(false)
                 , synchronizationMode: "None"
                 , operationMode: "Server"
-                , groupId: formatter.isWindows() && formatter.isNodeJs() ? "$direct" : undefined
+                // , groupId: "$direct" // TODO!!! formatter.isWindows() && formatter.isNodeJs() ? "$direct" : undefined
             });
 
             // Error in UI 2 way binding

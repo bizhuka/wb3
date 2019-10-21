@@ -4,7 +4,7 @@ const Db = require('../util/Db');
 const Status = require('../util/Status');
 const Time = require('../util/Time');
 // Synchronization with R3
-const {rfcClient} = require('./sync')();
+const {getRfcClient} = require('./sync')();
 
 module.exports = (app, srv) => {
 
@@ -80,8 +80,9 @@ module.exports = (app, srv) => {
         // Generate new key
         if (!waybill.Id) {
             // waybill.Id = (new Date()).getTime(); create option ?
-            await rfcClient.open();
+            const rfcClient = await getRfcClient();
             const result = await rfcClient.call('Z_WB_NEXT_WAYBILL_ID', {});
+            rfcClient.close();
 
             // from SAP
             waybill.Id = result.EV_WAYBILL_ID;

@@ -15,22 +15,26 @@ sap.ui.define([], function () {
             return this._link.href;
         },
 
-        _isNode: null,
-        isNodeJs: function () {
-            if (this._isNode === null) {
+        _isV4: null,
+        isV4: function () {
+            if (this._isV4 === null) {
                 var path = this.absolutePath("/");
 
                 // Java
                 if (path.indexOf("wb-router") > 0 || path.indexOf("http://localhost:8080") === 0)
-                    this._isNode = false;
+                    this._isV4 = false;
                 // Node js
                 else if (path.indexOf("wb3-") > 0 || path.indexOf("http://localhost:4004") === 0 || path.indexOf("https://hxehost") === 0)
-                    this._isNode = true;
+                    this._isV4 = true;
                 else
-                    throw "isNodeJs() Unknown host";
+                    throw "isV4() Unknown host";
             }
 
-            return this._isNode;
+            return this._isV4;
+        },
+
+        isNewCds: function () {
+            return true;
         },
 
         _isWindows: null,
@@ -41,7 +45,7 @@ sap.ui.define([], function () {
         },
 
         getLongPostfix: function () {
-            return this.isNodeJs() ? "" : "L";
+            return this.isNewCds() ? "" : "L";
         },
 
         checkDate: function (date) {

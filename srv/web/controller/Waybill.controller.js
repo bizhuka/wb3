@@ -100,12 +100,12 @@ sap.ui.define([
             // ToDate ?
             if (fromDate)
                 oFilter.push(new Filter("ToDate", FilterOperator.GE,
-                    formatter.isNodeJs() ? _this.toSqlDate(fromDate) : fromDate));
+                    formatter.isV4() ? _this.toSqlDate(fromDate) : fromDate));
 
             // FromDate ?
             if (toDate)
                 oFilter.push(new Filter("FromDate", FilterOperator.LE,
-                    formatter.isNodeJs() ? _this.toSqlDate(toDate) : toDate));
+                    formatter.isV4() ? _this.toSqlDate(toDate) : toDate));
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
 
@@ -154,11 +154,11 @@ sap.ui.define([
         },
 
         onExcelExport: function () {
-            this.doExcelExport(wayBillTable, formatter.getUrl("/json/excel/v_waybill.json"));
+            this.doExcelExport(wayBillTable, ["ToDate%20ge", "FromDate%20le"], formatter.getUrl("/json/excel/v_waybill.json"));
         },
 
         onExcelExportGas: function () {
-            this.doExcelExport(wayBillTable, formatter.getUrl("/json/excel/v_gasspent.json"), [
+            this.doExcelExport(wayBillTable, ["ToDate%20ge", "FromDate%20le"], formatter.getUrl("/json/excel/v_gasspent.json"), [
                 {
                     from: "VWaybills?",
                     to: "VGasSpents?"

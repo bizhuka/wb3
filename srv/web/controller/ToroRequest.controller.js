@@ -176,7 +176,7 @@ sap.ui.define([
             ];
 
             // TODO check
-            if (!formatter.isWindows() || !formatter.isNodeJs()) {
+            if (!formatter.isWindows() || !formatter.isV4()) {
                 console.log('EO filter added')
                 filters.push(
                     new Filter({
@@ -880,7 +880,7 @@ sap.ui.define([
         },
 
         getDateUrl: function (date) {
-            return formatter.isNodeJs() ?
+            return formatter.isV4() ?
                 this.toSqlDate(date) :
                 "datetime'" + encodeURIComponent(this.toSqlDateTime(date)) + "'";
         }

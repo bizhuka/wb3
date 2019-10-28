@@ -429,10 +429,32 @@ sap.ui.define([
             return this.link.href;
         },
 
-        doExcelExport: function (table, columnFile, replaceBlock) {
+        getDownloadUrl: function (oRowBinding) {
+            // v2
+            if (oRowBinding.getDownloadUrl)
+                return oRowBinding.getDownloadUrl();
+
+            // v4
+            var result = oRowBinding.oModel.sServiceUrl + oRowBinding.sPath.substr(1) + '?';
+            for (var key in oRowBinding.mCacheQueryOptions)
+                if (oRowBinding.mCacheQueryOptions.hasOwnProperty(key)) {
+                    result += ("&" + key + "=" + encodeURIComponent(oRowBinding.mCacheQueryOptions[key]));
+                }
+            return result;
+        },
+
+        doExcelExport: function (table, dateFields, columnFile, replaceBlock) {
             var oRowBinding = table.getBinding("items");
             var oModel = oRowBinding.getModel();
             var oModelInterface = oModel.getInterface();
+
+            // Try to get URL
+            var dataUrl = this.getDownloadUrl(oRowBinding);
+            for (var i = 0; i < dateFields.length; i++)
+                if (dataUrl.indexOf(dateFields[i]) < 0) {
+                    this.showError(null, this.getBundle().getText("noFilter"));
+                    return;
+                }
 
             var jsonModel = new JSONModel(columnFile);
             jsonModel.attachRequestCompleted(function () {
@@ -443,14 +465,13 @@ sap.ui.define([
                     var column = columns[i];
                     columns[i].label = locale === 'ru' ? column.label_ru : column.label_kz;
                     columns[i].property = column.property.replace('{locale}', locale);
+
+                    // v4
+                    if (!oRowBinding.getDownloadUrl && (columns[i].type === 'date' || columns[i].type === 'datetime'))
+                        delete columns[i].type;
                 }
 
                 // Load async
-                // console.log(table)
-                // console.log(oModelInterface)
-                console.log(oRowBinding);
-            debugger;
-
                 sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
                     var oSettings = {
                         workbook: {
@@ -458,7 +479,7 @@ sap.ui.define([
                         },
                         dataSource: {
                             type: "odata",
-                            dataUrl: oRowBinding.getDownloadUrl ? oRowBinding.getDownloadUrl() : null,
+                            dataUrl: dataUrl,
                             serviceUrl: oModelInterface.sServiceUrl,
                             headers: oModelInterface.getHeaders ? oModelInterface.getHeaders() : null,
                             //count: oRowBinding.getLength(), ALL

@@ -46,7 +46,7 @@ sap.ui.define([
 
             var oModel = null;
 
-            if (!formatter.isNodeJs())
+            if (!formatter.isV4())
                 oModel = new ODataV2({
                     serviceUrl: _this._getServiceUrl(true) // "/odata.svc/"
                 });
@@ -107,7 +107,7 @@ sap.ui.define([
                 serviceUrl: this._getServiceUrl(false)
                 , synchronizationMode: "None"
                 , operationMode: "Server"
-                // , groupId: "$direct" // TODO!!! formatter.isWindows() && formatter.isNodeJs() ? "$direct" : undefined
+                // , groupId: "$direct" // for testing only  formatter.isWindows() && formatter.isV4() ? "$direct" : undefined
             });
 
             // Error in UI 2 way binding

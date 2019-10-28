@@ -16,10 +16,11 @@ applications:
     type: nodejs
     path: srv
     port: 51062
-    memory: 512M
-    disk-quota: 512M
+    memory: 1024M
+    disk-quota: 1024M
     env:
       WB_IS_TEST: true
+#      RFC_TEST: true
 #      WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"DGR@2018","lang":"ru","ashost":"172.20.16.88","sysnr":"20","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
       WB_RFC_DEST: '{"client":"305","user":"ALE_COMM_RU","passwd":"f38#@d79b2A92b","lang":"ru","ashost":"172.20.16.88","sysnr":"10","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
       WIALON_OPT: '{"host": "http://188.127.32.26:8022/", "user": "dlcguest", "password": "kEFEHUMFFE", "templateId":19, "resourceId": 291, "tzOffset": 134239328}'

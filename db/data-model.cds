@@ -556,7 +556,31 @@
         WHEN PtType = 1 THEN 'Основной бак'
         WHEN PtType = 2 THEN 'Верхнее оборудование'
         WHEN PtType = 4 THEN 'Будка'
-      END as PtType_ru : String(40)
+      END as PtType_ru : String(40),
+
+       CASE
+           WHEN PtType = 1 THEN (CASE WHEN GasBefore + GasGiven >= w.Spent1 THEN w.Spent1
+                                                                            ELSE GasBefore + GasGiven END)
+           WHEN PtType = 2 THEN (CASE WHEN GasBefore + GasGiven >= w.Spent2 THEN w.Spent2
+                                                                            ELSE GasBefore + GasGiven END)
+           WHEN PtType = 4 THEN (CASE WHEN GasBefore + GasGiven >= w.Spent4 THEN w.Spent4
+                                                                            ELSE GasBefore + GasGiven END)
+           END as GasSpent: DecimalFloat,
+
+       CASE
+           WHEN PtType = 1 THEN (GasBefore + GasGiven - w.Spent1)
+           WHEN PtType = 2 THEN (GasBefore + GasGiven - w.Spent2)
+           WHEN PtType = 4 THEN (GasBefore + GasGiven - w.Spent4)
+           END as GasAfterNext: DecimalFloat,
+
+       CASE
+           WHEN PtType = 1 THEN (CASE WHEN GasBefore + GasGiven >= w.Spent1 THEN GasBefore + GasGiven - w.Spent1
+                                                                            ELSE 0 END)
+           WHEN PtType = 2 THEN (CASE WHEN GasBefore + GasGiven >= w.Spent2 THEN GasBefore + GasGiven - w.Spent2
+                                                                            ELSE 0 END)
+           WHEN PtType = 4 THEN (CASE WHEN GasBefore + GasGiven >= w.Spent4 THEN GasBefore + GasGiven - w.Spent4
+                                                                            ELSE 0 END)
+           END as GasAfter: DecimalFloat           
     } ORDER BY Waybill_Id, PtType, Pos;
 
     define entity VCountREQ AS SELECT FROM ReqHeader{

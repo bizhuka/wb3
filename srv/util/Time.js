@@ -12,9 +12,13 @@ module.exports = {
     // return YYYY-MM-DD
     getSqlDate: function (d) {
         // From SAP date
-        if (typeof d === 'string' && d.length === 8)
-            return d.substr(0, 4) + '-' + d.substr(4, 2) + '-' + d.substr(6, 2);
+        if (typeof d === 'string') {
+            if (d.length === 8)
+                return d.substr(0, 4) + '-' + d.substr(4, 2) + '-' + d.substr(6, 2);
 
+            if (d.length === 10)
+                return d;
+        }
         return d.toISOString().substr(0, 10)
     },
 

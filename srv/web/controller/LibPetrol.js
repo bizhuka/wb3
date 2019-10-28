@@ -318,9 +318,9 @@ sap.ui.define([
                         // Only this fields
                         var updFields = {
                             GasMatnr: row.GasMatnr,
-                            GasBefore: row.GasBefore === null ? undefined : formatter.isNodeJs() ? Number(row.GasBefore) : String(row.GasBefore),
-                            GasGive: row.GasGive === null ? undefined : formatter.isNodeJs() ? Number(row.GasGive) : String(row.GasGive),
-                            GasGiven: row.GasGiven === null ? undefined : formatter.isNodeJs() ? Number(row.GasGiven) : String(row.GasGiven),
+                            GasBefore: row.GasBefore === null ? undefined : formatter.isV4() ? Number(row.GasBefore) : String(row.GasBefore),
+                            GasGive: row.GasGive === null ? undefined : formatter.isV4() ? Number(row.GasGive) : String(row.GasGive),
+                            GasGiven: row.GasGiven === null ? undefined : formatter.isV4() ? Number(row.GasGiven) : String(row.GasGiven),
                             GasLgort: row.GasLgort === null ? undefined : row.GasLgort
                         };
 
@@ -407,7 +407,7 @@ sap.ui.define([
                         GasMatnr: gasMatnr
                     };
                 }
-                newObject.Waybill_Id = formatter.isNodeJs() ? Number(this.waybillId) : String(this.waybillId); // As string!
+                newObject.Waybill_Id = formatter.isV4() ? Number(this.waybillId) : String(this.waybillId); // As string!
 
                 var path = _this.getGasSpentPath(newObject.PtType, id);
                 if (newObject.GasMatnr === "")
@@ -470,7 +470,7 @@ sap.ui.define([
 
                     // First position
                     petrol.Pos = 0;
-                    petrol.GasBefore = formatter.isNodeJs() ? Number(petrol.GasBefore) : String(petrol.GasBefore);
+                    petrol.GasBefore = formatter.isV4() ? Number(petrol.GasBefore) : String(petrol.GasBefore);
 
                     // Refresh
                     ptType.model.setProperty("/data", ptType.data);

@@ -159,8 +159,8 @@ sap.ui.define([
                 var comboFilter = this.statusCombo ? this.statusCombo.getSelectedKey() : "";
                 var reqComboFilter = this.reqStatusCombo ? this.reqStatusCombo.getSelectedKey() : "";
                 var werksComboFilter = this.werksStatusCombo ? this.werksStatusCombo.getSelectedKey() : "";
-                var fromDate = this.fromDate ? this.owner.toSapDate(this.fromDate.getDateValue()) : "";
-                var toDate = this.toDate ? this.owner.toSapDate(this.toDate.getDateValue()) : "";
+                var fromDate = this.fromDate ? this.owner.toSqlDate(this.fromDate.getDateValue().setHours(12, 0, 0, 0)) : "";
+                var toDate = this.toDate ? this.owner.toSqlDate(this.toDate.getDateValue().setHours(12, 0, 0, 0)) : "";
 
                 // Called twice
                 if (this.prevFilt && this.prevFilt.text === textFilter &&
@@ -196,9 +196,9 @@ sap.ui.define([
 
                 // Dates
                 if (fromDate)
-                    arrFilter.push(new Filter("GltrpChar", FilterOperator.GE, fromDate));
+                    arrFilter.push(new Filter("Gltrp", FilterOperator.GE, fromDate));
                 if (toDate)
-                    arrFilter.push(new Filter("GstrpChar", FilterOperator.LE, toDate));
+                    arrFilter.push(new Filter("Gstrp", FilterOperator.LE, toDate));
 
                 if (textFilter && textFilter.length > 0) {
                     var arr = [
@@ -463,7 +463,7 @@ sap.ui.define([
                     var waybillId = params.unset ? owner.status.WB_ID_NULL : params.waybillId;
                     var reqHeader = {
                         Objnr: item.Objnr,
-                        Waybill_Id: formatter.isNodeJs() ? Number(waybillId) : String(waybillId),
+                        Waybill_Id: formatter.isV4() ? Number(waybillId) : String(waybillId),
                         StatusReason: params.unset ? owner.status.RC_NEW : owner.status.RC_SET
                     };
                     owner.getOwnerComponent().modifyWrapper('UPDATE', "/ReqHeaders('" + item.Objnr + "')", reqHeader, {
@@ -498,7 +498,7 @@ sap.ui.define([
             },
 
             onExcelExport: function () {
-                this.owner.doExcelExport(this.reqTable, formatter.getUrl("/json/excel/v_reqheader.json"));
+                this.owner.doExcelExport(this.reqTable, ["Gltrp%20ge", "Gstrp%20le"], formatter.getUrl("/json/excel/v_reqheader.json"));
             }
         });
     }

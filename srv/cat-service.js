@@ -2,15 +2,18 @@
 
 const Db = require('./util/Db');
 const express = require('express');
+const bodyParser = require("body-parser");
 
 module.exports = function (srv) {
     const app = global.__express;
 
-    // // oData V2 wrapper
-    // const odatav2proxy = require("@sap/cds-odata-v2-adapter-proxy");
-    // app.use(odatav2proxy({ port: process.env.PORT || 4004 }));
+    // oData V2 wrapper
+    const odatav2proxy = require("@sap/cds-odata-v2-adapter-proxy");
+    app.use(odatav2proxy({port: process.env.PORT || 4004}));
 
     // Default folder
+    const compression = require('compression');
+    app.use(compression());
     app.use('/', express.static(__dirname + '/web'));
 
     const xsenv = require("@sap/xsenv");

@@ -1,6 +1,7 @@
 sap.ui.define([
     'com/modekzWaybill/controller/BaseController',
     'sap/ui/model/json/JSONModel',
+    'sap/ui/core/Fragment',
     'sap/ui/core/UIComponent',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
@@ -10,7 +11,7 @@ sap.ui.define([
     'com/modekzWaybill/controller/LibChangeStatus',
     'com/modekzWaybill/controller/LibPetrol'
     // 'com/modekzWaybill/jsCode/petrol'
-], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, formatter, LibReqs, LibChangeStatus, LibPetrol) {
+], function (BaseController, JSONModel, Fragment, UIComponent, Filter, FilterOperator, MessageToast, formatter, LibReqs, LibChangeStatus, LibPetrol) {
     "use strict";
 
     var waybillId, bindingObject;
@@ -25,23 +26,12 @@ sap.ui.define([
         onInit: function () {
             // call base init
             var _this = this;
-
-            // Load as text
-            var urlFrag = formatter.getUrl("/view/frag/PetrolFrag.fragment.xml");
-
-            // Read fragment as text async
-            $.ajax({
-                url: urlFrag,
-                dataType: "text",
-                async: false, // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                success: function (textFrag) {
-                    var callInit = _this.libPetrol === false;
-                    _this.libPetrol = new LibPetrol(_this, textFrag);
-                    if (callInit)
-                        _this._onObjectMatched();
-                }
-            });
             BaseController.prototype.onInit.apply(_this, arguments);
+
+            // Load fragment as a text
+            var textFrag = sap.ui.loader._.getModuleContent('com/modekzWaybill/view/frag/PetrolFrag.fragment.xml');
+            _this.libPetrol = new LibPetrol(_this, textFrag);
+
             this.libReqs = new LibReqs(this, {
                 showActual: true,
 
@@ -56,14 +46,23 @@ sap.ui.define([
             this.getRouter().getRoute("waybillDetail").attachPatternMatched(this._onObjectMatched, this);
         },
 
-        getBindingPath: function(forUpdate) {
+        getBindingPath: function (forUpdate) {
             if (forUpdate)
                 return "/Waybills(" + waybillId + formatter.getLongPostfix() + ")";
             return "/VWaybills(" + waybillId + formatter.getLongPostfix() + ")";
         },
 
-        getViewBindingObject: function() {
-            return this.getView().getBindingContext("wb").getObject();
+        getViewBindingObject: function () {
+            var _this = this;
+            var result = _this.getView().getBindingContext("wb").getObject();
+
+            // TODO fix
+            result.OdoDiff = _this.byId("id_wb_odo_diff").getValue();
+            result.MotoHour = _this.byId("id_wb_moto_hour").getValue();
+            result.Spent1 = _this.findById("id_input_spent1").getValue();
+            result.Spent2 = _this.findById("id_input_spent2").getValue();
+            result.Spent4 = _this.findById("id_input_spent4").getValue();
+            return result;
         },
 
         onDataReceived: function (oEvent) {
@@ -169,12 +168,6 @@ sap.ui.define([
             // Called by UI5
             if (oEvent)
                 waybillId = oEvent.getParameter("arguments").waybillId;
-
-            // Call later on
-            if (_this.libPetrol === null) {
-                _this.libPetrol = false;
-                return;
-            }
 
             // Default tab
             allTabs.setSelectedKey("id_eo_tab");
@@ -455,7 +448,7 @@ sap.ui.define([
                         return;
                     }
 
-                    var bindObj = _this.getView().getBindingContext("wb").getObject();// TODO WAS oWbModel.getProperty(_this.getBindingPath());
+                    var bindObj = _this.getViewBindingObject();
                     var odoEmpty = (!parseFloat(bindObj.OdoDiff) && !parseFloat(bindObj.MotoHour));
                     var fuelEmpty = !parseFloat(bindObj.Spent1);
 
@@ -510,8 +503,16 @@ sap.ui.define([
                             odoDiff: bindObj.OdoDiff,
                             motoHour: bindObj.MotoHour,
                             spents: spents
+
+                            // TODO Save in the same step
+                            // waybillId: bindObj.Waybill_Id,
+                            // spent1: bindObj.Spent1,
+                            // spent2: bindObj.Spent2,
+                            // spent4: bindObj.Spent4,
                         })),
-                        //type: 'POST', data: ,
+                        type: 'GET',
+                        // data: JSON.stringify(),
+
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
                         success: function (doc) {
@@ -530,11 +531,11 @@ sap.ui.define([
                                 obj.CloseDate = new Date(1);
                                 obj.Status = _this.status.CLOSED;
                                 // From sensors
-                                obj.OdoDiff = formatter.isNodeJs() ? Number(bindObj.OdoDiff) : String(bindObj.OdoDiff);
-                                obj.MotoHour = formatter.isNodeJs() ? Number(bindObj.MotoHour) : String(bindObj.MotoHour);
-                                obj.Spent1 = formatter.isNodeJs() ? Number(bindObj.Spent1) : String(bindObj.Spent1);
-                                obj.Spent2 = formatter.isNodeJs() ? Number(bindObj.Spent2) : String(bindObj.Spent2);
-                                obj.Spent4 = formatter.isNodeJs() ? Number(bindObj.Spent4) : String(bindObj.Spent4);
+                                obj.OdoDiff = formatter.isV4() ? Number(bindObj.OdoDiff) : String(bindObj.OdoDiff);
+                                obj.MotoHour = formatter.isV4() ? Number(bindObj.MotoHour) : String(bindObj.MotoHour);
+                                obj.Spent1 = formatter.isV4() ? Number(bindObj.Spent1) : String(bindObj.Spent1);
+                                obj.Spent2 = formatter.isV4() ? Number(bindObj.Spent2) : String(bindObj.Spent2);
+                                obj.Spent4 = formatter.isV4() ? Number(bindObj.Spent4) : String(bindObj.Spent4);
                                 obj.Docum = doc.docum;
                                 obj.Aufnr = doc.aufnr;
                                 _this.setNewStatus(obj);
@@ -555,7 +556,7 @@ sap.ui.define([
         setNewStatus: function (obj) {
             var _this = this;
 
-            if (obj.Id && formatter.isNodeJs())
+            if (obj.Id && formatter.isV4())
                 obj.Id = Number(obj.Id);
             var oWbModel = _this.getModel("wb");
             _this.getOwnerComponent().modifyWrapper('UPDATE', _this.getBindingPath(true), obj, {

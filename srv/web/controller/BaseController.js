@@ -71,8 +71,12 @@ sap.ui.define([
 
                 // Create by scope
                 var items = this.getModel("userInfo").getProperty("/" + line.scope);
-                if (items.length === 0)
+                if (!items || items.length === 0) {
+                    // TODO fix
+                    if (!items)
+                        console.log('skip filter by ' + line.scope);
                     continue;
+                }
 
                 var filters = [];
                 for (var j = 0; j < items.length; j++)
@@ -444,6 +448,7 @@ sap.ui.define([
         },
 
         doExcelExport: function (table, dateFields, columnFile, replaceBlock) {
+            var _this = this;
             var oRowBinding = table.getBinding("items");
             var oModel = oRowBinding.getModel();
             var oModelInterface = oModel.getInterface();
@@ -459,7 +464,8 @@ sap.ui.define([
             var jsonModel = new JSONModel(columnFile);
             jsonModel.attachRequestCompleted(function () {
                 var columns = jsonModel.getProperty("/columns");
-                var locale = navigator.language === 'ru' ? 'ru' : 'kz';
+                // navigator.language Or sap.ui.getCore().getConfiguration().getLanguage() ?
+                var locale = _this.getBundle().getText('lang') === 'ru' ? 'ru' : 'kz';
 
                 for (var i = 0; i < columns.length; i++) {
                     var column = columns[i];

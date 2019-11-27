@@ -18,7 +18,7 @@
     { "label_kz": "Мотосағ","label_ru": "Моточасы","property": "MotoHour","type": "number" },
 
     { "label_kz": "Жанармай түрі","label_ru": "Вид ГСМ","property": "Maktx","type": "string" },
-    { "label_kz": "Бак түрі","label_ru": "Тип бака","property": "Pttype_{locale}","type": "string" },
+    { "label_kz": "Бак түрі","label_ru": "Тип бака","property": "PtType_{locale}","type": "string" },
     { "label_kz": "Реттік нөмірі","label_ru": "Позиция","property": "Pos","type": "number" },
     { "label_kz": "Берілген мөлшер","label_ru": "Выдано ГСМ","property": "GasGiven","type": "number" },
     { "label_kz": "Кеткендегі қалдық","label_ru": "Остаток на начало","property": "GasBefore","type": "number" },

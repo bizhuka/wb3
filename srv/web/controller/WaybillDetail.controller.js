@@ -57,11 +57,13 @@ sap.ui.define([
             var result = _this.getView().getBindingContext("wb").getObject();
 
             // TODO fix
-            result.OdoDiff = _this.byId("id_wb_odo_diff").getValue();
-            result.MotoHour = _this.byId("id_wb_moto_hour").getValue();
-            result.Spent1 = _this.findById("id_input_spent1").getValue();
-            result.Spent2 = _this.findById("id_input_spent2").getValue();
-            result.Spent4 = _this.findById("id_input_spent4").getValue();
+            if (result) {
+                result.OdoDiff = _this.byId("id_wb_odo_diff").getValue();
+                result.MotoHour = _this.byId("id_wb_moto_hour").getValue();
+                result.Spent1 = _this.findById("id_input_spent1").getValue();
+                result.Spent2 = _this.findById("id_input_spent2").getValue();
+                result.Spent4 = _this.findById("id_input_spent4").getValue();
+            }
             return result;
         },
 

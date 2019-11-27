@@ -95,7 +95,9 @@
 
                 <Table id="id_eo_schedule"
                        mode="{= ${userInfo>/WbMechanic}===true?'MultiSelect':'SingleSelect'}"
-                       items="{ path: 'wb>/Equipments', length: 200 }"
+                       items="{
+                         path: 'wb>/Equipments',
+                         length: 200 }"
                        updateStarted="onUpdateStartedSchedule"
                        selectionChange="onEquipSelected"
                        growing="true" growingScrollToLoad="true"

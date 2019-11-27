@@ -4,7 +4,7 @@
   "routes": [
     {
       "source": "/sap/bc/ina",
-      "destination": "wb-analytics",
+      "destination": "wb-sac",
       "httpMethods": [
         "POST",
         "GET"
@@ -14,7 +14,7 @@
     },
     {
       "source": "/sap/bc/ina",
-      "destination": "wb-analytics",
+      "destination": "wb-sac",
       "httpMethods": [
         "OPTIONS"
       ],
@@ -22,7 +22,7 @@
     },
     {
       "source": "/print",
-      "destination": "wb-server",
+      "destination": "wb-srv",
       "httpMethods": [
         "GET",
         "POST"
@@ -37,9 +37,10 @@
         "GET",
         "POST",
         "PATCH",
-        "DELETE"
+        "DELETE",
+        "HEAD"
       ],
-      "destination": "wb-server",
+      "destination": "wb-srv",
       "scope": "$XSAPPNAME.WbAuthorized"
     }
   ]

@@ -33,6 +33,32 @@ sap.ui.define([
         init: function () {
             var _this = this;
 
+            // V4 or V2 ?
+            var isV2 = !formatter.isV4();
+
+            // All post request would be checked (So send GET first)
+            var csrfToken;
+            $.ajax({
+                url: _this._getServiceUrl(isV2),
+                type: "GET",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRF-Token", "Fetch");
+                    xhr.setRequestHeader("cache", "false")
+                },
+                complete: function (xhr) {
+                    _this.csrfToken = xhr.getResponseHeader("X-CSRF-Token");
+                }
+            });
+
+            // send for POST, PATCH ...
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRF-Token", _this.csrfToken);
+                    }
+                }
+            });
+
             // call the base component's init function
             UIComponent.prototype.init.apply(this, arguments);
 
@@ -46,7 +72,7 @@ sap.ui.define([
 
             var oModel = null;
 
-            if (!formatter.isV4())
+            if (isV2)
                 oModel = new ODataV2({
                     serviceUrl: _this._getServiceUrl(true) // "/odata.svc/"
                 });
@@ -73,29 +99,6 @@ sap.ui.define([
 
             // set as default ?
             this.setModel(oModel, "wb");
-
-            // All post request would be checked (So send GET first)
-            var csrfToken;
-            $.ajax({
-                url: oModel.sServiceUrl,
-                type: "GET",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("X-CSRF-Token", "Fetch");
-                    xhr.setRequestHeader("cache", "false")
-                },
-                complete: function (xhr) {
-                    _this.csrfToken = xhr.getResponseHeader("X-CSRF-Token");
-                }
-            });
-
-            // send for POST, PATCH ...
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRF-Token", _this.csrfToken);
-                    }
-                }
-            });
         },
 
         _getServiceUrl: function (v2) {

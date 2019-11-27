@@ -3,7 +3,7 @@
   "description": "Generated from ../package.json, do not change!",
   "version": "1.0.0",
   "dependencies": {
-    "@sap/cds": "~3.17.4",
+    "@sap/cds": "~3.18.3",
     "@sap/cds-odata-v2-adapter-proxy": "~1.4.1",
     "@sap/hdbext": "~6.0.1",
     "@sap/odata-commons": "~2.1.3",

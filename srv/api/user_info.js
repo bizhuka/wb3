@@ -5,12 +5,11 @@ const xssec = require("@sap/xssec");
 const util = require('util');
 const fs = require('fs');
 
-const readFile = util.promisify(fs.readFile);
 
-async function getUserInfo(req) {
+function getUserInfo(req) {
     // get from json
     const token = Db.isTest() ?
-        JSON.parse(await readFile(Db.getFilePath('json/tokenInfo.json'), 'utf8')) :
+        JSON.parse(fs.readFileSync(Db.getFilePath('json/tokenInfo.json'), 'utf8')) :
         JSON.parse(req.authInfo.ssojwt.getJWPayload());
 
     // Parsed info
@@ -57,8 +56,8 @@ async function getUserInfo(req) {
     return result;
 }
 
-async function getWerksR3Clause(req) {
-    const userInfo = await getUserInfo(req);
+function getWerksR3Clause(req) {
+    const userInfo = getUserInfo(req);
 
     // No restriction
     if (userInfo.werks.length === 0)
@@ -76,11 +75,11 @@ async function getWerksR3Clause(req) {
 
 async function getBukrsR3Clause(req, srv) {
     const {Werk} = srv.entities('wb.db');
-    const query = 'SELECT Bukrs FROM ' + Werk["@cds.persistence.name"] + ' WHERE Werks ' + await getWerksR3Clause(req);
+    const query = 'SELECT Bukrs FROM ' + Werk["@cds.persistence.name"] + ' WHERE Werks ' + getWerksR3Clause(req);
 
     const tx = cds.transaction(req);
     const arrWerks = await tx.run(query);
-    await Db.close(tx);
+    Db.close(tx);
 
     // No restriction
     if (arrWerks.length === 0)
@@ -110,8 +109,8 @@ module.exports = (app) => {
         return exportObject;
 
     //////////////////////////////////////////////////////////////////////////////
-    app.all("/userInfo", async (req, res) => {
-        const data = await getUserInfo(req);
+    app.all("/userInfo", (req, res) => {
+        const data = getUserInfo(req);
         res.status(200).json(data)
     });
 };

@@ -84,7 +84,7 @@ module.exports = (app, srv) => {
         //             Id: parseInt(incomingDoc.waybillId)
         //         })
         //     );
-        // await Db.close(tx, true);
+        // Db.close(tx, true);
 
         // Send as json
         res.json(result);

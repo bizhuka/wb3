@@ -8,7 +8,7 @@
     { "label_kz": "СТ тапсырмасы","label_ru": "Задание СТ","property": "Ltxa1","type": "string" },
     { "label_kz": "Цех","label_ru": "Цех","property": "Pltxt","type": "string" },
     { "label_kz": "ЖҚ нөмірі","label_ru": "Номер ПЛ","property": "Waybill_Id","type": "number" },
-    { "label_kz": "Тапсырыс күйі","label_ru": "Статус заявки","property": "Statusreason_{locale}","type": "string" },
+    { "label_kz": "Тапсырыс күйі","label_ru": "Статус заявки","property": "StatusReason_{locale}","type": "string" },
     { "label_kz": "SAP көлігінің нөмірі","label_ru": "№ ЕО ТОРО","property": "Equnr","type": "string" },
     { "label_kz": "Тапсырыстың жоспарланған уақыты","label_ru": "Плановая время Заявки","property": "Hours","type": "string" },
     { "label_kz": "Тапсырыстың нақты басталу уақыты","label_ru": "Фактическая время Заявки начало","property": "FromDate","type": "datetime" },

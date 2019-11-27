@@ -21,10 +21,10 @@ sap.ui.define([], function () {
                 var path = this.absolutePath("/");
 
                 // Java
-                if (path.indexOf("wb-router") > 0 || path.indexOf("http://localhost:8080") === 0)
+                if (path.indexOf("http://localhost:8080") === 0)
                     this._isV4 = false;
                 // Node js
-                else if (path.indexOf("wb3-") > 0 || path.indexOf("http://localhost:4004") === 0 || path.indexOf("https://hxehost") === 0)
+                else if (path.indexOf("wb-router") > 0 || path.indexOf("wb3-") > 0 || path.indexOf("http://localhost:4004") === 0 || path.indexOf("https://hxehost") === 0)
                     this._isV4 = true;
                 else
                     throw "isV4() Unknown host";

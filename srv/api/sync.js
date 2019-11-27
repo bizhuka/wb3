@@ -124,7 +124,7 @@ async function persist(req, res, Entity, params) {
                 result.deleted++;
             }
 
-    await Db.close(tx, true);
+    Db.close(tx, true);
 
     // And return info
     res.json(result);
@@ -257,7 +257,7 @@ module.exports = (app, srv) => {
     //////////////////////////////////////////////////////////////////////////////
     app.all("/r3/EQUIPMENT", async (req, res) => {
         // Werks by rights
-        const where = await getWerksR3Clause(req);
+        const where = getWerksR3Clause(req);
 
         await persist(req, res, Equipment, {
             DB_WHERE: where ? ' WHERE Swerk ' + where : '',
@@ -272,7 +272,7 @@ module.exports = (app, srv) => {
         let sapDateTo = req.query.TO_DATE.replace(/-/g, '');
 
         // Werks by rights
-        const where = await getWerksR3Clause(req);
+        const where = getWerksR3Clause(req);
         const filter = {
             DB_WHERE: where ? ' WHERE Werks ' + where + ' AND ' : '',
             R3_WHERE: where ? ' AFIH~IWERK ' + where + ' AND ' : '',
@@ -309,7 +309,7 @@ module.exports = (app, srv) => {
         const sapDateTo = req.query.TO_DATE.replace(/-/g, '');
 
         // Werks by rights
-        const where = await getWerksR3Clause(req);
+        const where = getWerksR3Clause(req);
         const filter = {
             DB_WHERE: where ? ' WHERE Iwerk ' + where + ' AND ' : '',
             R3_WHERE: where ? ' AFIH~IWERK ' + where + ' AND ' : ''

@@ -178,7 +178,7 @@ module.exports = (app, srv) => {
         } catch (e) {
             res.json(e.toString());
         } finally {
-            await Db.close(tx);
+            Db.close(tx);
         }
 
         // Send error

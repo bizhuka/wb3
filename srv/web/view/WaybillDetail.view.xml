@@ -49,9 +49,11 @@
         <semantic:customFooterContent>
             <!--<Button id="id_bt_confirm" icon="sap-icon://accept"-->
             <!--text="Confirm"/>-->
+
+            <!--%{wb>TooName}==='-'&amp;&amp;-->
             <Button id="id_bt_cancel" icon="sap-icon://decline" text="{i18n>canceling}"
                     press="on_set_status"
-                    visible="{= %{wb>Status}!==%{status>/REJECTED}&amp;&amp;%{wb>Status}!==%{status>/ARRIVED}&amp;&amp;%{wb>Status}!==%{status>/CLOSED}&amp;&amp;%{wb>TooName}==='-'&amp;&amp;%{userInfo>/WbCancel}===true}"/>
+                    visible="{= %{wb>Status}!==%{status>/REJECTED}&amp;&amp;%{wb>Status}!==%{status>/ARRIVED}&amp;&amp;%{wb>Status}!==%{status>/CLOSED}&amp;&amp;%{userInfo>/WbCancel}===true}"/>
 
             <Button id="id_bt_dep_date" icon="sap-icon://journey-arrive" text="{i18n>outGarage}"
                     press="on_set_status"

@@ -380,7 +380,7 @@
             Reason       : String(100);
 
             @Comment: 'stype = RC || RR'
-            StatusReason : TStatusId; // Association to StatusText;
+            StatusReason : TStatusId default 100; //Status.RC_NEW Association to StatusText;
 
             @R3_FIELD : 'AFVC_KTSCH'
             Ktsch        : TKtsch; // Association to EqunrGrp;
@@ -540,7 +540,7 @@
 
         g.Maktx,
 
-        w.Id, w.Werks, w.CreateDate, w.FromDate, w.ToDate, w.OdoDiff, w.MotoHour, w.Description, w.Status,
+        w.Id, w.Werks, w.CreateDate, w.GarageDepDate, w.GarageArrDate, w.FromDate, w.ToDate, w.OdoDiff, w.MotoHour, w.Description, w.Status,
 
         e.Equnr, e.Eqktx, e.Point, e.Imei, e.Mptyp,
         e.WialonId, e.License_num, e.TooName, e.PetrolMode,

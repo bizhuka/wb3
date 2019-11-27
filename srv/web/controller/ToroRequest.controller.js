@@ -7,12 +7,13 @@ sap.ui.define([
     'sap/ui/core/MessageType',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
+    'sap/ui/model/Sorter',
     'sap/ui/model/json/JSONModel',
     'sap/ui/core/UIComponent',
     'com/modekzWaybill/model/formatter',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, MessageToast, Label, ButtonType, SelectDialog, MessageType, Filter, FilterOperator, JSONModel, UIComponent, formatter, LibReqs, LibChangeStatus) {
+], function (BaseController, MessageToast, Label, ButtonType, SelectDialog, MessageType, Filter, FilterOperator, Sorter, JSONModel, UIComponent, formatter, LibReqs, LibChangeStatus) {
     "use strict";
 
     var C_FIX_COLUMN = 2;
@@ -141,7 +142,6 @@ sap.ui.define([
                 return;
 
             var items = {};
-            var werksArr = [], werksKeys = [];
             var equnrArr = [];
 
             for (var i = 0; i < eoItems.length; i++) {
@@ -157,84 +157,88 @@ sap.ui.define([
                     row: item,
                     changed: false
                 };
-
-                if (werksKeys.indexOf(item.Swerk) < 0) {
-                    werksKeys.push(item.Swerk);
-                    werksArr.push(new Filter("Werks", FilterOperator.EQ, item.Swerk));
-                }
                 equnrArr.push(new Filter("Equnr", FilterOperator.EQ, item.Equnr));
             }
 
-            var filters = [
+            var dateFilter =
                 new Filter("Datum", FilterOperator.BT,
                     _this.addDays(this.dpFrom.getDateValue(), -1),
-                    _this.addDays(this.dpTo.getDateValue(), 1)),
-                new Filter({
-                    filters: werksArr,
-                    and: false
-                })
-            ];
+                    _this.addDays(this.dpTo.getDateValue(), 1))
+            ;
 
-            // TODO check
-            if (!formatter.isWindows() || !formatter.isV4()) {
-                console.log('EO filter added')
-                filters.push(
-                    new Filter({
-                        filters: equnrArr,
-                        and: false
-                    }));
-            }
+            // // TODO check
+            // if (!formatter.isWindows() || !formatter.isV4()) {
+            //     console.log('EO filter added')
+            //     filters.push(
+            //         new Filter({
+            //             filters: equnrArr,
+            //             and: false
+            //         }));
+            // }
 
-            _this.getOwnerComponent().readWrapper("Schedules",
-                filters,
-                function (error, schedules) {
-                    if (error || !_this.tbSchedule)
-                        return;
+            _this.filterBy({
+                filters: [
+                    {
+                        field: "Werks",
+                        scope: "werks"
+                    },
 
-                    var items = _this.tbSchedule.getItems();
-                    var columnCount = _this.tbSchedule.getColumns().length;
+                    dateFilter
+                ],
 
-                    // Without time!
-                    var dFrom = _this.dpFrom.getDateValue();
-                    dFrom.setHours(0, 0, 0, 0);
+                ok: function (okFilter) {
+                    _this.getOwnerComponent().readWrapper("Schedules",
+                        okFilter,
+                        function (error, schedules) {
+                            if (error || !_this.tbSchedule)
+                                return;
 
-                    var wbShowOne = _this.getModel("userInfo").getProperty("/WbShowOne") === true;
-                    var wbMechanic = _this.getModel("userInfo").getProperty("/WbMechanic") === true;
+                            var items = _this.tbSchedule.getItems();
+                            var columnCount = _this.tbSchedule.getColumns().length;
 
-                    for (var i = 0; i < items.length; i++) {
-                        var cells = items[i].getCells();
+                            // Without time!
+                            var dFrom = _this.dpFrom.getDateValue();
+                            dFrom.setHours(0, 0, 0, 0);
 
-                        // Clear cells
-                        for (var c = C_FIX_COLUMN; c < columnCount; c++) {
-                            var link = cells[c];
-                            link.setText(C_EMPTY_TEXT);
-                            link.setEnabled(_this.checkWithDate(new Date(link.getTarget()), wbMechanic));
-                        }
+                            var wbShowOne = _this.getModel("userInfo").getProperty("/WbShowOne") === true;
+                            var wbMechanic = _this.getModel("userInfo").getProperty("/WbMechanic") === true;
 
-                        var context = items[i].getBindingContext("wb");
-                        // TODO not prepared?
-                        if (!context || !context.getObject())
-                            continue;
-                        var equnr = context.getObject().Equnr;
+                            for (var i = 0; i < items.length; i++) {
+                                var cells = items[i].getCells();
 
-                        for (var s = 0; s < schedules.length; s++) {
-                            var schedule = schedules[s];
-                            if (schedule.Equnr === equnr && _this.toSapDate(dFrom) <= _this.toSapDate(schedule.Datum)) {
-                                var daysOff = _this.diffInDays(schedule.Datum, dFrom) + C_FIX_COLUMN;
+                                // Clear cells
+                                for (var c = C_FIX_COLUMN; c < columnCount; c++) {
+                                    var link = cells[c];
+                                    link.setText(C_EMPTY_TEXT);
+                                    link.setEnabled(_this.checkWithDate(new Date(link.getTarget()), wbMechanic));
+                                }
 
-                                link = cells[daysOff];
-                                if (link && daysOff > (C_FIX_COLUMN - 1)) {
-                                    link.setText(schedule.Ilart ? schedule.Ilart : schedule.Waybill_Id);
+                                var context = items[i].getBindingContext("wb");
+                                // TODO not prepared?
+                                if (!context || !context.getObject())
+                                    continue;
+                                var equnr = context.getObject().Equnr;
 
-                                    var isEnabled = (parseInt(schedule.Waybill_Id) > 0 && wbShowOne) ||
-                                        link.getEnabled(); // (_this.checkWithDate(new Date(link.getTarget()), wbMechanic) // schedule.Datum
+                                for (var s = 0; s < schedules.length; s++) {
+                                    var schedule = schedules[s];
+                                    if (schedule.Equnr === equnr && _this.toSapDate(dFrom) <= _this.toSapDate(schedule.Datum)) {
+                                        var daysOff = _this.diffInDays(schedule.Datum, dFrom) + C_FIX_COLUMN;
 
-                                    link.setEnabled(isEnabled);
+                                        link = cells[daysOff];
+                                        if (link && daysOff > (C_FIX_COLUMN - 1)) {
+                                            link.setText(schedule.Ilart ? schedule.Ilart : schedule.Waybill_Id);
+
+                                            var isEnabled = (parseInt(schedule.Waybill_Id) > 0 && wbShowOne) ||
+                                                link.getEnabled(); // (_this.checkWithDate(new Date(link.getTarget()), wbMechanic) // schedule.Datum
+
+                                            link.setEnabled(isEnabled);
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                });
+                        });
+                }
+            });
         },
 
         onUpdateStartedSchedule: function () {
@@ -275,7 +279,12 @@ sap.ui.define([
                         filter = _this.makeAndFilter(filter, new Filter("Swerk", FilterOperator.EQ, werksComboFilter));
 
                     eoFilterInfo.wholeFilterPrev = filter;
-                    this.tbSchedule.getBinding("items").filter(eoFilterInfo.wholeFilterPrev);
+                    var items = this.tbSchedule.getBinding("items");
+
+                    // Order
+                    items.sort([new Sorter('N_class'), new Sorter('TooName')]);
+                    // And filter
+                    items.filter(eoFilterInfo.wholeFilterPrev);
                 }
             });
         },

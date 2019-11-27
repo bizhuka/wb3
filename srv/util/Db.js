@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
 
-    close: async function (tx, doCommit) {
-        if (doCommit || this.isWindows()) // SQLITE !
-            await tx.commit(true);
+    close: function (tx, doCommit) {
+        // if (doCommit || this.isWindows()) // SQLITE !
+        tx.commit(true);
     },
 
     isTest: function () {

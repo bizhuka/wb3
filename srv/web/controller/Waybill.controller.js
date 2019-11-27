@@ -46,7 +46,11 @@ sap.ui.define([
             var byToo = this.byId('id_by_too').getState();
 
             var fromDate = this.byId('id_date_from').getDateValue();
+            if (fromDate) fromDate.setHours(12, 0, 0, 0);
+
             var toDate = this.byId('id_date_to').getDateValue();
+            if (toDate) toDate.setHours(12, 0, 0, 0);
+
             var werksFilter = this.byId('id_werks_filter').getSelectedKey();
 
             // Called twice

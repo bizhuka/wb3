@@ -1,0 +1,34 @@
+ID: wb3
+_schema-version: '2.1'
+version: 0.0.5
+description: 'Main application'
+applications:
+# wb3-srv
+  - name: wb-emba2
+    type: nodejs
+    path: srv
+    port: 51062
+# 1024M    
+    memory: 4098M
+    disk-quota: 1024M
+    env:
+      WB_IS_TEST: false
+#      RFC_TEST: true
+# RDV
+#      WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"DGR@2018,"lang":"ru","ashost":"172.20.16.88","sysnr":"20","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
+
+# RTS
+#      WB_RFC_DEST: '{"client":"305","user":"MM026_DG","passwd":"PMP%2019,"lang":"ru","ashost":"172.20.16.88","sysnr":"10","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
+#      WB_RFC_DEST: '{"client":"305","user":"ALE_COMM_RU","passwd":"f38#@d79b2A92b","lang":"ru","ashost":"172.20.16.88","sysnr":"10","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
+
+# RPR-PROD
+      WB_RFC_DEST: '{"client":"305","user":"ALE_COMM_RU","passwd":"f38#@d79b2A92b","lang":"ru","ashost":"172.20.16.89","sysnr":"00","saprouter":"/H/93.185.79.115/S/3299/W/sap83h2m01"}'
+      WIALON_OPT: '{"host": "http://188.127.32.26:8022/", "user": "dlcguest", "password": "kEFEHUMFFE", "templateId":19, "resourceId": 291, "tzOffset": 134239328}'
+#    provides:
+#      - name: srv_api
+#        properties:
+#          url: '${default-url}'
+    services:
+      - wb3-hdi-container
+      - wb-xsuaa
+#      - wb3-uaa

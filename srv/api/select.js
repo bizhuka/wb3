@@ -9,7 +9,7 @@ module.exports = (app, srv) => {
     const {Waybill, GasSpent, VCountWB, VCountREQ} = srv.entities('wb.db');
 
     //////////////////////////////////////////////////////////////////////////////
-    app.all("/select/prevGas", async (req, res) => {
+    app.all("/select/prevGas", (req, res) => {
 
         let statement =
             "SELECT w.id, w.Spent1, w.Spent2, w.Spent4, p.*\n" +
@@ -27,58 +27,62 @@ module.exports = (app, srv) => {
             .replace('_STATUS_ID_', Status.CLOSED);
 
         // Read from DB
-        const tx = cds.transaction(req);
-        const rows = await tx.run(statement);
-        await Db.close(tx);
+        // const tx = cds.transaction(req);
+        // tx.run(statement); const rows =
+        // Db.close(tx);
 
-        let prevPetrol = null;
-        const prevPetrolList = [];
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            if (Db.readProperty(row, 'Pos') === 0) {
-                const ptType = Db.readProperty(row, 'PtType');
-                prevPetrol = {
-                    PtType: ptType,
-                    GasBefore: Db.readProperty(row, 'Spent' + ptType),
-                    GasMatnr: ''
-                };
-                prevPetrolList.push(prevPetrol);
+        cds.run(statement).then(rows => {
+            let prevPetrol = null;
+            const prevPetrolList = [];
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                if (Number(Db.readProperty(row, 'Pos')) === 0) {
+                    const ptType = Db.readProperty(row, 'PtType');
+                    prevPetrol = {
+                        PtType: ptType,
+                        GasBefore: Db.readProperty(row, 'Spent' + ptType),
+                        GasMatnr: ''
+                    };
+                    prevPetrolList.push(prevPetrol);
+                }
+                if (prevPetrol == null)
+                    continue;
+
+                prevPetrol.GasMatnr = Db.readProperty(row, 'GasMatnr');
+                prevPetrol.GasBefore -= (
+                    Number(Db.readProperty(row, 'GasBefore')) + Number(Db.readProperty(row, 'GasGiven')));
             }
-            if (prevPetrol == null)
-                continue;
 
-            prevPetrol.GasMatnr = Db.readProperty(row, 'GasMatnr');
-            prevPetrol.GasBefore -= (
-                Db.readProperty(row, 'GasBefore') + Db.readProperty(row, 'GasGiven'));
-        }
+            // Change sign
+            for (let i = 0; i < prevPetrolList.length; i++)
+                prevPetrolList[i].GasBefore = Math.abs(prevPetrolList[i].GasBefore);
 
-        // Change sign
-        for (let i = 0; i < prevPetrolList.length; i++)
-            prevPetrolList[i].GasBefore = Math.abs(prevPetrolList[i].GasBefore);
-
-        res.json(prevPetrolList);
+            res.json(prevPetrolList);
+        }).catch(err => {
+            console.log('prevGas=', err);
+        });
     });
 
     //////////////////////////////////////////////////////////////////////////////
-    app.all("/count/wb", async (req, res) => {
-        await doCount(req, res, VCountWB);
+    app.all("/count/wb", (req, res) => {
+        doCount(req, res, VCountWB);
     });
 
     //////////////////////////////////////////////////////////////////////////////
-    app.all("/count/req", async (req, res) => {
-        await doCount(req, res, VCountREQ);
+    app.all("/count/req", (req, res) => {
+        doCount(req, res, VCountREQ);
     });
 };
 
 
-async function doCount(req, res, Entity) {
+function doCount(req, res, Entity) {
     const result = [];
 
     let statement =
         "SELECT Status as STATUS, sum(cnt) AS CNT FROM _VIEW_NAME_ _WHERE_ GROUP BY Status ORDER BY Status;";
 
     // Based on rights
-    let where = await getWerksR3Clause(req);
+    let where = getWerksR3Clause(req);
     if (where)
         where = 'WHERE Werks ' + where;
 
@@ -86,9 +90,12 @@ async function doCount(req, res, Entity) {
         .replace('_VIEW_NAME_', Entity["@cds.persistence.name"])
         .replace('_WHERE_', where);
 
-    const tx = cds.transaction(req);
-    const items = await tx.run(statement);
-    await Db.close(tx);
-
-    res.json(items);
+    // const tx = cds.transaction(req);
+    // tx.run(statement);
+    cds.run(statement).then(items => {
+        res.json(items);
+    }).catch(err => {
+        console.log('doCount=', err);
+    });
+    //Db.close(tx);
 }

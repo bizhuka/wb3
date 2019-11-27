@@ -84,16 +84,15 @@ module.exports = (app, srv) => {
 
             // add fields to header
             const header = [];
-            const headerDates = [];
+            const cdsFields = [];
             for (let f = 0; f < fields.length; f++)
+
                 if (!fields[f].Name.startsWith('$')) {
                     const field = getField(entityName, fields[f].Name);
                     header.push(field.name);
-
-                    if (field.type === 'cds.Timestamp') // field.type === 'cds.Date' ||
-                        headerDates.push(field.name);
+                    // Save description
+                    cdsFields.push(field);
                 }
-
             // Get table data
             const entryCSV = zipEntries.find(item => item.entryName === entityName + '/data.csv');
 
@@ -118,13 +117,28 @@ module.exports = (app, srv) => {
                 const item = csvResult.data[i];
 
                 // transform datetimes
-                headerDates.forEach(dateField => {
-                    const txtValue = item[dateField];
+                cdsFields.forEach(cdsField => {
 
-                    if (txtValue)
-                        item[dateField] = (new Date(txtValue.substr(0, 23).replace(' ', 'T'))).toISOString();
-                    else
-                        item[dateField] = null;
+                    switch (cdsField.type) {
+                        case 'cds.Timestamp':
+                            // case 'ccds.Date':
+                            const dateValue = item[cdsField.name];
+
+                            if (dateValue)
+                                item[cdsField.name] = (new Date(dateValue.substr(0, 23).replace(' ', 'T'))).toISOString();
+                            else
+                                item[cdsField.name] = null;
+                            break;
+
+                        case 'cds.DecimalFloat':
+                            let numValue = item[cdsField.name];
+                            if (numValue === '')
+                                numValue = 0;
+
+                            item[cdsField.name] = Number(numValue);
+                            break;
+                    }
+
                 });
 
                 for (let key in item)
@@ -166,7 +180,7 @@ module.exports = (app, srv) => {
         }
 
         // Commit and show info
-        await Db.close(tx, true);
+        Db.close(tx, true);
         console.warn('================================');
         console.warn(result);
         res.json(result);

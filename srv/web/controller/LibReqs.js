@@ -405,7 +405,7 @@ sap.ui.define([
                 // What would be edited
                 var editFields = {
                     Objnr: obj.Objnr,
-                    Waybill_Id: String(_this.owner.status.WB_ID_REJECTED)
+                    Waybill_Id: formatter.isV4() ? Number(_this.owner.status.WB_ID_REJECTED) : String(_this.owner.status.WB_ID_REJECTED)
                 };
                 var bundle = _this.owner.getBundle();
                 changeStat.openDialog({
@@ -424,7 +424,7 @@ sap.ui.define([
                     },
 
                     success: function () {
-                        _this.getOwnerComponent().modifyWrapper('UPDATE', "/ReqHeaders('" + obj.Objnr + "')", editFields, {
+                        _this.owner.getOwnerComponent().modifyWrapper('UPDATE', "/ReqHeaders('" + obj.Objnr + "')", editFields, {
                             success: function () {
                                 oWbModel.refresh();
                             },

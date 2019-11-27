@@ -205,7 +205,10 @@ sap.ui.define([
                 var bSameMonth = false;
                 if (CreateDate) {
                     var now = new Date();
-                    bSameMonth = now.getFullYear() === CreateDate.getFullYear() && now.getMonth() === CreateDate.getMonth();
+                    bSameMonth = now.getFullYear() === CreateDate.getFullYear() &&
+                        (now.getMonth() === CreateDate.getMonth() || (
+                                now.getMonth() - 1 === CreateDate.getMonth() && now.getDay() <= 6)
+                        );
                 }
 
                 return (Status === this.owner.status.ARRIVED && (WbChangeWialonData === true || noSource === true)) ||
@@ -278,6 +281,7 @@ sap.ui.define([
                     // From wialon
                     var fldName = "Spent" + ptType.id;
                     var gasTotalSpent = parseFloat(bindObj[fldName] ? bindObj[fldName] : 0);
+                    var unqMatnrLgort = {};
 
                     for (var i = 0; i < data.length; i++) {
                         var row = data[i];
@@ -299,7 +303,20 @@ sap.ui.define([
                         _this.round2Digits(data[i], ["GasBefore", "GasGive", "GasGiven", "GasSpent", "GasAfter"]);
 
                         // Modify items in DB
-                        if (!row.GasMatnr || oEvent.skipSave)
+                        if (!row.GasMatnr)
+                            continue;
+
+                        // Get unique key
+                        var unqKey = row.GasMatnr + "-" + data[i].GasLgort;
+                        if (unqMatnrLgort[unqKey] === true && !oEvent.skipMessage) {
+                            owner.showError(null, owner.getBundle().getText("noUnqMatnrLgort", [ptType.title, i + 1]));
+                            hasErrors = true;
+                            continue;
+                        }
+                        unqMatnrLgort[unqKey] = true;
+
+                        // When ?
+                        if (oEvent.skipSave)
                             continue;
 
                         // Check Lgort
@@ -310,7 +327,7 @@ sap.ui.define([
                         }
 
                         if (oEvent.checkGive && row.GasMatnr && parseFloat(row.GasGive) <= 0 && ptType.giveRequired) {
-                            this.showError(null, owner.getBundle().getText("noGas", [ptType.title, i + 1]));
+                            owner.showError(null, owner.getBundle().getText("noGas", [ptType.title, i + 1]));
                             hasErrors = true;
                             continue;
                         }

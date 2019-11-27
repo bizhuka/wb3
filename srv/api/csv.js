@@ -33,7 +33,7 @@ module.exports = (app, srv) => {
                 item.status = C_UPDATED;
             }
         }
-        await Db.close(tx, true);
+        Db.close(tx, true);
 
         res.status(200).json(result);
     });
@@ -100,7 +100,7 @@ module.exports = (app, srv) => {
                     break;
             }
         }
-        await Db.close(tx, true);
+        Db.close(tx, true);
 
         res.status(200).json(result);
 

@@ -6,6 +6,8 @@ const Time = require('../util/Time');
 // Synchronization with R3
 const {getRfcClient} = require('./sync')();
 
+const {getUserInfo} = require('./user_info')();
+
 module.exports = (app, srv) => {
 
     const {Waybill, ReqHeader, ReqHistory, Schedule, GasSpent, VGasSpent} = srv.entities('wb.db');
@@ -62,6 +64,12 @@ module.exports = (app, srv) => {
                     console.log(JSON.stringify(newReqHistory) + " " + e.toString())
                 }
         }
+
+        // Always
+        console.log('---REQHEADER-COMMIT--');
+        Db.close(tx, true);
+
+        return reqHeader;
     });
 
     //////////////////////////////////////////////////////////////////////////////
@@ -77,7 +85,13 @@ module.exports = (app, srv) => {
                     waybill[key] = Time.getNow();
             }
         }
-        console.log('{waybill}', waybill);
+        console.log('{waybill}=', waybill);
+
+        // Who changed
+        waybill.ChangeDate = Time.getNow();
+        const userInfo = getUserInfo(context._.req);
+        if (userInfo)
+            waybill.ChangeUser = userInfo.email;
 
         // Generate new key
         if (!waybill.Id) {
@@ -169,8 +183,7 @@ module.exports = (app, srv) => {
         }
         // Always
         console.log('---WAYBILL-COMMIT--');
-        await Db.close(tx, true);
-        console.log('---END--WAYBILL-OK-123-');
+        Db.close(tx, true);
 
         return waybill;
     });
@@ -221,7 +234,7 @@ module.exports = (app, srv) => {
 
         const tx = cds.transaction(context._.odataReq);
         const items = await tx.run(statement);
-        await Db.close(tx);
+        Db.close(tx, true);
 
         // Add virtual fields info
         for (let i = 0; i < items.length; i++) {
@@ -242,6 +255,19 @@ module.exports = (app, srv) => {
     //////////////////////////////////////////////////////////////////////////////
     srv.after('READ', 'VGasSpents', async (result, context) => {
         //const tx = cds.transaction(context._.odataReq);
+
+        // By primary key Waybill_Id, PtType, Pos
+        result.sort((a, b) => {
+            let result = a.Waybill_Id - b.Waybill_Id;
+            if (result !== 0)
+                return result;
+
+            result = a.PtType - b.PtType;
+            if (result !== 0)
+                return result;
+
+            return a.Pos - b.Pos;
+        });
 
         let prevItem = null;
         for (let i = 0; i < result.length; i++) {
@@ -268,10 +294,10 @@ module.exports = (app, srv) => {
             // prevItem = prevItem[0];
 
             // Both fuel
-            let total = item.GasBefore + item.GasGiven;
+            let total = Number(item.GasBefore) + Number(item.GasGiven);
 
             // GasSpent
-            let prevGasAfterNext = prevItem.GasAfterNext;
+            let prevGasAfterNext = Number(prevItem.GasAfterNext);
             if (prevGasAfterNext > 0)
                 result[i].GasSpent = 0;
             else {
@@ -280,12 +306,11 @@ module.exports = (app, srv) => {
 
                 if (total > prevGasAfterNext)
                     result[i].GasSpent = prevGasAfterNext;
-                else
-                    result[i].GasSpent = total - prevGasAfterNext;
+                // else result[i].GasSpent = total - prevGasAfterNext;
             }
 
             // GasAfterNext
-            prevGasAfterNext = prevItem.GasAfterNext;
+            prevGasAfterNext = Number(prevItem.GasAfterNext);
             if (prevGasAfterNext > 0)
                 result[i].GasAfterNext = total;
             else
@@ -310,7 +335,7 @@ module.exports = (app, srv) => {
             result[i].GasSpent = Math.round(result[i].GasSpent * 100) / 100;
             result[i].GasAfter = Math.round(result[i].GasAfter * 100) / 100;
         }
-        // await Db.close(tx);
+        // Db.close(tx);
 
         // And return
         return result;
@@ -344,7 +369,7 @@ module.exports = (app, srv) => {
             })
         );
 
-        await Db.close(tx, true);
+        Db.close(tx, true);
         console.log('-----END--UPDATE--VWaybills--', context.data.Id, typeof context.data.Id);
     });
 };

@@ -272,7 +272,7 @@ sap.ui.define([
                         okFilter;
 
                     // Do not show marked EO
-                    filter = _this.makeAndFilter(filter, new Filter("Expelled", FilterOperator.NE, "X"));
+                    filter = _this.makeAndFilter(filter, new Filter("Expelled", FilterOperator.EQ, ""));
 
                     // From ComboBox
                     if (werksComboFilter)

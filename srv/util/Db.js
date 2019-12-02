@@ -3,8 +3,13 @@ const path = require('path');
 module.exports = {
 
     close: function (tx, doCommit) {
-        // if (doCommit || this.isWindows()) // SQLITE !
-        tx.commit(true);
+        console.trace("commit=", doCommit);
+        try {
+            // if (doCommit || this.isWindows()) // SQLITE !
+            tx.commit(true);
+        } catch (e) {
+            console.error(e.stack);
+        }
     },
 
     isTest: function () {

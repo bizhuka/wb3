@@ -5,19 +5,19 @@ description: 'SAP Analytics Cloud'
 
 applications:
 - name: wb-analytics
-  memory: 768M
+  memory: 1024M
   type: java.tomee
   buildpack: sap_java_buildpack
-  path: sac/java-xsahaa.war
+  path: sac/java-xsahaa-1-4.war
   env:
-    USE_NAMED_USER: true
+#    USE_NAMED_USER: true
     TARGET_RUNTIME: tomee
-#    SAP_JWT_TRUST_ACL: '[{"clientid":"sb-wb-analytics", "identityzone": "*"}]'
+    SAP_JWT_TRUST_ACL: '[{"clientid":"sb-wb-analytics", "identityzone": "*"}]'
     JBP_CONFIG_RESOURCE_CONFIGURATION: "['tomee/webapps/ROOT/WEB-INF/resources.xml': {'xsahaa-hdi-container':'wb3-hdi-container'}]"
   provides:
     - name: wb-analytics
       properties:
         url: ${default-url}
   services:
-#    - wb3-hdi-container
+    - wb3-hdi-container
     - wb-xsuaa

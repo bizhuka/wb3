@@ -20,6 +20,8 @@ module.exports = (app, srv) => {
     const entities = srv.entities('wb.db');
 
     const getField = function (entityName, fieldName) {
+        fieldName = fieldName.toLowerCase();
+
         const entity = entities[entityName];
         if (!entity)
             throw (`Entity '${entityName}' not found`);

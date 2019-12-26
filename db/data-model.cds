@@ -66,6 +66,13 @@
             MotoHour      : DecimalFloat;
             OdoDiff       : DecimalFloat;
 
+            @Comment: 'Origainal wialon data'
+            _Spent1        : DecimalFloat;
+            _Spent2        : DecimalFloat;
+            _Spent4        : DecimalFloat;
+            _MotoHour      : DecimalFloat;
+            _OdoDiff       : DecimalFloat;
+
             @Comment: 'After close WB coming from SAP'
             Docum         : TMeasureDoc;
             Aufnr         : TAufnr;
@@ -114,11 +121,19 @@
         w.ChangeUser,
         w.ChangeDate,
         w.Spent0,
+
         w.Spent1,
         w.Spent2,
         w.Spent4,
         w.MotoHour,
         w.OdoDiff,
+
+        w._Spent1,
+        w._Spent2,
+        w._Spent4,
+        w._MotoHour,
+        w._OdoDiff,
+
         w.Docum,
         w.Aufnr,
         w.Bukrs,

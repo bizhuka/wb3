@@ -63,8 +63,8 @@ sap.ui.define([
 
                     // set model & add to tabbar
                     ptType.iconTab = owner.createFragment({
-                        fragmentContent: textFrag.replace('{{SPENT_PATH}}', '{wb>Spent' + ptType.id + '}')
-                            .replace('{{SPENT_ID}}', 'id_input_spent' + ptType.id)
+                        fragmentContent: textFrag
+                            .replace(/{{SPENT_ID}}/g, ptType.id)
                     }, _this);
                     ptType.iconTab._PtType = ptType.id;
                     ptType.iconTab.setModel(ptType.model, "petrol");

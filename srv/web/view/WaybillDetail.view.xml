@@ -236,6 +236,7 @@
                                                    enabled="{= %{wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
                                                    valueLiveUpdate="true"
                                                    id="id_wb_odo_diff"/>
+                                            <Input type="Number" value="{wb>_OdoDiff}" id="_id_wb_odo_diff" visible="false"/>
                                         </f:fields>
                                     </f:FormElement>
 
@@ -245,6 +246,7 @@
                                                    enabled="{= %{wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
                                                    valueLiveUpdate="true"
                                                    id="id_wb_moto_hour"/>
+                                            <Input type="Number" value="{wb>_MotoHour}" id="_id_wb_moto_hour" visible="false"/>
                                         </f:fields>
                                     </f:FormElement>
                                 </f:formElements>

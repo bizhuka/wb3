@@ -18,6 +18,20 @@ sap.ui.define([
 
     var allTabs, driverInput;
 
+    var uiFields = [
+        {bind: "OdoDiff", ui: "id_wb_odo_diff"},
+        {bind: "MotoHour", ui: "id_wb_moto_hour"},
+        {bind: "Spent1", ui: "id_input_spent1"},
+        {bind: "Spent2", ui: "id_input_spent2"},
+        {bind: "Spent4", ui: "id_input_spent4"},
+
+        {bind: "_OdoDiff", ui: "_id_wb_odo_diff"},
+        {bind: "_MotoHour", ui: "_id_wb_moto_hour"},
+        {bind: "_Spent1", ui: "_id_input_spent1"},
+        {bind: "_Spent2", ui: "_id_input_spent2"},
+        {bind: "_Spent4", ui: "_id_input_spent4"},
+    ];
+
     return BaseController.extend("com.modekzWaybill.controller.WaybillDetail", {
         libPetrol: null,
         libReqs: null,
@@ -57,14 +71,32 @@ sap.ui.define([
             var result = _this.getView().getBindingContext("wb").getObject();
 
             // TODO fix
-            if (result) {
-                result.OdoDiff = _this.byId("id_wb_odo_diff").getValue();
-                result.MotoHour = _this.byId("id_wb_moto_hour").getValue();
-                result.Spent1 = _this.findById("id_input_spent1").getValue();
-                result.Spent2 = _this.findById("id_input_spent2").getValue();
-                result.Spent4 = _this.findById("id_input_spent4").getValue();
-            }
+            if (result)
+                _this._fromUi(result, true);
             return result;
+        },
+
+        _fromUi: function (obj, read) {
+            for (var i = 0; i < uiFields.length; i++) {
+                var filed = uiFields[i];
+                var ui = this.findById(filed.ui);
+                if (!ui)
+                    ui = this.byId(filed.ui);
+
+                if (read)
+                    obj[filed.bind] = ui.getValue();
+                else // write
+                    ui.setValue(obj[filed.bind])
+            }
+        },
+
+        _copyToOData: function (src, dest) {
+            var isV4 = formatter.isV4();
+            for (var i = 0; i < uiFields.length; i++) {
+                var filed = uiFields[i];
+
+                dest[filed.bind] = isV4 ? Number(src[filed.bind]) : String(src[filed.bind]);
+            }
         },
 
         onDataReceived: function (oEvent) {
@@ -250,19 +282,15 @@ sap.ui.define([
                         _this.libPetrol.round2Digits(json, ["OdoDiff", "MotoHour", "Spent1", "Spent2", "Spent4"]);
 
                         // Set in binding object
-                        bindingObject.OdoDiff = json.OdoDiff;
-                        bindingObject.MotoHour = json.MotoHour;
-                        bindingObject.Spent1 = json.Spent1;
-                        bindingObject.Spent2 = json.Spent2;
+                        bindingObject.OdoDiff = bindingObject._OdoDiff = json.OdoDiff;
+                        bindingObject.MotoHour = bindingObject._MotoHour = json.MotoHour;
+                        bindingObject.Spent1 = bindingObject._Spent1 = json.Spent1;
+                        bindingObject.Spent2 = bindingObject._Spent2 = json.Spent2;
                         if (json.Spent4 > 0)
-                            bindingObject.Spent4 = json.Spent4;
+                            bindingObject.Spent4 = bindingObject._Spent4 = json.Spent4;
 
                         // Set in UI
-                        _this.byId("id_wb_odo_diff").setValue(bindingObject.OdoDiff);
-                        _this.byId("id_wb_moto_hour").setValue(bindingObject.MotoHour);
-                        _this.findById("id_input_spent1").setValue(bindingObject.Spent1);
-                        _this.findById("id_input_spent2").setValue(bindingObject.Spent2);
-                        _this.findById("id_input_spent4").setValue(bindingObject.Spent4);
+                        _this._fromUi(bindingObject, false);
                         _this.libPetrol.setNewSpent(bindingObject);
                     };
                     break;
@@ -533,11 +561,8 @@ sap.ui.define([
                                 obj.CloseDate = new Date(1);
                                 obj.Status = _this.status.CLOSED;
                                 // From sensors
-                                obj.OdoDiff = formatter.isV4() ? Number(bindObj.OdoDiff) : String(bindObj.OdoDiff);
-                                obj.MotoHour = formatter.isV4() ? Number(bindObj.MotoHour) : String(bindObj.MotoHour);
-                                obj.Spent1 = formatter.isV4() ? Number(bindObj.Spent1) : String(bindObj.Spent1);
-                                obj.Spent2 = formatter.isV4() ? Number(bindObj.Spent2) : String(bindObj.Spent2);
-                                obj.Spent4 = formatter.isV4() ? Number(bindObj.Spent4) : String(bindObj.Spent4);
+                                _this._copyToOData(bindObj, obj);
+
                                 obj.Docum = doc.docum;
                                 obj.Aufnr = doc.aufnr;
                                 _this.setNewStatus(obj);

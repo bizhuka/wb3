@@ -131,6 +131,18 @@ module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/wialon/getSpentByWialon", async (req, res) => {
+        if (process.env.RFC_TEST === 'true') {
+            res.json(
+                {
+                    "MotoHour": 2536,
+                    "OdoDiff": 5578.808212,
+                    "Spent1": 34.56942,
+                    "Spent2": 0,
+                    "Spent4": 0
+                });
+            return;
+        }
+
         const wialonId = req.query.wialonId;
         const sFrom = req.query.from;
         const sTo = req.query.to;

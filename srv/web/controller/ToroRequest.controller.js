@@ -438,7 +438,7 @@ sap.ui.define([
 
                         title: _this.getBundle().getText("journal"),
 
-                        timeout: 2500, // 2,5 seconds
+                        timeout: 7500, // 2,5 seconds
 
                         afterUpdate: function () {
                             _this._onObjectMatched();

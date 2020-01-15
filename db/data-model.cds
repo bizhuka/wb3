@@ -220,6 +220,18 @@
             @R3_FIELD : 'ILOA_SWERK'
             Swerk        : TWerks;
 
+            @R3_FIELD : 'ILOA_KOSTL'
+            Kostl     : String(10);
+
+            @R3_FIELD : 'CSKT_LTEXT'
+            KostlTxt  : String(40);
+
+            @R3_FIELD : '_NORM_PROB'
+            NormProb  : DecimalFloat;
+
+            @R3_FIELD : '_NORM_MCHAS'
+            NormMchas : DecimalFloat;
+
             @R3_FIELD : '_MARK'
             Expelled     : String(1);
 

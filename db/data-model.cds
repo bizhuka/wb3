@@ -164,7 +164,7 @@
         e.KtschTxt,
         e.Eqart,
         e.Typbz,
-        e.N_class
+        e.N_class, e.Kostl, e.KostlTxt, e.NormProb, e.NormMchas
     };
 
     @Comment: 'Works for authority checks'
@@ -569,7 +569,7 @@
 
         w.Id, w.Werks, w.CreateDate, w.GarageDepDate, w.GarageArrDate, w.FromDate, w.ToDate, w.OdoDiff, w.MotoHour, w.Description, w.Status,
 
-        e.Equnr, e.Eqktx, e.Point, e.Imei, e.Mptyp,
+        e.Equnr, e.Eqktx, e.Point, e.Imei, e.Mptyp, e.Kostl, e.KostlTxt, e.NormProb, e.NormMchas,
         e.WialonId, e.License_num, e.TooName, e.PetrolMode,
         e.Anln1, e.KtschTxt,
 

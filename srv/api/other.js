@@ -19,22 +19,28 @@ module.exports = (app, srv) => {
     // DB info
     const entities = srv.entities('wb.db');
 
-    const getField = function (entityName, fieldName) {
+    const findEntity = function (tableName) {
+        for (let entityKey in entities)
+            if (entities.hasOwnProperty(entityKey) &&
+                entities[entityKey]["@cds.persistence.name"] === tableName) {
+                return entities[entityKey];
+            }
+        throw (`Entity '${tableName}' not found`)
+    };
+    const getField = function (tableName, fieldName) {
         fieldName = fieldName.toLowerCase();
 
-        const entity = entities[entityName];
-        if (!entity)
-            throw (`Entity '${entityName}' not found`);
+        const entity = findEntity(tableName);
 
-        switch (entityName) {
-            case "Equipment":
-                switch (fieldName) {
-                    case "orig_class":
-                        fieldName = "origclass";
-                        break;
-                }
-                break;
-        }
+        // switch (entityName) {
+        //     case "Equipment":
+        //         switch (fieldName) {
+        //             case "orig_class":
+        //                 fieldName = "origclass";
+        //                 break;
+        //         }
+        //         break;
+        // }
 
         let elem = null;
         for (let elemName in entity.elements) {
@@ -69,17 +75,17 @@ module.exports = (app, srv) => {
         const result = [];
 
         // Each folder is an entity
-        const entityNames = zipEntries
+        const zipNames = zipEntries
             .filter(zipEntry => zipEntry.entryName.endsWith('/'))
             .map(zipEntry => zipEntry.entryName.split('/')[0]);
 
-        for (let ind = 0; ind < entityNames.length; ind++) {
+        for (let ind = 0; ind < zipNames.length; ind++) {
             // Get info about entity
-            const entityName = entityNames[ind];
-            const entity = entities[entityName];
+            const zipName = zipNames[ind];
+            const entity = findEntity(zipName);
 
             // Get info about fields
-            const entryHeader = zipEntries.find(item => item.entryName === entityName + '/table.xml');
+            const entryHeader = zipEntries.find(item => item.entryName === zipName + '/table.xml');
 
             // Parse info from XML
             const fields = parser.parse(entryHeader.getData().toString('utf8')).Table.AllAttrs.Field;
@@ -90,13 +96,13 @@ module.exports = (app, srv) => {
             for (let f = 0; f < fields.length; f++)
 
                 if (!fields[f].Name.startsWith('$')) {
-                    const field = getField(entityName, fields[f].Name);
+                    const field = getField(zipName, fields[f].Name);
                     header.push(field.name);
                     // Save description
                     cdsFields.push(field);
                 }
             // Get table data
-            const entryCSV = zipEntries.find(item => item.entryName === entityName + '/data.csv');
+            const entryCSV = zipEntries.find(item => item.entryName === zipName + '/data.csv');
 
             // Parse data
             const csvResult = Papa.parse(
@@ -109,7 +115,7 @@ module.exports = (app, srv) => {
                 });
 
             const oneInsert = {
-                name: entityName,
+                name: zipName,
                 count: 0,
                 errors: csvResult.errors
             };

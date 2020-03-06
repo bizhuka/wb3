@@ -76,8 +76,6 @@ module.exports = (app, srv) => {
 
 
 function doCount(req, res, Entity) {
-    const result = [];
-
     let statement =
         "SELECT Status as STATUS, sum(cnt) AS CNT FROM _VIEW_NAME_ _WHERE_ GROUP BY Status ORDER BY Status;";
 

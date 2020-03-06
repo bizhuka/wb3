@@ -3,8 +3,6 @@
 const Db = require('../util/Db');
 const Status = require('../util/Status');
 const Time = require('../util/Time');
-// Synchronization with R3
-const {getRfcClient} = require('./sync')();
 
 const {getUserInfo} = require('./user_info')();
 
@@ -98,7 +96,10 @@ module.exports = (app, srv) => {
             console.log('Generate waybill.Id');
 
             // waybill.Id = (new Date()).getTime(); create option ?
-            const rfcClient = await getRfcClient();
+            const rfcClient = await Db.getRfcClient(context._.req);
+            if (!rfcClient)
+                throw new Error("No connection to '" + Db.getConnectionInfo(context._.req).desc + "'");
+
             const result = await rfcClient.call('Z_WB_NEXT_WAYBILL_ID', {});
             rfcClient.close();
 

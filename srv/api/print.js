@@ -3,8 +3,6 @@
 const Db = require('../util/Db');
 const Time = require('../util/Time');
 const Status = require('../util/Status');
-// Synchronization with R3
-const {getRfcClient} = require('./sync')();
 
 const util = require('util');
 const fs = require('fs');
@@ -15,7 +13,10 @@ module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/print/template", async (req, res) => {
-        const rfcClient = await getRfcClient();
+        const rfcClient = await Db.getRfcClient(req);
+        if (!rfcClient)
+            throw new Error("No connection to '" + Db.getConnectionInfo(req).desc + "'");
+
         const result = await rfcClient.call('Z_WB_PRINT_DOC', {
             IV_OBJID: req.query.objid
         });
@@ -185,7 +186,10 @@ module.exports = (app, srv) => {
         if (docs.length === 0)
             return;
 
-        const rfcClient = await getRfcClient();
+        const rfcClient = await Db.getRfcClient(req);
+        if (!rfcClient)
+            throw new Error( "No connection to '" + Db.getConnectionInfo(req).desc + "'");
+
         const result = await rfcClient.call('Z_WB_PRINT_DOC', {
             IV_WAYBILL_ID: String(waybillId),
             IV_CLASS: String(orig_class),

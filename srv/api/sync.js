@@ -11,20 +11,6 @@ const fs = require("fs");
 process.env.NLSUI_INIT_TRACE_LEVEL = 'high';
 process.env.NLSUI_7BIT_FALLBACK = 'YES';
 
-async function getRfcClient() {
-    // Always new ?
-    try {
-        const Client = require('node-rfc').Client;
-        const sapSystem = JSON.parse(process.env.WB_RFC_DEST);
-        const rfcClient = new Client(sapSystem);
-        await rfcClient.open();
-        return rfcClient;
-    } catch (e) {
-        console.error(e);
-    }
-    return null;
-}
-
 async function persist(req, res, Entity, params) {
 
     const result = {
@@ -51,7 +37,7 @@ async function persist(req, res, Entity, params) {
     }
 
     // open connection & call RFC fm
-    const rfcClient = await getRfcClient();
+    const rfcClient = await Db.getRfcClient(req);
     if (!rfcClient)
         return;
     const sapResult = await rfcClient.call(params.FM, params.RFC_PARAMS);
@@ -197,8 +183,7 @@ function createKey(Entity, dbItem, asObject) {
 // Public Fm
 const exportObject = {
     persist: persist,
-    itemsTransform: itemsTransform,
-    getRfcClient: getRfcClient
+    itemsTransform: itemsTransform
 };
 
 module.exports = (app, srv) => {
@@ -324,7 +309,10 @@ module.exports = (app, srv) => {
         const newList = await persist(req, res, ReqHeader, filter);
 
         // open connection & call RFC fm
-        const rfcClient = await getRfcClient();
+        const rfcClient = await Db.getRfcClient(req);
+        if (!rfcClient)
+            throw new Error("No connection to '" + Db.getConnectionInfo(req).desc + "'");
+
         const arrObjnr = [];
         for (let i = 0; i < newList.length; i++)
             arrObjnr.push("OR" + newList[i].Aufnr);

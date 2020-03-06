@@ -1,0 +1,9 @@
+{
+	"appId": "wb3!t26474",
+	"displayName": "Waybill",
+	"description": "Waybill - Multitenant Business App based on Node.js",
+	"category": "Partner Engineering Digital Enablement",
+	"appUrls": {
+		"onSubscription": "https://subaccount-emba-wb3-srv.cfapps.eu10.hana.ondemand.com/callback/v1.0/tenants/{tenantId}"
+	}
+}

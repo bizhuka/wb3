@@ -304,8 +304,8 @@ sap.ui.define([
                 success: function (result) {
                     _this.showUpdateInfo(result, params);
                 },
-                error: function () {
-                    _this.showError(null, _this.getBundle().getText("errDict", [params.title]));
+                error: function (err) {
+                    _this.showError(err, _this.getBundle().getText("errDict", [params.title]));
 
                     if (params.afterUpdate)
                         params.afterUpdate.call(_this, false);

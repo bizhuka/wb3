@@ -4,29 +4,23 @@ version: 0.0.5
 description: 'Router'
 applications:
   - name: wb3-app
-    type: html5
+    type: nodejs #html5
     path: app
     disk-quota: 256M
     memory: 256M
     services:
       - wb3-uaa
     env:
-      TENANT_HOST_PATTERN: '^(.*).cfapps.eu10.hana.ondemand.com'
+      TENANT_HOST_PATTERN: '^(.*)-wb3-app.cfapps.eu10.hana.ondemand.com'
       CORS: '[{"uriPattern": "^/sap/bc/ina/(.*)$", "allowedOrigin": [{"host":"erp-service.eu1.sapanalytics.cloud", "protocol":"https"}], "allowedMethods": ["GET", "POST", "HEAD", "OPTIONS"], "allowedHeaders": ["Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "X-Sap-Cid", "X-Csrf-Token"], "exposeHeaders": ["Accept", "Authorization", "X-Requested-With", "X-Sap-Cid", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Csrf-Token", "Content-Type"]}]'
       destinations: >
         [
-          {"name":"wb-srv", "url":"https://wb3-srv.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true },
-          {"name":"wb-sac", "url":"https://wb-sac.cfapps.eu10.hana.ondemand.com",  "forwardAuthToken": true }
+          {"name":"wb-srv", "url":"https://subaccount-emba-wb3-srv.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true },
+          {"name":"wb-sac", "url":"https://subaccount-emba-wb-sac.cfapps.eu10.hana.ondemand.com",  "forwardAuthToken": true }
         ]
 #        https://wb3-srv.cfapps.eu10.hana.ondemand.com
 #        https://hxehost:51062
-
-#    requires:
-#      - name: srv_api
-#        group: destinations
-#        properties:
-#          name: srv_api
-#          url: '~{url}'
-#          forwardAuthToken: true
-#    properties:
-#      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
+    provides:
+     - name: MTAppRouter_api
+       properties:
+          url: ${default-url}

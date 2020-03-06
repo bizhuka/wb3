@@ -18,6 +18,7 @@ function getUserInfo(req) {
         email: token.email, // authInfo.userInfo.email,
         firstName: token.given_name,// authInfo.userInfo.givenName,
         lastName: token.family_name, // authInfo.userInfo.familyName,
+        systDesc: Db.getConnectionInfo(req).desc,
         scopes: [],
         werks: [],
         ingrp: [],

@@ -18,18 +18,6 @@ module.exports = function (srv) {
 
     const xsenv = require("@sap/xsenv");
 
-    // Use hana
-    if (!Db.isWindows()) {
-        const xsHDBConn = require("@sap/hdbext");
-        const hanaOptions = xsenv.getServices({
-            hana: {
-                plan: "hdi-shared"
-            }
-        });
-        hanaOptions.hana.pooling = true;
-        app.use(xsHDBConn.middleware(hanaOptions.hana));
-    }
-
     // Use xsuaa
     if (!Db.isTest()) {
         const xssec = require("@sap/xssec");
@@ -43,6 +31,9 @@ module.exports = function (srv) {
         app.use(passport.initialize());
         app.use(passport.authenticate("JWT", {session: false}));
     }
+
+    // init hdi containers & rfc connections
+    Db.readConnectionInfo(app);
 
     // DB - updates
     require('./api/db')(app, srv);

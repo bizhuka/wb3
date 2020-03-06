@@ -206,7 +206,7 @@ sap.ui.define([
             var oModel = _this.getModel("wb");
 
             if (operation !== "UPDATE" && operation !== "CREATE" && operation !== "DELETE")
-                throw ("Wrong parameter");
+                throw new Error("Wrong parameter");
 
             if (oModel instanceof ODataV2) {
                 switch (operation) {
@@ -254,9 +254,14 @@ sap.ui.define([
                     success: function (result) {
                         callback.success(result);
                     },
-                    error: function () {
-                        if (callback.error)
-                            callback.error();
+                    error: function (err) {
+                        // no callback
+                        if (!callback.error)
+                            return;
+
+                        var message = (((err || {})["responseJSON"] || {}) ["error"] || {})["message"] || '';
+                        callback.error(message);
+
                     }
                 });
             }

@@ -4,9 +4,6 @@ const Db = require('../util/Db');
 const Time = require('../util/Time');
 const Status = require('../util/Status');
 
-// Synchronization with R3
-const {getRfcClient} = require('./sync')();
-
 module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -47,21 +44,32 @@ module.exports = (app, srv) => {
             };
         else {
             // Call SAP FM
-            const rfcClient = await getRfcClient();
-            const sapResult = await rfcClient.call('Z_WB_MEASURE_DOC', params);
-            rfcClient.close();
+            const rfcClient = await Db.getRfcClient(req);
+            if (!rfcClient)
+                result = {
+                    docum: '000',
+                    aufnr: '000',
+                    messages: [{
+                        messageType: 'E',
+                        message: 'Cannot connect to SAP system!'
+                    }]
+                };
+            else {
+                const sapResult = await rfcClient.call('Z_WB_MEASURE_DOC', params);
+                rfcClient.close();
 
-            // SAP -> JS
-            result = {
-                docum: sapResult.EV_DOCUM,
-                aufnr: sapResult.EV_AUFNR,
-                messages: sapResult.CT_MESSAGE.map(item => {
-                    return {
-                        messageType: item.MESSAGE_TYPE,
-                        message: item.MESSAGE
-                    }
-                })
-            };
+                // SAP -> JS
+                result = {
+                    docum: sapResult.EV_DOCUM,
+                    aufnr: sapResult.EV_AUFNR,
+                    messages: sapResult.CT_MESSAGE.map(item => {
+                        return {
+                            messageType: item.MESSAGE_TYPE,
+                            message: item.MESSAGE
+                        }
+                    })
+                };
+            }
         }
 
         // // TODO Save in the same step ! Close Setp -> delete from ReqHistory

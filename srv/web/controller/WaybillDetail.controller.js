@@ -352,8 +352,8 @@ sap.ui.define([
                     // oWbModel.refresh();
                 },
 
-                error: function () {
-                    _this.showError(null, _this.getBundle().getText("updateDriverError"));
+                error: function (err) {
+                    _this.showError(err, _this.getBundle().getText("updateDriverError"));
                 }
             });
         },
@@ -591,8 +591,8 @@ sap.ui.define([
                     // TODO _this.readBindingObject();
                     oWbModel.refresh();
                 },
-                error: function () {
-                    _this.showError(null, _this.getBundle().getText("errWbUpdate"));
+                error: function (err) {
+                    _this.showError(err, _this.getBundle().getText("errWbUpdate"));
                 }
             });
         },

@@ -4,7 +4,7 @@
           xmlns:layout="sap.ui.layout"
           controllerName="com.modekzWaybill.controller.Start">
 
-    <semantic:FullscreenPage id="start" title="{i18n>title}">
+    <semantic:FullscreenPage id="start" title="{i18n>title} - {userInfo>/systDesc}">
         <semantic:content>
 
             <layout:VerticalLayout class="sapUiResponsiveMargin">

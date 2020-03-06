@@ -754,8 +754,9 @@ sap.ui.define([
                             _this.tbSchedule.removeSelections(true);
                         },
 
-                        error: function (err) {
-                            _this.showError(err, _this.getBundle().getText("errCreateWb"));
+                        error: function (message) {
+                            message = message ? message + ' - ' : '';
+                            _this.showError(message, message + _this.getBundle().getText("errCreateWb"));
                         }
                     }); // oData create new waybill
                 } // success text dialog

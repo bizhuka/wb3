@@ -1,56 +1,41 @@
 ID: wb3
 _schema-version: '2.1'
 description: 'Waybill Node.js + CD&S'
-version: 0.0.3
+version: 0.0.4
 # only for -> cf deploy (as a one archive)
-#modules:
-#  - name: wb3-db
-#    type: hdb
-#    path: db
-#    parameters:
-#      memory: 256M
-#      disk-quota: 256M
-#    requires:
-#      - name: wb3-hdi-container
+modules:
+  - name: wb3-db
+    type: hdb
+    path: db
+    parameters:
+      memory: 256M
+      disk-quota: 256M
+    requires:
+      - name: wb3-hdi-rpr
 #  - name: wb3-srv
-#    type: nodejs
-#    path: srv
-#    parameters:
-#      memory: 512M
-#      disk-quota: 256M
 #    provides:
-#      - name: srv_api
+#      - name: wb3_srv_api
 #        properties:
-#          url: '${default-url}'
-#    requires:
-#      - name: wb3-hdi-container
-##      - name: wb3-uaa
+#         beurl: ${default-url}
 #
 #  - name: wb3-app
-#    type: html5
-#    path: app
-#    parameters:
-#      disk-quota: 256M
-#      memory: 256M
-#    build-parameters:
-#      builder: grunt
 #    requires:
-##      - name: wb3-uaa
-#      - name: srv_api
+#      - name: wb3_srv_api
 #        group: destinations
 #        properties:
-#          name: srv_api
-#          url: '~{url}'
+#          name: wb3_srv_api
+#          url: '~{beurl}'
 #          forwardAuthToken: true
-#    properties:
-#      TENANT_HOST_PATTERN: '^(.*)-trial-dev-wb3-app.cfapps.eu10.hana.ondemand.com'
-#
-#resources:
-#  - name: wb3-hdi-container
-#    type: com.sap.xs.hdi-container
-#    properties:
-#      hdi-container-name: '${service-name}'
-#
+resources:
+  - name: wb3-hdi-rpr
+    type: com.sap.xs.hdi-container
+    parameters:
+      config:
+        schema: wb3
+      service-name: wb3-hdi-rpr
+    properties:
+      hdi-container-name: '${service-name}'
+
 #  - name: wb3-uaa
 #    type: org.cloudfoundry.managed-service
 #    parameters:

@@ -12,11 +12,11 @@ applications:
   env:
     TARGET_RUNTIME: tomee
 #    SAP_JWT_TRUST_ACL: '[{"clientid":"sb-wb-sac", "identityzone": "*"}]'
-    JBP_CONFIG_RESOURCE_CONFIGURATION: "['tomee/webapps/ROOT/WEB-INF/resources.xml': {'xsahaa-hdi-container':'wb3-hdi-container'}]"
+    JBP_CONFIG_RESOURCE_CONFIGURATION: "['tomee/webapps/ROOT/WEB-INF/resources.xml': {'xsahaa-hdi-container':'wb3-hdi-rpr'}]"
   provides:
     - name: wb-sac
       properties:
         url: ${default-url}
   services:
-    - wb3-hdi-container
+    - wb3-hdi-rpr
     - wb3-uaa

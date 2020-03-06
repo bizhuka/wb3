@@ -27,7 +27,7 @@ sap.ui.define([], function () {
                 else if (path.indexOf("wb-router") > 0 || path.indexOf("wb3-") > 0 || path.indexOf("http://localhost:4004") === 0 || path.indexOf("https://hxehost") === 0)
                     this._isV4 = true;
                 else
-                    throw "isV4() Unknown host";
+                    throw new Error("isV4() Unknown host");
             }
 
             return this._isV4;

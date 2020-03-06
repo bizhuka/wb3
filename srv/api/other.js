@@ -25,7 +25,7 @@ module.exports = (app, srv) => {
                 entities[entityKey]["@cds.persistence.name"] === tableName) {
                 return entities[entityKey];
             }
-        throw (`Entity '${tableName}' not found`)
+        throw new Error(`Entity '${tableName}' not found`)
     };
     const getField = function (tableName, fieldName) {
         fieldName = fieldName.toLowerCase();
@@ -53,7 +53,7 @@ module.exports = (app, srv) => {
         }
 
         if (!elem)
-            throw (`Field name '${fieldName}' not found`);
+            throw new Error(`Field name '${fieldName}' not found`);
 
         return elem;
     };

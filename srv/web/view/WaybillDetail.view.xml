@@ -232,21 +232,121 @@
                                 <f:formElements>
                                     <f:FormElement label="{i18n>run} Δ">
                                         <f:fields>
-                                            <Input type="Number" value="{wb>OdoDiff}"
+                                            <Input type="Number" value="{wb>OdoDiff}" width="20rem"
                                                    enabled="{= %{wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
                                                    valueLiveUpdate="true"
                                                    id="id_wb_odo_diff"/>
-                                            <Input type="Number" value="{wb>_OdoDiff}" id="_id_wb_odo_diff" visible="false"/>
+
+                                            <HBox visible="{wb>UseRate}">
+                                                <Input type="Number" enabled="false" width="5rem" value="{wb>NormProb}"/>
+                                                <Input id="id_cr_0" type="Number" enabled="false" width="5rem" value="{= ${wb>OdoDiff} * ${wb>NormProb} / 100 }"/>
+
+                                                <Input type="Number" value="{wb>_OdoDiff}" width="20rem" id="_id_wb_odo_diff" visible="false"/>
+                                            </HBox>
                                         </f:fields>
                                     </f:FormElement>
 
                                     <f:FormElement label="{i18n>motoHour} Δ">
                                         <f:fields>
-                                            <Input type="Number" value="{wb>MotoHour}"
+                                            <Input type="Number" value="{wb>MotoHour}" width="20rem"
                                                    enabled="{= %{wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
                                                    valueLiveUpdate="true"
                                                    id="id_wb_moto_hour"/>
-                                            <Input type="Number" value="{wb>_MotoHour}" id="_id_wb_moto_hour" visible="false"/>
+                                            <HBox visible="{wb>UseRate}">
+                                                <Input type="Number" enabled="false" width="5rem" value="{wb>NormMchas}"/>
+                                                <Input id="id_cr_1" type="Number" enabled="false" width="5rem" value="{= ${wb>MotoHour} * ${wb>NormMchas} }"/>
+
+                                                <Input type="Number" value="{wb>_MotoHour}" width="20rem" id="_id_wb_moto_hour" visible="false"/>
+                                            </HBox>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+
+                            <f:FormContainer title="{i18n>consRate}" visible="{= (${wb>NormProb}>0||${wb>NormMchas}>0)}">
+                                <f:formElements>
+                                    <f:FormElement label="{i18n>offRoad}" visible="{wb>UseRate}">
+                                        <f:fields>
+                                            <Switch state="{wb>OffRoad}" change="reCalcCR"
+                                                    enabled="{=
+                                                         %{wb>Status}===${status>/ARRIVED}
+
+                                                         || ( %{wb>Status}===${status>/CLOSED} &amp;&amp;
+                                                              ${userInfo>/WbChangeWialonDataClose}===true &amp;&amp;
+                                                              ${userInfo>/same_month}===true) }"/>
+                                            <HBox>
+                                               <Label width="5rem"/>
+                                               <Input id="id_cr_2" type="Number" enabled="false" width="5rem" value="{= %{wb>OffRoad} ? ${wb>OdoDiff} * ${wb>NormProb} * ${cr>/off_road_rate} : 0 }"/>
+                                            </HBox>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="{i18n>seasonality}" visible="{wb>UseRate}">
+                                        <f:fields>
+                                            <Switch enabled="false" state="{cr>/seasonality_bool}" tooltip="01.11 - 30.04"/>
+                                            <HBox>
+                                                <Label width="5rem"/>
+                                                <Input id="id_cr_3" type="Number" enabled="false" width="5rem" value="{= %{cr>/seasonality_bool} ? ${wb>OdoDiff} * ${wb>NormProb} * ${cr>/seasonality_rate} : 0 }"/>
+                                            </HBox>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="{i18n>idleTime}" visible="{wb>UseRate}">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>IdleTime}" width="20rem"
+                                                   valueLiveUpdate="true" liveChange="reCalcCR"
+                                                   enabled="{=
+                                                         %{wb>Status}===${status>/ARRIVED}
+
+                                                         || ( %{wb>Status}===${status>/CLOSED} &amp;&amp;
+                                                              ${userInfo>/WbChangeWialonDataClose}===true &amp;&amp;
+                                                              ${userInfo>/same_month}===true) }"/>
+                                            <HBox>
+                                                <Label width="5rem"/>
+                                                <Input id="id_cr_4" type="Number" enabled="false" width="5rem" value="{= ${wb>IdleTime} * ${wb>NormProb} * ${cr>/idle_time_rate} }"/>
+                                            </HBox>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="{i18n>CargoTonn}" visible="{wb>UseRate}">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>CargoTime}" width="20rem"
+                                                   valueLiveUpdate="true"
+                                                   change="reCalcCR"
+                                                   enabled="{=
+                                                         %{wb>Status}===${status>/ARRIVED}
+
+                                                         || ( %{wb>Status}===${status>/CLOSED} &amp;&amp;
+                                                              ${userInfo>/WbChangeWialonDataClose}===true &amp;&amp;
+                                                              ${userInfo>/same_month}===true) }"/>
+                                            <HBox>
+                                                <Input type="Number" value="{wb>Tonnage}" width="5rem"
+                                                       valueLiveUpdate="true" liveChange="reCalcCR"
+                                                       enabled="{=
+                                                         %{wb>Status}===${status>/ARRIVED}
+
+                                                         || ( %{wb>Status}===${status>/CLOSED} &amp;&amp;
+                                                              ${userInfo>/WbChangeWialonDataClose}===true &amp;&amp;
+                                                              ${userInfo>/same_month}===true) }"/>
+                                                <Input id="id_cr_5" type="Number" enabled="false" width="5rem" value="{= ${wb>CargoTime} * ${wb>Tonnage} * ${cr>/tonnage_rate} }"/>
+                                            </HBox>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="{i18n>consRate} ∑">
+                                        <f:fields>
+                                            <Switch state="{wb>UseRate}" change="reCalcCR"
+                                                    enabled="{=
+                                                         %{wb>Status}===${status>/ARRIVED}
+
+                                                         || ( %{wb>Status}===${status>/CLOSED} &amp;&amp;
+                                                              ${userInfo>/WbChangeWialonDataClose}===true &amp;&amp;
+                                                              ${userInfo>/same_month}===true) }"/>
+
+                                            <HBox visible="{wb>UseRate}">
+                                                <Label width="5rem"/>
+                                                <Input enabled="false" type="Number" value="{cr>/id_cr_all}" width="5rem"/>
+                                            </HBox>
                                         </f:fields>
                                     </f:FormElement>
                                 </f:formElements>

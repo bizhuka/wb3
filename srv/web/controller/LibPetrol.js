@@ -13,7 +13,7 @@ sap.ui.define([
             PT_MAIN: {
                 id: 1,
                 title: "totalConsumption",
-                icon: "sap-icon://mileage",
+                tab_icon: "sap-icon://mileage",
                 inputEnabled: true,
                 giveRequired: true
             },
@@ -21,21 +21,22 @@ sap.ui.define([
             PT_TOP: {
                 id: 2,
                 title: "totalConsumptionTop",
-                icon: "sap-icon://inventory",
+                tab_icon: "sap-icon://inventory",
                 inputEnabled: true,
                 giveRequired: true
             },
             PT_BOOTH: {
                 id: 4,
                 title: "totalConsumptionBooth",
-                icon: "sap-icon://family-protection",
+                tab_icon: "sap-icon://family-protection",
                 inputEnabled: true,
                 noSource: true
             },
             PT_ALL: {
                 id: 0,
                 title: "totalConsumptionResult",
-                icon: "sap-icon://simulate",
+                tab_icon: "sap-icon://simulate",
+                tab_visible: true,
                 inputEnabled: false
             },
 
@@ -54,6 +55,7 @@ sap.ui.define([
 
                 // Load fragment from string
                 for (var p = 0; p < _this.arrPtTypes.length; p++) {
+                    // Add to object for speed
                     var ptType = _this.arrPtTypes[p];
                     _this.mapPtTypes[ptType.id] = ptType;
 
@@ -62,9 +64,16 @@ sap.ui.define([
                     ptType.model = new JSONModel(ptType);
 
                     // set model & add to tabbar
+                    var xmlText = textFrag.replace(/{{SPENT_ID}}/g, ptType.id);
+
+                    // No need
+                    if (ptType.noSource) {
+                        xmlText = xmlText
+                            .replace('value="{wb>Spent' + ptType.id + '}"', '')
+                            .replace('value="{wb>_Spent' + ptType.id + '}"', '');
+                    }
                     ptType.iconTab = owner.createFragment({
-                        fragmentContent: textFrag
-                            .replace(/{{SPENT_ID}}/g, ptType.id)
+                        fragmentContent: xmlText
                     }, _this);
                     ptType.iconTab._PtType = ptType.id;
                     ptType.iconTab.setModel(ptType.model, "petrol");
@@ -88,22 +97,43 @@ sap.ui.define([
                 return result;
             },
 
-            showTabs: function (petrolMode, waybillId) {
+            showTabs: function (bindObj, waybillId) {
                 var _this = this;
                 this.waybillId = parseInt(waybillId);
                 // 0 & 1 only
-                petrolMode = parseInt(petrolMode);
+                var petrolMode = parseInt(bindObj.PetrolMode);
+
+                //  Same month ?
+                var bSameMonth = false;
+                if (bindObj.CreateDate) {
+                    var createDate = new Date(bindObj.CreateDate.substr(0, 10));
+                    var now = new Date();
+
+                    bSameMonth = now.getFullYear() === createDate.getFullYear() &&
+                        (now.getMonth() === createDate.getMonth() ||
+                            (now.getMonth() - 1 === createDate.getMonth() && now.getDate() <= 6));
+                }
+                // set in global model
+                _this.owner.getModel("userInfo").setProperty("/same_month", bSameMonth);
 
                 // Prepare IconTabFilters
                 for (var p = 0; p < this.arrPtTypes.length; p++) {
                     var ptType = this.arrPtTypes[p];
 
+                    // Empty fuel list
                     ptType.data = _this.getEmptyList(ptType.id);
-                    ptType.model.setProperty("/data", ptType.data);
+
+                    // Both norms are empty for main fuel
+                    ptType.empty_norm = true;
+                    if (ptType.id === 1)
+                        ptType.empty_norm = !bindObj.NormProb && !bindObj.NormMchas;
 
                     // Check bit is set
-                    if (ptType.id !== 0)
-                        ptType.iconTab.setVisible((petrolMode & ptType.id) !== 0);
+                    if (ptType.id !== 0) // Skip all
+                        ptType.tab_visible = (petrolMode & ptType.id) !== 0;
+
+                    // update model
+                    ptType.model.setProperty("/", ptType);
                 }
 
                 _this._readGasSpents();
@@ -197,62 +227,6 @@ sap.ui.define([
                         }
                     });
                 });
-            },
-
-            spentIsEnabled: function (Status, CreateDate, WbChangeWialonData, WbChangeWialonDataClose, noSource) {
-                // enabled="{= ( %{wb>Status}===${status>/ARRIVED}&amp;&amp;(${userInfo>/WbChangeWialonData}===true||${petrol>/noSource}===true) ) ||
-                // ( %{wb>Status}===${status>/CLOSED} &amp;&amp; ${userInfo>/WbChangeWialonDataClose}===true) }"
-                var bSameMonth = false;
-                if (CreateDate) {
-                    var now = new Date();
-                    bSameMonth = now.getFullYear() === CreateDate.getFullYear() &&
-                        (now.getMonth() === CreateDate.getMonth() || (
-                                now.getMonth() - 1 === CreateDate.getMonth() && now.getDay() <= 6)
-                        );
-                }
-
-                return (Status === this.owner.status.ARRIVED && (WbChangeWialonData === true || noSource === true)) ||
-                    (Status === this.owner.status.CLOSED && WbChangeWialonDataClose === true && bSameMonth)
-            },
-
-            inputIsEnabled: function (inputEnabled, GasMatnr, Status, CreateDate, WbChangeWialonData, WbChangeWialonDataClose, controlName) {
-                if (!inputEnabled)
-                    return false;
-
-                // Do not check for comboBox
-                if (controlName !== '_GasMatnr' && GasMatnr.length === 0)
-                    return false;
-
-                var result = false;
-                switch (controlName) {
-                    case '_GasMatnr':
-                        result = (Status === this.owner.status.CREATED || Status === this.owner.status.ARRIVED) && WbChangeWialonData;
-                        break;
-
-                    case '_GasBefore':
-                        result = (Status === this.owner.status.CREATED) && WbChangeWialonData;
-                        break;
-
-                    case '_GasLgort':
-                        result = (Status === this.owner.status.CREATED || Status === this.owner.status.ARRIVED) && WbChangeWialonData;
-                        break;
-
-                    case '_GasGiven':
-                        result = (Status === this.owner.status.ARRIVED) && WbChangeWialonData;
-                        break;
-                }
-
-                // Second attempt to open field to change
-                if (!result) {
-                    var bSameMonth = false;
-                    if (CreateDate) {
-                        var now = new Date();
-                        bSameMonth = now.getFullYear() === CreateDate.getFullYear() && now.getMonth() === CreateDate.getMonth();
-                    }
-                    result = Status === this.owner.status.CLOSED && WbChangeWialonDataClose === true && bSameMonth;
-                }
-
-                return result;
             },
 
             onDataChange: function (oEvent) {

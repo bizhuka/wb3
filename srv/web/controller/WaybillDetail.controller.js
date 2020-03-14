@@ -32,6 +32,18 @@ sap.ui.define([
         {bind: "_Spent4", ui: "_id_input_spent4"},
     ];
 
+    // Consumption rate
+    var cr = {
+        off_road_rate: 0.00075,
+        seasonality_bool: false,
+        seasonality_rate: 0.0005,
+        idle_time_rate: 0.05,
+        tonnage_rate: 0.013,
+
+        // sum of id_cr_ 0-6
+        id_cr_all: 0
+    };
+
     return BaseController.extend("com.modekzWaybill.controller.WaybillDetail", {
         libPetrol: null,
         libReqs: null,
@@ -54,6 +66,10 @@ sap.ui.define([
                 }
             });
 
+            // Consumption rate
+            var crModel = new JSONModel(cr);
+            _this.setModel(crModel, "cr");
+
             allTabs = this.byId("id_all_tabs");
             driverInput = this.byId("id_driver_input");
 
@@ -71,8 +87,9 @@ sap.ui.define([
             var result = _this.getView().getBindingContext("wb").getObject();
 
             // TODO fix
-            if (result)
+            if (result) {
                 _this._fromUi(result, true);
+            }
             return result;
         },
 
@@ -83,9 +100,11 @@ sap.ui.define([
                 if (!ui)
                     ui = this.byId(filed.ui);
 
-                if (read)
-                    obj[filed.bind] = ui.getValue();
-                else // write
+                if (read) {
+                    var value = ui.getValue();
+                    if (value !== "")
+                        obj[filed.bind] = value;
+                } else // write
                     ui.setValue(obj[filed.bind])
             }
         },
@@ -104,6 +123,7 @@ sap.ui.define([
             bindingObject = _this.getViewBindingObject();
 
             var userModel = _this.getModel("userInfo");
+            var crModel = _this.getModel("cr");
 
             // Prepare reqs tab
             var reqsTab = _this.byId("id_reqs_container");
@@ -193,7 +213,15 @@ sap.ui.define([
             this.byId('id_date_tab').setVisible(visible);
 
             // Prepare tabs of petrol
-            _this.libPetrol.showTabs(bindingObject.PetrolMode, parseInt(waybillId));
+            _this.libPetrol.showTabs(bindingObject, parseInt(waybillId));
+
+            // Consumption rate
+            var month = bindingObject.GarageDepDate ? bindingObject.GarageDepDate : "XXXX-99-01";
+            month = parseInt(month.substr(5, 2));
+            if (month >= 11 || month <= 4) {
+                crModel.setProperty("/seasonality_bool", true);
+            }
+            _this.reCalcCR(bindingObject);
         },
 
         _onObjectMatched: function (oEvent) {
@@ -270,7 +298,6 @@ sap.ui.define([
                     objExt.wlnCallback = function (json) {
                         var oWbModel = _this.getModel("wb");
                         var path = _this.getBindingPath();
-                        // debugger
                         bindingObject = _this.getViewBindingObject();
 
                         // In meters
@@ -799,6 +826,30 @@ sap.ui.define([
                     _this.showError(err, _this.getBundle().getText("errGetData"));
                 }
             });
+        },
+
+        reCalcCR: function (param) {
+            var _this = this;
+            var sum = 0.0;
+
+            if (param.Spent1 !== undefined)
+                sum = parseFloat(param.Spent1 ? param.Spent1 : 0.0);
+            else
+                for (var i = 0; i < 6; i++) {
+                    sum += parseFloat(_this.byId("id_cr_" + i).getValue());
+                }
+            sum = parseFloat(sum.toFixed(2));
+            _this.getModel("cr").setProperty("/id_cr_all", sum);
+
+            if (param.Spent1 === undefined) {
+                _this.findById("id_input_spent1").setValue(sum);
+
+                _this.libPetrol.onDataChange({
+                    skipSave: true
+                });
+            }
+
+            return sum;
         }
     });
 });

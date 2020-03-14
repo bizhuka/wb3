@@ -73,6 +73,13 @@
             _MotoHour      : DecimalFloat;
             _OdoDiff       : DecimalFloat;
 
+            @Comment: 'Rate of consumption'
+            UseRate        : Boolean;
+            OffRoad        : Boolean;
+            IdleTime       : DecimalFloat;
+            Tonnage        : DecimalFloat;
+            CargoTime      : DecimalFloat;
+
             @Comment: 'After close WB coming from SAP'
             Docum         : TMeasureDoc;
             Aufnr         : TAufnr;
@@ -133,6 +140,12 @@
         w._Spent4,
         w._MotoHour,
         w._OdoDiff,
+
+        w.UseRate,
+        w.OffRoad,
+        w.IdleTime,
+        w.Tonnage,
+        w.CargoTime,
 
         w.Docum,
         w.Aufnr,

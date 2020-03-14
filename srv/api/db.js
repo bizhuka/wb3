@@ -1,6 +1,7 @@
 "use strict";
 
 const Db = require('../util/Db');
+const MT = require('../util/MT');
 const Status = require('../util/Status');
 const Time = require('../util/Time');
 
@@ -96,9 +97,9 @@ module.exports = (app, srv) => {
             console.log('Generate waybill.Id');
 
             // waybill.Id = (new Date()).getTime(); create option ?
-            const rfcClient = await Db.getRfcClient(context._.req);
+            const rfcClient = await MT.getRfcClient(context._.req);
             if (!rfcClient)
-                throw new Error("No connection to '" + Db.getConnectionInfo(context._.req).desc + "'");
+                throw new Error("No connection to '" + MT.getConnectionInfo(context._.req).desc + "'");
 
             const result = await rfcClient.call('Z_WB_NEXT_WAYBILL_ID', {});
             rfcClient.close();
@@ -131,6 +132,8 @@ module.exports = (app, srv) => {
         } else {
             // If new item
             waybill.WithNoReqs = waybill.WithNoReqs === undefined ? false : waybill.WithNoReqs;
+            waybill.UseRate    = waybill.UseRate    === undefined ? false : waybill.UseRate;
+            waybill.OffRoad    = waybill.OffRoad    === undefined ? false : waybill.OffRoad;
         }
 
         if (waybill.Status !== Status.ARRIVED) {
@@ -353,6 +356,11 @@ module.exports = (app, srv) => {
                     case "Spent1":
                     case "Spent2":
                     case "Spent4":
+                    case "UseRate":
+                    case "OffRoad":
+                    case "IdleTime":
+                    case "Tonnage":
+                    case "CargoTime":
                         wb[prop] = context.data[prop];
                         break;
                 }
@@ -361,7 +369,6 @@ module.exports = (app, srv) => {
         // No need
         if (Object.keys(wb).length === 0)
             return;
-        console.log('-----START--UPDATE--VWaybills--');
 
         const tx = cds.transaction(context._.odataReq);
         await tx.run(
@@ -371,6 +378,5 @@ module.exports = (app, srv) => {
         );
 
         Db.close(tx, true);
-        console.log('-----END--UPDATE--VWaybills--', context.data.Id, typeof context.data.Id);
     });
 };

@@ -1,15 +1,16 @@
 "use strict";
 
 const Db = require('./util/Db');
+const MT = require('./util/MT');
 const express = require('express');
 const bodyParser = require("body-parser");
 
 module.exports = function (srv) {
     const app = global.__express;
 
-    // oData V2 wrapper
-    const odatav2proxy = require("@sap/cds-odata-v2-adapter-proxy");
-    app.use(odatav2proxy({port: process.env.PORT || 4004}));
+    // // oData V2 wrapper
+    // const odatav2proxy = require("@sap/cds-odata-v2-adapter-proxy");
+    // app.use(odatav2proxy({port: process.env.PORT || 4004}));
 
     // Default folder
     const compression = require('compression');
@@ -33,7 +34,10 @@ module.exports = function (srv) {
     }
 
     // init hdi containers & rfc connections
-    Db.readConnectionInfo(app);
+    Db.initialize(app);
+
+    // Multi tenant utils
+    MT.initialize(app);
 
     // DB - updates
     require('./api/db')(app, srv);

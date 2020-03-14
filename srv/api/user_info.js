@@ -1,6 +1,7 @@
 "use strict";
 
 const Db = require('../util/Db');
+const MT = require('../util/MT');
 const xssec = require("@sap/xssec");
 const util = require('util');
 const fs = require('fs');
@@ -12,19 +13,26 @@ function getUserInfo(req) {
         JSON.parse(fs.readFileSync(Db.getFilePath('json/tokenInfo.json'), 'utf8')) :
         JSON.parse(req.authInfo.ssojwt.getJWPayload());
 
+    // Get global info about system
+    const connection = MT.getConnectionInfo(req);
+
     // Parsed info
     const result = {
         login: token.user_name, // authInfo.userInfo.logonName,
         email: token.email, // authInfo.userInfo.email,
         firstName: token.given_name,// authInfo.userInfo.givenName,
         lastName: token.family_name, // authInfo.userInfo.familyName,
-        systDesc: Db.getConnectionInfo(req).desc,
+        systDesc: connection.desc,
         scopes: [],
         werks: [],
         ingrp: [],
         beber: []
         //timeZoneOffset;
     };
+
+    // Just for test
+    if(connection.werks && connection.werks.length !== undefined)
+        result.werks = connection.werks;
 
     // Get scopes
     for (let i = 0; i < token.scope.length; i++) {

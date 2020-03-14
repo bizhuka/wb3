@@ -1,6 +1,7 @@
 "use strict";
 
 const Db = require('../util/Db');
+const MT = require('../util/MT');
 const Time = require('../util/Time');
 const Status = require('../util/Status');
 
@@ -13,9 +14,9 @@ module.exports = (app, srv) => {
 
     //////////////////////////////////////////////////////////////////////////////
     app.all("/print/template", async (req, res) => {
-        const rfcClient = await Db.getRfcClient(req);
+        const rfcClient = await MT.getRfcClient(req);
         if (!rfcClient)
-            throw new Error("No connection to '" + Db.getConnectionInfo(req).desc + "'");
+            throw new Error("No connection to '" + MT.getConnectionInfo(req).desc + "'");
 
         const result = await rfcClient.call('Z_WB_PRINT_DOC', {
             IV_OBJID: req.query.objid
@@ -186,9 +187,9 @@ module.exports = (app, srv) => {
         if (docs.length === 0)
             return;
 
-        const rfcClient = await Db.getRfcClient(req);
+        const rfcClient = await MT.getRfcClient(req);
         if (!rfcClient)
-            throw new Error( "No connection to '" + Db.getConnectionInfo(req).desc + "'");
+            throw new Error( "No connection to '" + MT.getConnectionInfo(req).desc + "'");
 
         const result = await rfcClient.call('Z_WB_PRINT_DOC', {
             IV_WAYBILL_ID: String(waybillId),

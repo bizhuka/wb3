@@ -244,7 +244,6 @@ sap.ui.define([
                     if (value.hasOwnProperty(key) && value[key] && value[key].getMonth)
                         value[key] = this.toTextDate(entity, key, value[key]);
 
-                //console.warn(JSON.stringify(value))
                 $.ajax({
                     type: httpType,
                     url: "catalog" + path,

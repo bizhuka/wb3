@@ -1,8 +1,6 @@
 "use strict";
 
-const Db = require('../util/Db');
-const Time = require('../util/Time');
-const Status = require('../util/Status');
+const MT = require('../util/MT');
 
 module.exports = (app, srv) => {
 
@@ -44,7 +42,7 @@ module.exports = (app, srv) => {
             };
         else {
             // Call SAP FM
-            const rfcClient = await Db.getRfcClient(req);
+            const rfcClient = await MT.getRfcClient(req);
             if (!rfcClient)
                 result = {
                     docum: '000',

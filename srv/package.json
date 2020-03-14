@@ -4,8 +4,6 @@
   "version": "1.0.0",
   "dependencies": {
     "@sap/cds": "3.18.3",
-    "@sap/cds-odata-v2-adapter-proxy": "~1.4.1",
-    "@sap/hdbext": "~6.0.1",
     "@sap/odata-commons": "~2.1.3",
     "@sap/xsenv": "~2.0.0",
     "@sap/xssec": "~2.2.3",

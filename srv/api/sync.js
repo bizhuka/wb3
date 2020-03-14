@@ -1,6 +1,7 @@
 "use strict";
 
 const Db = require('../util/Db');
+const MT = require('../util/MT');
 const Time = require('../util/Time');
 
 const util = require('util');
@@ -37,7 +38,7 @@ async function persist(req, res, Entity, params) {
     }
 
     // open connection & call RFC fm
-    const rfcClient = await Db.getRfcClient(req);
+    const rfcClient = await MT.getRfcClient(req);
     if (!rfcClient)
         return;
     const sapResult = await rfcClient.call(params.FM, params.RFC_PARAMS);
@@ -309,9 +310,9 @@ module.exports = (app, srv) => {
         const newList = await persist(req, res, ReqHeader, filter);
 
         // open connection & call RFC fm
-        const rfcClient = await Db.getRfcClient(req);
+        const rfcClient = await MT.getRfcClient(req);
         if (!rfcClient)
-            throw new Error("No connection to '" + Db.getConnectionInfo(req).desc + "'");
+            throw new Error("No connection to '" + MT.getConnectionInfo(req).desc + "'");
 
         const arrObjnr = [];
         for (let i = 0; i < newList.length; i++)

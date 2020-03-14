@@ -4,6 +4,9 @@ const xsenv = require("@sap/xsenv");
 const cdsLib = require("@sap/cds/lib/cds");
 const cdsConnect = require("@sap/cds/lib/runtime/connect");
 
+// for RFC
+const Client = require('node-rfc').Client;
+
 const Db = require('./Db');
 
 // hdi-containers & rfc connections info
@@ -36,6 +39,27 @@ module.exports = {
             console.log('#######################################');
             console.log('Looking for ' + connection.hdi_service);
 
+            // For cds
+            for (let h = 0; h < vcap.hana.length; h++) {
+                const envHana = vcap.hana[h];
+                if (envHana.name === connection.hdi_service) {
+                    connection.envHana = {
+                        use: 'hana',
+                        kind: 'hana',
+                        credentials: envHana.credentials,
+                        model: 'gen/csn.json'
+                    };
+
+                    console.log('OK found =' + envHana.name);
+                    console.log('#######################################');
+                    break;
+                }
+            }
+
+            // No option was found
+            if(!connection.envHana)
+                continue;
+
             const hanaOption = xsenv.getServices({
                 hana: {
                     name: connection.hdi_service,
@@ -46,27 +70,11 @@ module.exports = {
             // For hana
             hanaOption.pooling = true;
             connection.hanaOption = hanaOption;
-
-            // For cds
-            for (let h = 0; h < vcap.hana.length; h++) {
-                const envHana = vcap.hana[h];
-                if (envHana.name === connection.hdi_service) {
-                    connection.envHana = {
-                        use: 'hana',
-                        kind: 'hana',
-                        credentials: envHana.credentials
-                    };
-
-                    console.log('OK found =' + envHana.name);
-                    console.log('#######################################');
-                    break;
-                }
-            }
         }
 
         const _this = this;
 
-        // // @sap/hdbext.middleware
+        // @sap/hdbext.middleware TODO no need to change ?
         // app.use(_this.changeHDB());
 
         // What container to use
@@ -100,7 +108,7 @@ module.exports = {
 
     changeCDS: function (connection) {
         const prefix = connection.prefix;
-        if (Db.isWindows() || prefix !== _subDomainPrefix)
+        if (Db.isWindows() || prefix === _subDomainPrefix)
             return;
 
         console.log('trying to connect ' + prefix);

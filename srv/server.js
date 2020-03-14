@@ -1,6 +1,7 @@
 /*eslint no-console: 0, no-unused-vars: 0*/
 "use strict";
 
+// for local test launch cdsRun.js (Read README.md)
 // const Db = require('./util/Db');
 // const cds = require("@sap/cds");
 // const express = require("express");

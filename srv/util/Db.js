@@ -1,8 +1,5 @@
 const path = require('path');
 
-// for RFC
-const Client = require('node-rfc').Client;
-
 module.exports = {
 
     close: function (tx, doCommit) {

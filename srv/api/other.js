@@ -139,6 +139,7 @@ module.exports = (app, srv) => {
                             break;
 
                         case 'cds.DecimalFloat':
+                        case 'cds.Integer64':
                             let numValue = item[cdsField.name];
                             if (numValue === '')
                                 numValue = 0;

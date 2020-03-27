@@ -7,7 +7,7 @@ applications:
     type: nodejs
     path: srv
     port: 51062
-    memory: 1024M
+    memory: 2024M
     disk-quota: 1024M
     env:
       WB_IS_TEST: false

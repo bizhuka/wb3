@@ -21,7 +21,7 @@
     "passport": "~0.4.0"
   },
   "engines": {
-    "node": "^8.9",
+    "node": "^12.14",
     "npm": "^6"
   },
   "devDependencies": {},

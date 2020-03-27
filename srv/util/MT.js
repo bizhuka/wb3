@@ -5,7 +5,7 @@ const cdsLib = require("@sap/cds/lib/cds");
 const cdsConnect = require("@sap/cds/lib/runtime/connect");
 
 // for RFC
-const Client = require('node-rfc').Client;
+const Client = process.env.RFC_TEST === 'true' ? null : require('node-rfc').Client;
 
 const Db = require('./Db');
 
@@ -57,7 +57,7 @@ module.exports = {
             }
 
             // No option was found
-            if(!connection.envHana)
+            if (!connection.envHana)
                 continue;
 
             const hanaOption = xsenv.getServices({

@@ -19,7 +19,7 @@ module.exports = {
 
     getConnectionInfo: function (req) {
         // prefix key
-        const key = Db.isWindows() ? "localhost:" : req.authInfo.subdomain;
+        const key = Db.isWindows() ? "localhost:" : req.authInfo.subdomain; //TODO for test "subaccount-emba";
 
         for (let i = 0; i < connections.length; i++) {
             const connection = connections[i];

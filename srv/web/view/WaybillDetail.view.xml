@@ -238,8 +238,8 @@
                                                    id="id_wb_odo_diff"/>
 
                                             <HBox visible="{wb>UseRate}">
-                                                <Input type="Number" enabled="false" width="5rem" value="{wb>NormProb}"/>
-                                                <Input id="id_cr_0" type="Number" enabled="false" width="5rem" value="{= ${wb>OdoDiff} * ${wb>NormProb} / 100 }"/>
+                                                <Input type="Number" enabled="false" width="5rem" value="{= %{wb>NormProb}}"/>
+                                                <Input id="id_cr_0" type="Number" enabled="false" width="5rem" value="{= ${wb>OdoDiff} * %{wb>NormProb} / 100 }"/>
 
                                                 <Input type="Number" value="{wb>_OdoDiff}" width="20rem" id="_id_wb_odo_diff" visible="false"/>
                                             </HBox>
@@ -253,8 +253,8 @@
                                                    valueLiveUpdate="true"
                                                    id="id_wb_moto_hour"/>
                                             <HBox visible="{wb>UseRate}">
-                                                <Input type="Number" enabled="false" width="5rem" value="{wb>NormMchas}"/>
-                                                <Input id="id_cr_1" type="Number" enabled="false" width="5rem" value="{= ${wb>MotoHour} * ${wb>NormMchas} }"/>
+                                                <Input type="Number" enabled="false" width="5rem" value="{= %{wb>NormMchas}}"/>
+                                                <Input id="id_cr_1" type="Number" enabled="false" width="5rem" value="{= ${wb>MotoHour} * %{wb>NormMchas} }"/>
 
                                                 <Input type="Number" value="{wb>_MotoHour}" width="20rem" id="_id_wb_moto_hour" visible="false"/>
                                             </HBox>
@@ -263,7 +263,7 @@
                                 </f:formElements>
                             </f:FormContainer>
 
-                            <f:FormContainer title="{i18n>consRate}" visible="{= (${wb>NormProb}>0||${wb>NormMchas}>0)}">
+                            <f:FormContainer title="{i18n>consRate}" visible="{= %{wb>NormProb} > 0 || %{wb>NormMchas} > 0 }">
                                 <f:formElements>
                                     <f:FormElement label="{i18n>offRoad}" visible="{wb>UseRate}">
                                         <f:fields>
@@ -276,7 +276,7 @@
                                                               ${userInfo>/same_month}===true) }"/>
                                             <HBox>
                                                <Label width="5rem"/>
-                                               <Input id="id_cr_2" type="Number" enabled="false" width="5rem" value="{= %{wb>OffRoad} ? ${wb>OdoDiff} * ${wb>NormProb} * ${cr>/off_road_rate} : 0 }"/>
+                                               <Input id="id_cr_2" type="Number" enabled="false" width="5rem" value="{= %{wb>OffRoad} ? ${wb>OdoDiff} * %{wb>NormProb} * ${cr>/off_road_rate} : 0 }"/>
                                             </HBox>
                                         </f:fields>
                                     </f:FormElement>
@@ -286,7 +286,7 @@
                                             <Switch enabled="false" state="{cr>/seasonality_bool}" tooltip="01.11 - 30.04"/>
                                             <HBox>
                                                 <Label width="5rem"/>
-                                                <Input id="id_cr_3" type="Number" enabled="false" width="5rem" value="{= %{cr>/seasonality_bool} ? ${wb>OdoDiff} * ${wb>NormProb} * ${cr>/seasonality_rate} : 0 }"/>
+                                                <Input id="id_cr_3" type="Number" enabled="false" width="5rem" value="{= %{cr>/seasonality_bool} ? ${wb>OdoDiff} * %{wb>NormProb} * ${cr>/seasonality_rate} : 0 }"/>
                                             </HBox>
                                         </f:fields>
                                     </f:FormElement>
@@ -303,7 +303,7 @@
                                                               ${userInfo>/same_month}===true) }"/>
                                             <HBox>
                                                 <Label width="5rem"/>
-                                                <Input id="id_cr_4" type="Number" enabled="false" width="5rem" value="{= ${wb>IdleTime} * ${wb>NormProb} * ${cr>/idle_time_rate} }"/>
+                                                <Input id="id_cr_4" type="Number" enabled="false" width="5rem" value="{= ${wb>IdleTime} * %{wb>NormProb} * ${cr>/idle_time_rate} }"/>
                                             </HBox>
                                         </f:fields>
                                     </f:FormElement>

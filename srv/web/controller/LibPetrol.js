@@ -125,8 +125,8 @@ sap.ui.define([
 
                     // Both norms are empty for main fuel
                     ptType.empty_norm = true;
-                    if (ptType.id === 1)
-                        ptType.empty_norm = !bindObj.NormProb && !bindObj.NormMchas;
+                    // TODO https://trello.com/c/Ro3eVMIQ/156-открыть-на-редактирование-поле-расхода-гсм
+                    // if (ptType.id === 1) ptType.empty_norm = !bindObj.NormProb && !bindObj.NormMchas;
 
                     // Check bit is set
                     if (ptType.id !== 0) // Skip all

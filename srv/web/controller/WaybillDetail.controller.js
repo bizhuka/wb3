@@ -87,6 +87,9 @@ sap.ui.define([
             var result = _this.getView().getBindingContext("wb").getObject();
 
             // TODO fix
+            if(!result)
+                result = bindingObject;
+
             if (result) {
                 _this._fromUi(result, true);
             }
@@ -150,8 +153,11 @@ sap.ui.define([
 
                         var objnrFilter = [];
                         // Add new history filter
-                        for (var i = 0; i < arr.length; i++)
-                            objnrFilter.push(new Filter("Objnr", FilterOperator.EQ, arr[i].Objnr));
+                        if (arr.length === 0)
+                            objnrFilter.push(new Filter("Objnr", FilterOperator.EQ, '---')); // TODO TEST
+                        else
+                            for (var i = 0; i < arr.length; i++)
+                                objnrFilter.push(new Filter("Objnr", FilterOperator.EQ, arr[i].Objnr));
 
                         // Pass old objnr-s
                         _this.reqsFilter = new Filter({

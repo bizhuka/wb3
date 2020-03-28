@@ -108,6 +108,7 @@
             virtual Hist_Cnt : Integer;
             virtual Gas_Cnt  : Integer;
             virtual Spent0 : DecimalFloat;
+            virtual _Spent0 : DecimalFloat;
     };
 
     define entity VWaybill AS SELECT FROM Waybill as w
@@ -128,6 +129,7 @@
         w.ChangeUser,
         w.ChangeDate,
         w.Spent0,
+        w._Spent0,
 
         w.Spent1,
         w.Spent2,

@@ -18,8 +18,8 @@ module.exports = (app, srv) => {
             IV_GSTRP: incomingDoc.gstrp, // DATE + TIME
             IV_GLTRP: incomingDoc.gltrp, // DATE + TIME
             IV_SHORT_TEXT: incomingDoc.text,
-            IV_ODO_DIFF: incomingDoc.odoDiff,
-            IV_MOTO_HOUR: incomingDoc.motoHour,
+            IV_ODO_DIFF: incomingDoc.odoDiff ? incomingDoc.odoDiff : '0',
+            IV_MOTO_HOUR: incomingDoc.motoHour ? incomingDoc.motoHour : '0',
             IT_GAS_SPENT_POS: incomingDoc.spents.map(item => {
                 return {
                     MATNR: item.matnr,

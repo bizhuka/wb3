@@ -141,30 +141,29 @@ sap.ui.define([
             if (!eoItems.length)
                 return;
 
-            var items = {};
-            var equnrArr = [];
+            // var items = {};
+            // var equnrArr = [];
 
-            for (var i = 0; i < eoItems.length; i++) {
-                var context = eoItems[i].getBindingContext('wb');
-                // TODO not prepared?
-                if (!context || !context.getObject())
-                    continue;
-                var item = context.getObject();
+            // for (var i = 0; i < eoItems.length; i++) {
+            //     var context = eoItems[i].getBindingContext('wb');
+            //     // TODO not prepared?
+            //     if (!context || !context.getObject())
+            //         continue;
+            //     var item = context.getObject();
 
-                // Save for changing
-                items[item.Equnr] = {
-                    path: context.sPath,
-                    row: item,
-                    changed: false
-                };
-                equnrArr.push(new Filter("Equnr", FilterOperator.EQ, item.Equnr));
-            }
+            //     // Save for changing
+            //     items[item.Equnr] = {
+            //         path: context.sPath,
+            //         row: item,
+            //         changed: false
+            //     };
+            //      equnrArr.push(new Filter("Equnr", FilterOperator.EQ, item.Equnr));
+            // }
 
-            var dateFilter =
-                new Filter("Datum", FilterOperator.BT,
-                    _this.addDays(this.dpFrom.getDateValue(), -1),
-                    _this.addDays(this.dpTo.getDateValue(), 1))
-            ;
+            // var dateFilter =
+            //     new Filter("Datum", FilterOperator.BT,
+            //         _this.addDays(this.dpFrom.getDateValue(), -1),
+            //         _this.addDays(this.dpTo.getDateValue(), 1));
 
             // // TODO check
             // if (!formatter.isWindows() || !formatter.isV4()) {

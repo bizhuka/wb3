@@ -477,33 +477,67 @@ sap.ui.define([
                         delete columns[i].type;
                 }
 
-                // Load async
-                sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
-                    var oSettings = {
-                        workbook: {
-                            columns: columns
-                        },
-                        dataSource: {
-                            type: "odata",
-                            dataUrl: dataUrl,
-                            serviceUrl: oModelInterface.sServiceUrl,
-                            headers: oModelInterface.getHeaders ? oModelInterface.getHeaders() : null,
-                            //count: oRowBinding.getLength(), ALL
-                            useBatch: oModelInterface.bUseBatch,
-                            sizeLimit: oModelInterface.iSizeLimit
-                        }
-                    };
-                    if (oSettings.dataSource.dataUrl && replaceBlock)
-                        for (var i = 0; i < replaceBlock.length; i++) {
-                            var block = replaceBlock[i];
-                            oSettings.dataSource.dataUrl = oSettings.dataSource.dataUrl.replace(block.from, block.to);
-                        }
+                $.get({
+                    url: oModelInterface.sServiceUrl + dataUrl,
+                    success: function(data) {
+                        var newDataSource = data.value.map(function(el){
+                            el.CreateDate = el.CreateDate ? new Date(el.CreateDate) : '';
+                            el.GarageDepDate = el.GarageDepDate ? new Date(el.GarageDepDate) : '';
+                            el.GarageArrDate = el.GarageArrDate ? new Date(el.GarageArrDate) : '';
+                            return el;
+                        })
+                        sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
+                            var oSettings = {
+                                workbook: {
+                                    columns: columns
+                                },
+                                dataSource: newDataSource
+                            };
+                            if (oSettings.dataSource.dataUrl && replaceBlock)
+                                for (var i = 0; i < replaceBlock.length; i++) {
+                                    var block = replaceBlock[i];
+                                    oSettings.dataSource.dataUrl = oSettings.dataSource.dataUrl.replace(block.from, block.to);
+                                }
 
-                    var oSheet = new Spreadsheet(oSettings);
-                    oSheet.build().finally(function () {
-                        oSheet.destroy();
-                    });
+                            var oSheet = new Spreadsheet(oSettings);
+                            oSheet.build().finally(function () {
+                                oSheet.destroy();
+                            });
+                        });        
+                    }.bind(this),
+                    error: function(error) {
+                    }
                 });
+                
+               
+
+                // Load async
+                // sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
+                //     var oSettings = {
+                //         workbook: {
+                //             columns: columns
+                //         },
+                //         dataSource: {
+                //             type: "odata",
+                //             dataUrl: dataUrl,
+                //             serviceUrl: oModelInterface.sServiceUrl,
+                //             headers: oModelInterface.getHeaders ? oModelInterface.getHeaders() : null,
+                //             //count: oRowBinding.getLength(), ALL
+                //             useBatch: oModelInterface.bUseBatch,
+                //             sizeLimit: oModelInterface.iSizeLimit
+                //         }
+                //     };
+                //     if (oSettings.dataSource.dataUrl && replaceBlock)
+                //         for (var i = 0; i < replaceBlock.length; i++) {
+                //             var block = replaceBlock[i];
+                //             oSettings.dataSource.dataUrl = oSettings.dataSource.dataUrl.replace(block.from, block.to);
+                //         }
+
+                //     var oSheet = new Spreadsheet(oSettings);
+                //     oSheet.build().finally(function () {
+                //         oSheet.destroy();
+                //     });
+                // });
             });
         }
     });

@@ -160,10 +160,10 @@ sap.ui.define([
             //      equnrArr.push(new Filter("Equnr", FilterOperator.EQ, item.Equnr));
             // }
 
-            // var dateFilter =
-            //     new Filter("Datum", FilterOperator.BT,
-            //         _this.addDays(this.dpFrom.getDateValue(), -1),
-            //         _this.addDays(this.dpTo.getDateValue(), 1));
+            var dateFilter =
+                new Filter("Datum", "BT",
+                    _this.addDays(this.dpFrom.getDateValue(), -1),
+                    _this.addDays(this.dpTo.getDateValue(), 1));
 
             // // TODO check
             // if (!formatter.isWindows() || !formatter.isV4()) {
